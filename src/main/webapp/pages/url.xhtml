@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>URL Redirecting</title>
+</head>
+<body>
+	<script type="text/javascript">
+$(document).ready(function() {
+	alert("");
+	  function myFunction(){
+	   var url = $(location).attr('href');
+	   url2=url.split('/')[0]+url.split('/')[2]+url.split('/')[3];
+	   alert(url2);
+	return url2;
+	  }
+	  var url = $(location).attr('href');
+		url=url.split('/')[0]+url.split('/')[2]+url.split('/')[3];
+		alert(''+url);
+    		if(parseInt($('#x3').find('span.form-message').length) == 0) 
+    		 window.location =url+'/pages/rides/master-gr-pending-trips.xhtml'; }, 500);"/>ml>
+    		 
+});	   
+</script>
+</body>
+</html>

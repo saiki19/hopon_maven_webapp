@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf14137058180010" configfile="/hopon_local/src/main/webapp/WEB-INF/faces-config.xml">
+  <nodes xsi:type="pageflow:PFPage" name="pages/signin.xhtml" x="338" y="622" id="pf14137059059683" referenceLink="//@navigationRule.0/@navigationCase.0/@toViewId|" outlinks="pf14137059059684 pf14137059059685 pf14137059059686 pf14137059059687 pf14137059059688 pf14137059059689" inlinks="pf141370590596810 pf141370590596811 pf14139732353613" path="/pages/signin.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/settings/master-gr-my-msg.xhtml" x="554" y="622" id="pf141370590596812" referenceLink="//@navigationRule.4/@navigationCase.1/@toViewId|" outlinks="pf141370590596813 pf141370590596814" inlinks="pf14137059059684 pf14137059059685 pf14137059059686 pf14137059059687 pf141370590596815 pf141370590596813 pf141370590596814" path="/pages/settings/master-gr-my-msg.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/settings/changePassword.xhtml" x="554" y="238" id="pf141370590596916" referenceLink="//@navigationRule.2/@navigationCase.4/@toViewId|" inlinks="pf14137059059688" path="/pages/settings/changePassword.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/settings/Pref-ind.xhtml" x="122" y="562" id="pf141370590596917" referenceLink="//@navigationRule.12/@fromViewId|" outlinks="pf141370590596811 pf141370590596918" inlinks="pf14137059059689" path="/pages/settings/Pref-ind.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/signup.xhtml" x="122" y="946" id="pf141370590596919" referenceLink="//@navigationRule.3/@fromViewId|" outlinks="pf141370590596920 pf141370590596921 pf141370590596815 pf141370590596810" inlinks="pf141370590596920 pf141370590596921" path="/pages/signup.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/settings/master-my-circle.xhtml" x="338" y="2866" id="pf141370590596922" referenceLink="//@navigationRule.9/@navigationCase.0/@toViewId|" outlinks="pf141370590596923 pf141370590596924" inlinks="pf141370590596923 pf141370590596924 pf141370590596925" path="/pages/settings/master-my-circle.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/rides/master_gr-new-ride.xhtml" x="122" y="1330" id="pf141370590596926" referenceLink="//@navigationRule.6/@navigationCase.2/@toViewId|" outlinks="pf141370590596927 pf141370590596928 pf141370590596929" inlinks="pf141370590596928 pf141370590596929" path="/pages/rides/master_gr-new-ride.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/rides/master-gr-pending-trips.xhtml" x="338" y="1714" id="pf141370590596930" referenceLink="//@navigationRule.11/@navigationCase.0/@toViewId|" outlinks="pf141370590597031 pf141370590597032" inlinks="pf141370590596927 pf141370590597033 pf141370590597034 pf141370590597031 pf141370590597032 pf141370590597035 pf141370590597036" path="/pages/rides/master-gr-pending-trips.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/rides/master-gr-completedride.xhtml" x="122" y="1714" id="pf141370590597037" referenceLink="//@navigationRule.7/@fromViewId|" outlinks="pf141370590597038 pf141370590597033 pf141370590597034" inlinks="pf141370590597038" path="/pages/rides/master-gr-completedride.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/provider/create-circle.xhtml" x="122" y="2866" id="pf141370590597039" referenceLink="//@navigationRule.9/@fromViewId|" outlinks="pf141370590596925" path="/pages/provider/create-circle.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/taxi/taxi-link-manual.xhtml" x="122" y="2098" id="pf141370590597040" referenceLink="//@navigationRule.10/@fromViewId|" outlinks="pf141370590597035" path="/pages/taxi/taxi-link-manual.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/taxi/ride-pre-match.xhtml" x="122" y="2482" id="pf141370590597041" referenceLink="//@navigationRule.11/@fromViewId|" outlinks="pf141370590597036" path="/pages/taxi/ride-pre-match.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/settings/editcompany.xhtml" x="338" y="3250" id="pf141370590597042" referenceLink="//@navigationRule.14/@navigationCase.0/@toViewId|" inlinks="pf141370590596918 pf141370590597043 pf141370590597044" path="/pages/settings/editcompany.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/consumer/Pref-ind.xhtml" x="122" y="3250" id="pf141370590597045" referenceLink="//@navigationRule.13/@fromViewId|" outlinks="pf141370590597043" path="/pages/consumer/Pref-ind.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/companysignup.xhtml" x="122" y="3634" id="pf141370590597046" referenceLink="//@navigationRule.14/@fromViewId|" outlinks="pf141370590597044" path="/pages/companysignup.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/verify_user.xhtml" id="pf141370590597047" referenceLink="//@navigationRule.1/@fromViewId|" outlinks="pf141371304420152 pf141371304420153" path="/pages/verify_user.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/verification-success.xhtml" id="pf141371304420154" referenceLink="//@navigationRule.1/@navigationCase.0/@toViewId|" inlinks="pf141371304420152" path="/pages/verification-success.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="pages/verification-failure.xhtml" id="pf141371304420155" referenceLink="//@navigationRule.1/@navigationCase.1/@toViewId|" inlinks="pf141371304420153" path="/pages/verification-failure.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="*" id="pf14139732353624" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf14139732353613" path="/*"/>
+  <links id="pf14137059059684" target="pf141370590596812" source="pf14137059059683" outcome="P" redirect="true"/>
+  <links id="pf14137059059685" target="pf141370590596812" source="pf14137059059683" outcome="B" redirect="true"/>
+  <links id="pf14137059059686" target="pf141370590596812" source="pf14137059059683" outcome="C" redirect="true"/>
+  <links id="pf14137059059687" target="pf141370590596812" source="pf14137059059683" outcome="T" redirect="true"/>
+  <links id="pf14137059059688" target="pf141370590596916" source="pf14137059059683" outcome="changePassword" redirect="true"/>
+  <links id="pf14137059059689" target="pf141370590596917" source="pf14137059059683" outcome="preference" redirect="true"/>
+  <links id="pf141370590596815" target="pf141370590596812" source="pf141370590596919" outcome="userRegister" redirect="true"/>
+  <links id="pf141370590596810" target="pf14137059059683" source="pf141370590596919" outcome="userPending" redirect="true"/>
+  <links id="pf141370590596927" target="pf141370590596930" source="pf141370590596926" outcome="rideRegistered" redirect="true"/>
+  <links id="pf141370590597033" target="pf141370590596930" source="pf141370590597037" outcome="copyrideManager" redirect="true"/>
+  <links id="pf141370590597034" target="pf141370590596930" source="pf141370590597037" outcome="copyrideSeeker" redirect="true"/>
+  <links id="pf141370590596925" target="pf141370590596922" source="pf141370590597039" outcome="circleRegistered" redirect="true"/>
+  <links id="pf141370590597035" target="pf141370590596930" source="pf141370590597040" outcome="matched" redirect="true"/>
+  <links id="pf141370590597036" target="pf141370590596930" source="pf141370590597041" outcome="matched" redirect="true"/>
+  <links id="pf141370590596811" target="pf14137059059683" source="pf141370590596917" outcome="close" redirect="true"/>
+  <links id="pf141370590596918" target="pf141370590597042" source="pf141370590596917" outcome="page" redirect="true"/>
+  <links id="pf141370590597043" target="pf141370590597042" source="pf141370590597045" outcome="page" redirect="true"/>
+  <links id="pf141370590597044" target="pf141370590597042" source="pf141370590597046" outcome="registerCompany" redirect="true"/>
+  <links id="pf141370590596920" target="pf141370590596919" source="pf141370590596919" outcome="registerCompany" redirect="true">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf141370590596921" target="pf141370590596919" source="pf141370590596919" outcome="clear" redirect="true">
+    <bendPoints d1Height="-66" d2Height="-66"/>
+    <bendPoints d1Width="-94" d1Height="-66" d2Width="-94" d2Height="-66"/>
+    <bendPoints d1Width="-94" d2Width="-94"/>
+  </links>
+  <links id="pf141370590596813" target="pf141370590596812" source="pf141370590596812" outcome="giveRide" redirect="true">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf141370590596814" target="pf141370590596812" source="pf141370590596812" outcome="takeRide" redirect="true">
+    <bendPoints d1Height="-66" d2Height="-66"/>
+    <bendPoints d1Width="-94" d1Height="-66" d2Width="-94" d2Height="-66"/>
+    <bendPoints d1Width="-94" d2Width="-94"/>
+  </links>
+  <links id="pf141370590596923" target="pf141370590596922" source="pf141370590596922" outcome="giveRide" redirect="true">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf141370590596924" target="pf141370590596922" source="pf141370590596922" outcome="takeRide" redirect="true">
+    <bendPoints d1Height="-66" d2Height="-66"/>
+    <bendPoints d1Width="-94" d1Height="-66" d2Width="-94" d2Height="-66"/>
+    <bendPoints d1Width="-94" d2Width="-94"/>
+  </links>
+  <links id="pf141370590596928" target="pf141370590596926" source="pf141370590596926" outcome="giveRide" redirect="true">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf141370590596929" target="pf141370590596926" source="pf141370590596926" outcome="takeRide" redirect="true">
+    <bendPoints d1Height="-66" d2Height="-66"/>
+    <bendPoints d1Width="-94" d1Height="-66" d2Width="-94" d2Height="-66"/>
+    <bendPoints d1Width="-94" d2Width="-94"/>
+  </links>
+  <links id="pf141370590597038" target="pf141370590597037" source="pf141370590597037" outcome="giveRide" redirect="true">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf141370590597031" target="pf141370590596930" source="pf141370590596930" outcome="giveRide" redirect="true">
+    <bendPoints d1Height="-36" d2Height="-36"/>
+    <bendPoints d1Width="-64" d1Height="-36" d2Width="-64" d2Height="-36"/>
+    <bendPoints d1Width="-64" d2Width="-64"/>
+  </links>
+  <links id="pf141370590597032" target="pf141370590596930" source="pf141370590596930" outcome="takeRide" redirect="true">
+    <bendPoints d1Height="-66" d2Height="-66"/>
+    <bendPoints d1Width="-94" d1Height="-66" d2Width="-94" d2Height="-66"/>
+    <bendPoints d1Width="-94" d2Width="-94"/>
+  </links>
+  <links id="pf141371304420152" target="pf141371304420154" source="pf141370590597047" outcome="success"/>
+  <links id="pf141371304420153" target="pf141371304420155" source="pf141370590597047" outcome="failure"/>
+  <links id="pf14139732353613" target="pf14137059059683" source="pf14139732353624" outcome="signOut" redirect="true"/>
+</pageflow:Pageflow>

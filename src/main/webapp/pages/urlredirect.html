@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+
+
+<script src="../resources/js/jquery.min.js"></script>
+
+<script src="js/1.10.4/jquery-ui.js"></script>
+
+<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+
+</head>
+
+<body>
+
+	<script>
+		jQuery(document).ready(function() {
+			var href = jQuery(location).attr('href');
+			var url = jQuery(this).attr('title');
+			alert(href);
+			jQuery('#current_title').html(href);
+			jQuery('#current_url').html(url);
+
+			//jquery 
+			/*   $(location).attr('href'); 
+			 
+			  //pure javascript
+			    var pathname = window.location.pathname;
+			     alert("pathe name"+)
+			    // to show it in an alert window
+			    alert(window.location); */
+
+		});
+	</script>
+
+</body>
+</html>
