@@ -12,7 +12,12 @@
   <pm:page>
    <pm:view>
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
+	<script>
+function scroll(){
 	
+	 window.scrollTo(0, 2000);
+}
+</script>
 <h:head></h:head>
 <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -386,7 +391,7 @@
                    			<h:outputText value=" "></h:outputText>
                    			<h:commandButton styleClass="btn btn-info" value="RateRide" >
                    				<f:param value="taker" name="taker"></f:param>
-                   				<p:ajax oncomplete="modalUpdate();updateDataTable();" listener="#{userAction.rateAndWriteNotes}" process="@form" update="@form,:form1,:form2,:form3"></p:ajax>
+                   				<p:ajax oncomplete="modalUpdate();updateDataTable();scroll();" listener="#{userAction.rateAndWriteNotes}" process="@form" update="@form,:form1,:form2,:form3"></p:ajax>
                    			</h:commandButton>
                   		</h:panelGrid> <br/>
                   		<c:forEach var="sucMessage" items="${userAction.successMessage}">

@@ -1,4 +1,5 @@
 package com.hopon.utils;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -7,6 +8,7 @@ import java.util.ResourceBundle;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
+
 public class DataSource {
 	private static DataSource     datasource;
 	private BoneCP connectionPool;

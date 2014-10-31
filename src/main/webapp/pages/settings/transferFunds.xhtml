@@ -76,7 +76,7 @@
 
 <h:form>
 <b> Withdraw </b><br/> Withdraw Amount (in INR) 
-<h:inputText value="" id="withdraAmount" style="width:70px;"/> 
+<h:inputText value="#{userAction.transferAmount}" id="withdraAmount" style="width:70px;"/> 
 
 <h:commandButton styleClass="btn btn-success" value="Withdraw" style="margin-left:4px;">
 	<p:ajax listener="#{userAction.updateBalance}" process="@this,withdraAmount" update="@form,:messagePanel,:credit" />

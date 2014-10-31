@@ -26,8 +26,10 @@ public class DAOProvider {
 	private static PaymentDAO paymentDAO = new PaymentDAO();
 	private static PaymentPlanDAO paymentPlanDAO = new PaymentPlanDAO();
 	private static PaymentTxnsDAO paymentTxnsDAO = new PaymentTxnsDAO();
-	//Helper class
+	private static PaymentRequestDAO paymentRequestDAO = new PaymentRequestDAO();
+	// Helper class
 	private static ContactUsDAO contactUsDAO = new ContactUsDAO();
+	private static RideSummaryMessageToDriverDAO messageToDriverDAO = new RideSummaryMessageToDriverDAO();
 
 	public static MessageBoardDAO getMessageBoardDAO() {
 		return messageBoardDAO;
@@ -210,6 +212,8 @@ public class DAOProvider {
 		DAOProvider.paymentPlanDAO = paymentPlanDAO;
 	}
 
+	
+
 	public static PaymentTxnsDAO getPaymentTxnsDAO() {
 		return paymentTxnsDAO;
 	}
@@ -224,6 +228,23 @@ public class DAOProvider {
 
 	public static void setContactUsDAO(ContactUsDAO contactUsDAO) {
 		DAOProvider.contactUsDAO = contactUsDAO;
+	}
+
+	public static RideSummaryMessageToDriverDAO getMessageToDriverDAO() {
+		return messageToDriverDAO;
+	}
+
+	public static void setMessageToDriverDAO(
+			RideSummaryMessageToDriverDAO messageToDriverDAO) {
+		DAOProvider.messageToDriverDAO = messageToDriverDAO;
+	}
+
+	public static PaymentRequestDAO getPaymentRequestDAO() {
+		return paymentRequestDAO;
+	}
+
+	public static void setPaymentRequestDAO(PaymentRequestDAO paymentRequestDAO) {
+		DAOProvider.paymentRequestDAO = paymentRequestDAO;
 	}
 
 }

@@ -121,13 +121,79 @@ public class PaymentTxnsDAO {
 		return dto;
 	}
 	public void paymentTxnHoponToUser(Connection con,
-			HoponAccountDTO hoponAccountDto, UserRegistrationDTO userDto) throws SQLException {
-		// TODO Auto-generated method stub
-		
+			HoponAccountDTO hoponAccountDto, UserRegistrationDTO userDto)
+			throws SQLException {
+		StringBuilder query = new StringBuilder();
+		query.append("UPDATE hoponaccounts SET Balance = Balance - ?, UpdatedDT = ?, UpdatedBy = ? WHERE idHoponAccounts = ? ");
+		PreparedStatement pstmt = con.prepareStatement(query.toString());
+		pstmt.setFloat(1, hoponAccountDto.getBalance());
+		pstmt.setString(2, hoponAccountDto.getUpdateDate());
+		pstmt.setInt(3, hoponAccountDto.getUpdatedBy());
+		pstmt.setInt(4, hoponAccountDto.getIdHoponAccounts());
+		pstmt.executeUpdate();
+		pstmt.close();
+
+		query = new StringBuilder();
+		query.append("UPDATE users SET totalCredit = totalCredit + ? WHERE id = ?");
+		pstmt = con.prepareStatement(query.toString());
+		pstmt.setFloat(1, userDto.getTotalCredit());
+		pstmt.setString(2, userDto.getId());
+		pstmt.executeUpdate();
+		pstmt.close();
 	}
+
 	public void paymentTxnUserToHopon(Connection con,
-			HoponAccountDTO hoponAccountDto, UserRegistrationDTO userDto) throws SQLException {
-		// TODO Auto-generated method stub
-		
+			HoponAccountDTO hoponAccountDto, UserRegistrationDTO userDto)
+			throws SQLException {
+		StringBuilder query = new StringBuilder();
+		query.append("UPDATE hoponaccounts SET Balance = Balance + ?, UpdatedDT = ?, UpdatedBy = ? WHERE idHoponAccounts = ? ");
+		PreparedStatement pstmt = con.prepareStatement(query.toString());
+		pstmt.setFloat(1, hoponAccountDto.getBalance());
+		pstmt.setString(2, hoponAccountDto.getUpdateDate());
+		pstmt.setInt(3, hoponAccountDto.getUpdatedBy());
+		pstmt.setInt(4, hoponAccountDto.getIdHoponAccounts());
+		pstmt.executeUpdate();
+		pstmt.close();
+
+		query = new StringBuilder();
+		query.append("UPDATE users SET totalCredit = totalCredit - ? WHERE id = ?");
+		pstmt = con.prepareStatement(query.toString());
+		pstmt.setFloat(1, userDto.getTotalCredit());
+		pstmt.setString(2, userDto.getId());
+		pstmt.executeUpdate();
+		pstmt.close();
+	}
+
+	public List<PaymentTxnsDTO> searchCompletedTransaction(Connection con,
+			String userId, Date d1, Date d2) throws SQLException {
+		List dtos = new ArrayList();
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT paymentTxnsId, FromPayer, ToPayee, seeker_id, TripDetails, PaymentDT, Notes, UpdatedDT, UpdatedBy, CreatedDT, CreatedBy, Dist, amount from paymenttxns WHERE (DATE(PaymentDT) BETWEEN ? AND ? ) AND FromPayer = ?");
+		PreparedStatement pstmt = con.prepareStatement(query.toString());
+		pstmt.setString(1, ApplicationUtil.dateFormat1.format(d1));
+		pstmt.setString(2, ApplicationUtil.dateFormat1.format(d2));
+		pstmt.setString(3, userId);
+		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString(),
+				new Object[0]);
+		while (rs.next()) {
+			PaymentTxnsDTO dto = new PaymentTxnsDTO();
+			dto.setPaymentTxnsId(rs.getInt(1));
+			dto.setFromPayer(rs.getInt(2));
+			dto.setToPayee(rs.getInt(3));
+			dto.setSeekerId(rs.getInt(4));
+			dto.setTripDetails(rs.getString(5));
+			dto.setPaymentDT(rs.getString(6));
+			dto.setNotes(rs.getString(7));
+			dto.setUpdateDate(rs.getString(8));
+			dto.setUpdatedBy(rs.getInt(9));
+			dto.setCreatedDate(rs.getString(10));
+			dto.setCreatedBy(rs.getInt(11));
+			dto.setDist(rs.getInt(12));
+			dto.setAmount(rs.getInt(13));
+			dtos.add(dto);
+		}
+		rs.close();
+		pstmt.close();
+		return dtos;
 	}
 }

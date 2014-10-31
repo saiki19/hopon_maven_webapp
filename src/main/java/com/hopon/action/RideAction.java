@@ -26,10 +26,13 @@ import org.primefaces.json.JSONException;
 
 import com.hopon.dto.ApproverDTO;
 import com.hopon.dto.CircleDTO;
+import com.hopon.dto.CombineRideDTO;
 import com.hopon.dto.CombineVehicleDataModel;
 import com.hopon.dto.EmailDTO;
 import com.hopon.dto.FavoritePlacesDTO;
 import com.hopon.dto.FrequencyDTO;
+import com.hopon.dto.ManageRideDTO;
+import com.hopon.dto.ManageRideFormDTO;
 import com.hopon.dto.MatchedTripDTO;
 import com.hopon.dto.MatchedTripDataModel;
 import com.hopon.dto.MessageBoardDTO;
@@ -2013,7 +2016,9 @@ public class RideAction extends BaseAction {
 						dto.getStartDate(),
 						managerUserDto.getMobile_no(),
 						managementDtoTemp.getRideID(),
-						seekerDtoTemp.getUserName(),vehicleDto1.getReg_NO(), dto.getSeekerID()
+						seekerDtoTemp.getUserName(),
+						vehicleDto1.getReg_NO(), 
+						dto.getSeekerID()
 					}));
 					userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp.getUserID()));
 					userMessageDTO.setMessageChannel("S");
@@ -2352,49 +2357,7 @@ public class RideAction extends BaseAction {
 		}
 	}
 	
-	/*
-	 *This is for the <code> RideSummaryMessage</code>
-	 */
 	
-	public void RideSummaryMessageCronToDriver() {
-		
-		MatchedTripDTO tripDTO=new MatchedTripDTO();
-		
-		UserRegistrationDTO seekerUserDto=null;
-		
-		UserRegistrationDTO userDto1=new UserRegistrationDTO();
-		
-		MessageBoardDTO userMessageBoardDTO=new MessageBoardDTO(); 
-		
-		RideManagementDTO managementDto = new RideManagementDTO();
-		
-		VehicleMasterDTO vehicleDto = new VehicleMasterDTO();
-		
-		RideSeekerDTO seekerDtoTemp = ListOfValuesManager.getRideSeekerData(Integer.parseInt(tripDTO.getSeekerID()));
-		
-		List<MessageBoardDTO> messageBoardDTOsList=new ArrayList<MessageBoardDTO>();
-		
-		userMessageBoardDTO.setMessage(Messages.getValue("sms.match.driver", new Object[]{
-				
-		(seekerDtoTemp.getFromAddress1().length() > 25) ? seekerDtoTemp.getFromAddress1().substring(0, 25) : seekerDtoTemp.getFromAddress1(),
-				(seekerDtoTemp.getToAddress1().length() > 25) ? seekerDtoTemp.getToAddress1().substring(0, 25) : seekerDtoTemp.getToAddress1(),
-						seekerUserDto.getFirst_name(),
-						seekerUserDto.getMobile_no(),
-						managementDto.getRideID(),
-						userDto1.getFirst_name(),
-						vehicleDto.getReg_NO()
-					}));
-		userMessageDTO.setToMember(Integer.parseInt(userDto1.getId()));
-		userMessageDTO.setMessageChannel("S");
-		userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
-		
-		RideSeekerDTO rideSeekerDTO=new RideSeekerDTO();
-		RideSeekerDTO dtoSeeker = new RideSeekerDTO();
-		dtoSeeker.setSeekerID(tripDTO.getSeekerID());
-		dtoSeeker.setRideMatchRideId(rideManagementDTO.getRideID());
-		dtoSeeker.setIsResult("Y");
-	// ListOfValuesManager.changeField(dtoSeeker, con);
-	} 
 	
 }
 	 

@@ -21,6 +21,7 @@ import com.mysql.jdbc.Statement;
 
 public class RideSeekerDAO {
 	public RideManagementDTO registerRideSeeker(Connection con ,RideManagementDTO rideSeekerDTO )throws SQLException{
+
 		StringBuilder query = new StringBuilder();
 		query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point," +
 				"ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity," +

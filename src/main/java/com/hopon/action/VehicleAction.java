@@ -29,8 +29,10 @@ import org.primefaces.model.UploadedFile;
 
 import com.hopon.dto.MatchedTripDTO;
 import com.hopon.dto.MessageBoardDTO;
+import com.hopon.dto.RidePreVehicle;
 import com.hopon.dto.UserRegistrationDTO;
 import com.hopon.dto.VehicleMasterDTO;
+import com.hopon.dto.VehicleMasterDataTable;
 import com.hopon.utils.ApplicationUtil;
 import com.hopon.utils.ConfigurationException;
 import com.hopon.utils.ListOfValuesManager;

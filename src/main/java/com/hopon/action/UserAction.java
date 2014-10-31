@@ -27,16 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -55,8 +50,11 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.json.JSONException;
 import org.primefaces.model.UploadedFile;
 
+import com.hopon.dao.ApproverDAO;
+import com.hopon.dao.FrequencyDAO;
+import com.hopon.dao.MessageBoardDAO;
+import com.hopon.dao.RideSeekerDAO;
 import com.hopon.dao.UserRegistrationDAO;
-import com.hopon.demo.Demo;
 import com.hopon.dto.ApproverDTO;
 import com.hopon.dto.CircleAffiliationsDTO;
 import com.hopon.dto.CircleDTO;
@@ -82,11 +80,11 @@ import com.hopon.dto.PoolRequestsDTO;
 import com.hopon.dto.RideManagementDTO;
 import com.hopon.dto.RideSeekerDTO;
 import com.hopon.dto.SmsReplyDTO;
+import com.hopon.dto.SummaryMessageDTO;
 import com.hopon.dto.UserPreferencesDTO;
 import com.hopon.dto.UserRegistrationDTO;
 import com.hopon.dto.VehicleMasterDTO;
 import com.hopon.dto.VehicleMasterDataTable;
-import com.hopon.dto.VerifyUser;
 import com.hopon.utils.ApplicationUtil;
 import com.hopon.utils.ConfigurationException;
 import com.hopon.utils.ControllerException;
@@ -171,7 +169,7 @@ public class UserAction extends HPBaseAction {
 
 		return circle;
 
-}
+	}
 
 	public List<CircleDTO> autoTaxiCircle(String prefix) {
 		List<CircleDTO> circle = new ArrayList<CircleDTO>();
@@ -225,12 +223,18 @@ public class UserAction extends HPBaseAction {
 		return circle;
 	}
 
+	Object fieldValue;
 	public void gatherAffiliatedCircle(int circleId) {
 		allCircleAffiliationsDTO.clear();
 		allPendingCircleAffiliationsDTO.clear();
+		System.out.println("circleId =="+circleId);
 		allCircleAffiliationsDTO = ListOfValuesManager
 				.getAllAffiliatedCircle("" + circleId);
-
+		for(CircleAffiliationsDTO circleAffiliationsDTO:allCircleAffiliationsDTO) {
+		  fieldValue = circleAffiliationsDTO.getAffilicatedCircleId();
+		    System.out.println("fieldValue=====>"+fieldValue);
+		}
+		System.out.println("================fieldValue============================="+fieldValue);
 		allPendingCircleAffiliationsDTO = ListOfValuesManager
 				.getAllPendingCircle("" + circleId);
 
@@ -261,7 +265,7 @@ public class UserAction extends HPBaseAction {
 	public String registerUser() {
 
 		clearScreenMessage();
-		
+
 		forregistrationOnly.setMobile_no(forregistrationOnly.getMobile_no()
 				.replaceFirst("^[0|+]*", ""));
 
@@ -734,7 +738,6 @@ public class UserAction extends HPBaseAction {
 		validateUserPayment();
 		paymentTransaction();
 		populatePaymentPlan();
-		Demo.getMessages(userRegistrationDTO.getEmail_id());
 		return userRegistrationDTO.getTravel();
 	}
 
@@ -822,6 +825,8 @@ public class UserAction extends HPBaseAction {
 
 		rideManagementList = ListOfValuesManager
 				.getRideManagementList(userRegistrationDTO.getId());
+		System.out
+				.println("ridemanagement in UserAction:" + rideManagementList);
 		List<RideManagementDTO> listNew = new ArrayList<RideManagementDTO>();
 		for (RideManagementDTO dto : rideManagementList) {
 			if (!dto.getStatus().equalsIgnoreCase("T")
@@ -932,16 +937,18 @@ public class UserAction extends HPBaseAction {
 	}
 
 	/*
-	 *In this <code>registerRide()</code> Method RegisterRide First we get the getBroadConnection() using ListOfValuesManager class 
-	 *then checking all field conditions according to xhtml page  and we are two options one is TakeRide and 2nd one is GiveRide
-	 *and related Operations.
+	 * In this <code>registerRide()</code> Method RegisterRide First we get the
+	 * getBroadConnection() using ListOfValuesManager classthen checking all
+	 * field conditions according to xhtml page and we are two options one is
+	 * TakeRide and 2nd one is GiveRideand related Operations.
 	 */
 	public void registerRide() {
 
 		if (userCirclePaymentPending)
 			return;
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
-		System.out.println("Getting the connection Using listofvalues manager"+con);
+		System.out.println("Getting the connection Using listofvalues manager"
+				+ con);
 		String ride = null;
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> requestMap = context.getExternalContext()
@@ -952,6 +959,9 @@ public class UserAction extends HPBaseAction {
 		ride = (String) requestMap.get("ride");
 		clearScreenMessage();
 
+		if (userCirclePaymentPending) {
+			errorMessage.add("Please clear your payment.");
+		}
 		if (this.recurring && rideRegistered.getEndDate1() == null) {
 			errorMessage.add("Please select proper end date.");
 		}
@@ -1118,19 +1128,26 @@ public class UserAction extends HPBaseAction {
 							float distance = Integer.parseInt(windowCalculation
 									.get(5).toString()) / 1000;
 							rideRegistered.setRideDistance(distance);
-							if(rideRegistered.isSharedTaxi()==true){
-								System.out.println("Printing five rupees For Distance :"+ distance);
+							if (rideRegistered.isSharedTaxi() == true) {
+								System.out
+										.println("Printing five rupees For Distance :"
+												+ distance);
 								rideRegistered.setRideCost(distance
 										* Float.parseFloat(Messages.getValue(
-												"ride.perkm.charge").trim()) + "");
-								System.out.println("This is for 5rupees: "+ Messages.getValue(
-										"ride.perkm.charge"));
-							}else{
+												"ride.perkm.charge").trim())
+										+ "");
+								System.out.println("This is for 5rupees: "
+										+ Messages
+												.getValue("ride.perkm.charge"));
+							} else {
 								rideRegistered.setRideCost(distance
 										* Float.parseFloat(Messages.getValue(
-												"ride.perkm.sharecharge").trim()) + "");
-								System.out.println("This is default ammount 12rupee for carpool:"+ Messages.getValue(
-										"ride.perkm.sharecharge"));
+												"ride.perkm.sharecharge")
+												.trim()) + "");
+								System.out
+										.println("This is default ammount 12rupee for carpool:"
+												+ Messages
+														.getValue("ride.perkm.sharecharge"));
 							}
 						}
 					} catch (IOException e) {
@@ -1167,9 +1184,12 @@ public class UserAction extends HPBaseAction {
 							}
 						}
 					}
-			
-					if(rideRegistered.getCircleId()<=0 && allMemberCircleList != null && !allMemberCircleList.isEmpty()) {
-						rideRegistered.setCircleId(allMemberCircleList.get(0).getCircleID());
+
+					if (rideRegistered.getCircleId() <= 0
+							&& allMemberCircleList != null
+							&& !allMemberCircleList.isEmpty()) {
+						rideRegistered.setCircleId(allMemberCircleList.get(0)
+								.getCircleID());
 					}
 					rideRegistered = ListOfValuesManager.getRideSeekerEntery(
 							"findByDTO", rideRegistered, con);
@@ -2365,7 +2385,7 @@ public class UserAction extends HPBaseAction {
 		}
 		return list;
 	}
-
+int affilicatedCircleId;
 	public List<SelectItem> getAllAffiliatedCilcleMember() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		// allCircleAffiliationsDTO
@@ -2386,6 +2406,7 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public List<String> getAllPendingCilcleMemberForLoginUser() {
+		
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < allPendingCircleMemberList.size(); i++) {
 			String listText = "";
@@ -2430,7 +2451,29 @@ public class UserAction extends HPBaseAction {
 		}
 		return list;
 	}
-
+/*
+	public void circleTypeMethod(){
+		System.out.println("Reaching circleType()");
+		CircleDTO dto = new CircleDTO();
+		
+		if (userRegistrationDTO.getId() != null){
+			System.out.println("userRegistrationDTO.getId()  ==="+userRegistrationDTO.getId());
+			dto = ListOfValuesManager
+					.getCircleType(Integer
+							.parseInt(userRegistrationDTO.getId()));
+			System.out.println("dto = "+dto.getCircleType());
+		}
+		if(dto.getCircleType().equals("T")){
+			circleType = "T";
+			System.out.println(circleType + "circleType");
+		}
+		else{
+			circleType = "";
+			System.out.println(circleType + " =====circleType");
+		}
+	}
+	
+	*/
 	public void makeRidePreMatchInactive() {
 		ridePreMatchFormTest = false;
 	}
@@ -2542,6 +2585,10 @@ public class UserAction extends HPBaseAction {
 													.length() > 25) ? rideToDrop
 													.getToAddress1().substring(
 															0, 25) : rideToDrop
+													.getFromAddress1(),
+											(rideToDrop.getToAddress1().length() > 25) ? rideToDrop
+													.getToAddress1().substring(0,
+															25) : rideToDrop
 													.getToAddress1(),
 											rideToDrop.getStartdateValue() }));
 					userMessageDTO
@@ -2837,6 +2884,10 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public String matchRideForCompany() {
+
+		System.out.println("##############  Inside matchRideForCompany()   ##############");
+		System.out.println("manageRideFormDTO.getAffiliatedCircleId() ===>"+manageRideFormDTO.getAffiliatedCircleId());
+		
 		if (manageRideFormDTO.getRideDate() != null
 				&& !manageRideFormDTO.getRideDate().equals("")) {
 			SimpleDateFormat df1 = new SimpleDateFormat(
@@ -5179,8 +5230,8 @@ public class UserAction extends HPBaseAction {
 							rideManagementDTO = ListOfValuesManager
 									.getCancleRide(rideManagementDTO, con);
 							rideManagementDTO = ListOfValuesManager
-									.getRideManagerPopupDataDirect(dto
-											.getRideId());
+
+							.getRideManagerPopupDataDirect(dto.getRideId());
 
 						}
 					}
@@ -5792,10 +5843,12 @@ public class UserAction extends HPBaseAction {
 															.getStartPoint()
 															.substring(0, 25)
 															: dto.getStartPoint(),
+
 													(dto.getEndPoint().length() > 25) ? dto
 															.getEndPoint()
 															.substring(0, 25)
 															: dto.getEndPoint(),
+
 													managerUserDto
 															.getFirst_name(),
 													dto.getStartDate(),
@@ -5803,6 +5856,7 @@ public class UserAction extends HPBaseAction {
 															.getMobile_no(),
 													managementDtoTemp
 															.getRideID(),
+
 													seekerDtoTemp.getUserName(),
 													vehicleDto1.getReg_NO(),
 													dto.getSeekerID() }));
@@ -5812,6 +5866,7 @@ public class UserAction extends HPBaseAction {
 					userMessageDTO = ListOfValuesManager
 							.getInsertedMessage(userMessageDTO);
 
+					// Required: ride summary Message Creation for Driver
 					userMessageDTO = new MessageBoardDTO();
 					userMessageDTO
 							.setMessage(Messages
@@ -5844,9 +5899,11 @@ public class UserAction extends HPBaseAction {
 													vehicleDto1.getReg_NO() }));
 					userMessageDTO
 							.setToMember(Integer.parseInt(userDto.getId()));
+					System.out.println("Id in Tripmatch" + userDto.getId());
 					userMessageDTO.setMessageChannel("S");
 					userMessageDTO = ListOfValuesManager
 							.getInsertedMessage(userMessageDTO);
+					System.out.println("In triplinking:" + userMessageDTO);
 					// vehicleMasterDTO=ListOfValuesManager.getUpdateSeat(vehicleMasterDTO);
 					/*
 					 * RideSeekerDTO dtoSeeker = new RideSeekerDTO();
@@ -6106,11 +6163,22 @@ public class UserAction extends HPBaseAction {
 
 	public void updateVehicle() {
 		clearScreenMessage();
+		final int initialCapacity = Integer.parseInt(vehicleMasterDTO.getCapacity());;
+		int finalCapacity;
 		vehicleMasterDTO = ListOfValuesManager
 				.getUpdateVehicle(vehicleMasterDTO);
+		finalCapacity = Integer.parseInt(vehicleMasterDTO.getCapacity());
+		System.out.println(initialCapacity);
+		System.out.println(finalCapacity);
+		if(initialCapacity == finalCapacity){
 		successMessage.add(Messages.getValue("success.update",
 				new Object[] { "Vehicle" }));
-
+		}
+		else{
+		errorMessage.add(Messages.getValue("error.update",
+				new Object[] { "Vehicle" }));
+		}
+		// Code added by Kirty on 18th Oct 2014 for artf52898: Vehicle capacity -Modification ended here
 		rollbackTest = false;
 		// vehicleMasterDTO = new VehicleMasterDTO();
 		vehicleList();
@@ -6774,16 +6842,13 @@ public class UserAction extends HPBaseAction {
 		rollbackTest = false;
 		userMessageDTO = new MessageBoardDTO();
 	}
-/*
- * This is For<code> cronMessage</code>Method
- * 
- */
+
 	public void cronMessage() {
 		List<Integer> messageId = new ArrayList<Integer>();
 		try {
 			List<MessageBoardDTO> messagedto = ListOfValuesManager
 					.getAllEmailSendingMessage();
-			System.out.println("This is from emailCron:"+messagedto);
+			System.out.println("This is from emailCron:" + messagedto);
 			for (MessageBoardDTO dto : messagedto) {
 				EmailDTO emaildto = new EmailDTO();
 				emaildto.setReceiverEmailId(dto.getToMemberEmail());
@@ -6964,7 +7029,7 @@ public class UserAction extends HPBaseAction {
 			int rideId = 0;
 			try {
 				rideId = Integer.parseInt(bodyPart[1]);
-				if (msg.equalsIgnoreCase("CAN")) {
+				if (msg.equalsIgnoreCase("CANCEL")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -7735,7 +7800,7 @@ public class UserAction extends HPBaseAction {
 										+ e1.getStackTrace()[0].getLineNumber()
 										+ " :: " + e1.getMessage());
 					}
-				} else if (msg.equalsIgnoreCase("REJ")) {
+				} else if (msg.equalsIgnoreCase("REJECT")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -8532,76 +8597,793 @@ public class UserAction extends HPBaseAction {
 		}
 
 	}
-	
+
 	/*
-	 * This <code>ContactUs</code> Method is nothing but controller for the ContactUs in this we getting the data with 
-	 * the help of ListOfValueManager By using the ListOfvaluesManager Class invoke the getContactInfo with parameters.
-	 * 
+	 * This <code>ContactUs</code> Method is nothing but controller for the
+	 * ContactUs in this we getting the data with the help of ListOfValueManager
+	 * By using the ListOfvaluesManager Class invoke the getContactInfo with
+	 * parameters.
 	 */
 
 	public String contactUs() {
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
-		System.out.println(contactusDTO.getEmail_id());
 		boolean flag = ListOfValuesManager.getContactInfo(con, contactusDTO);
 		if (flag == true) {
 			contactusDTO = new ContactusDTO();
-		
+
 		} else {
 			System.out.println("Failure");
 		}
 		return "contactUs";
 	}
-	
-	
-	public static HttpServletRequest getRequest()
-	{
-		HttpServletRequest request = 
-			(HttpServletRequest)FacesContext
-				.getCurrentInstance()
-					.getExternalContext()
-						.getRequest();
-		if (request == null)
-		{
-			throw new RuntimeException("Sorry. Got a null request from faces context");
-		}
-		return request;
-	}
+
 	/*
 	 * This is <code> verifyUser()</code> Method VerifyUser..
-	*/
+	 */
 
 	public String verifyUser() {
-		//System.out.println("UserAction Getting the emailId and verificationCode:"+emailId+"/"+verificationCode);
-		boolean test = false; 
+		boolean test = false;
 		Connection con = null;
-		HttpServletResponse response=null;
-		HttpServletRequest req=getRequest();
-		//HttpServletRequest req=null;
-		HttpSession session=req.getSession();
-		//VerifyUser verifyUser=new VerifyUser();
-		System.out.println("user:"+verifyuser.getEmail());
-		String email=verifyuser.getEmail();//.split(":")[0];
-		String verificationcode=verifyuser.getVerificationcode();//.split(":")[1];
-		System.out.println("Email:"+email+"\nverificationcode:"+verificationcode);
+		HttpServletResponse response = null;
+	
+		String email = verifyuser.getEmail();
+		String verificationcode = verifyuser.getVerificationcode();
 		try {
-			//System.out.println(ListOfValuesManager);
-			con =ListOfValuesManager.getLocalConnection();
-			System.out.println("connection:"+con);
+			con = ListOfValuesManager.getLocalConnection();
 			UserRegistrationDTO dto = new UserRegistrationDTO();
 			dto.setEmail_id(email);
 			dto.setVerificationCode(URLDecoder.decode(verificationcode));
 			test = new UserRegistrationDAO().verifyUser(con, dto);
-			System.out.println("Inside the UserAction Calling the DAO Method:"+test);
+			
 		} catch (SQLException e) {
-			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+e.getMessage());
-		} finally { ListOfValuesManager.releaseConnection(con); }
-		
-			if(test) {
-				return "success";
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+
+		if (test) {
+			return "success";
+		} else {
+			return "failure";
+		}
+
+	}
+
+	/*
+	 * This is for<code>approverRide</code> Method
+	 */
+
+	public String approverRide() {
+		boolean test = false;
+		HttpServletResponse response = null;
+
+		String rideId = approverRideDTO.getRideId();
+		String verificationCode = approverRideDTO.getVerificationCode();
+		String approve = approverRideDTO.getApprove();
+		String approverId = approverRideDTO.getApproverId();
+		String approverEmailId = approverRideDTO.getApproverEmailId();
+		Connection con = null;
+		Map<String, String> map = new HashMap<>();
+		verificationCode = URLDecoder.decode(verificationCode);
+		try {
+			con = ListOfValuesManager.getLocalConnection();
+			ApproverDTO dto = new ApproverDAO().findApproverById(con,
+					Integer.parseInt(approverId));
+			if (dto.getId() > 0) {
+				RideSeekerDTO rideSeekerDTO = new RideSeekerDAO()
+						.getRideSeekerData(con, Integer.parseInt(rideId));
+				FrequencyDTO frequencyDto = new FrequencyDAO()
+						.fetchFrequencyListForRideSeeker(con,
+								rideSeekerDTO.getSeekerID()).get(0);
+				if (dto.getHoponId().equalsIgnoreCase(approverEmailId)
+						&& dto.getVerificationCode().equals(verificationCode)) {
+					if (rideSeekerDTO.getStatus().equalsIgnoreCase("T")) {
+						if (approve.equalsIgnoreCase("T")) {
+							new RideSeekerDAO().changeStatus(con,
+									Integer.parseInt(rideId), "O");
+							rideSeekerDTO.setStatus("O");
+							test = true;
+							map.put("successMessage",
+									"First approver "
+											+ dto.getName()
+											+ " has approved ride for request ID: "
+											+ rideSeekerDTO.getSeekerID()
+											+ " from '"
+											+ rideSeekerDTO.getFromAddress1()
+											+ "' to '"
+											+ rideSeekerDTO.getToAddress1()
+											+ "' on "
+											+ rideSeekerDTO.getStartdateValue()
+											+ ". Request sent to "
+											+ dto.getName2()
+											+ " for verification.");
+
+							String approveLink = Messages.getValue(
+									"ride.approve",
+									new Object[] {
+											rideSeekerDTO.getSeekerID(),
+											URLEncoder.encode(dto
+													.getVerificationCode2()),
+											dto.getId(), dto.getHoponId2() });
+							String rejectLink = Messages.getValue(
+									"ride.reject",
+									new Object[] {
+											rideSeekerDTO.getSeekerID(),
+											URLEncoder.encode(dto
+													.getVerificationCode2()),
+											dto.getId(), dto.getHoponId2() });
+							String messageContent = "<span style='font-size: 17px;font-weight: bold;text-decoration: underline;'>Ride Details</span><br>B-Code: "
+									+ dto.getbCode()
+									+ "<br>Name: "
+									+ rideSeekerDTO.getUserName()
+									+ "<br>Request ID: "
+									+ rideSeekerDTO.getSeekerID()
+									+ "<br>From: "
+									+ rideSeekerDTO.getFromAddress1()
+									+ "<br>To: "
+									+ rideSeekerDTO.getToAddress1()
+									+ "<br>Date Time: "
+									+ rideSeekerDTO.getStartdateValue()
+									+ "<br>Frequency: "
+									+ frequencyDto.getFrequency().toString()
+									+ "<br> "
+									+ approveLink
+									+ " &nbsp;&nbsp;"
+									+ rejectLink;
+							if (new UserRegistrationDAO().testEmail(con,
+									dto.getHoponId2())) {
+								UserRegistrationDTO dtoTemp = null;
+								dtoTemp = new UserRegistrationDAO()
+										.findUserByEmail(con, dto.getHoponId2());
+								MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+								userMessageDTO.setMessage(messageContent);
+								userMessageDTO
+										.setEmailSubject("Ride Request for Approval");
+								userMessageDTO.setMessageChannel("E");
+								userMessageDTO.setToMember(Integer
+										.parseInt(dtoTemp.getId()));
+								userMessageDTO = new MessageBoardDAO()
+										.insertMessage(con, userMessageDTO);
+								userMessageDTO = new MessageBoardDTO();
+								userMessageDTO
+										.setMessage(Messages
+												.getValue(
+														"ride.option.msgBoard",
+														new Object[] {
+																dto.getbCode(),
+																rideSeekerDTO
+																		.getSeekerID(),
+																rideSeekerDTO
+																		.getUserName(),
+																rideSeekerDTO
+																		.getFromAddress1(),
+																rideSeekerDTO
+																		.getToAddress1(),
+																rideSeekerDTO
+																		.getStartdateValue() }));
+								userMessageDTO.setMessageChannel("M");
+								userMessageDTO.setToMember(Integer
+										.parseInt(dtoTemp.getId()));
+								userMessageDTO = new MessageBoardDAO()
+										.insertMessage(con, userMessageDTO);
+								userMessageDTO = new MessageBoardDTO();
+								userMessageDTO
+										.setMessage(Messages
+												.getValue(
+														"ride.option.sms",
+														new Object[] {
+																dto.getbCode(),
+																rideSeekerDTO
+																		.getSeekerID(),
+																rideSeekerDTO
+																		.getUserName(),
+																rideSeekerDTO
+																		.getFromAddress1()
+																		.substring(
+																				0,
+																				(rideSeekerDTO
+																						.getFromAddress1()
+																						.length() >= 20) ? 20
+																						: rideSeekerDTO
+																								.getFromAddress1()
+																								.length()),
+																rideSeekerDTO
+																		.getToAddress1()
+																		.substring(
+																				0,
+																				(rideSeekerDTO
+																						.getToAddress1()
+																						.length() >= 20) ? 20
+																						: rideSeekerDTO
+																								.getToAddress1()
+																								.length()),
+																rideSeekerDTO
+																		.getStartdateValue() }));
+								userMessageDTO.setMessageChannel("S");
+								userMessageDTO.setToMember(Integer
+										.parseInt(dtoTemp.getId()));
+								userMessageDTO = new MessageBoardDAO()
+										.insertMessage(con, userMessageDTO);
+							} else {
+								EmailDTO emaildto = new EmailDTO();
+								emaildto.setReceiverEmailId(dto.getHoponId2());
+								emaildto.setSubject("Ride Request for Approval");
+								emaildto.setEmailTemplateBody(Messages
+										.getValue("email.template2",
+												new Object[] { "", "",
+														messageContent, "", "",
+														"", "" }));
+								MailService.sendMail(emaildto);
+							}
+							if (rideSeekerDTO.getRecurring().equalsIgnoreCase(
+									"Y")) {
+								String[] rides = rideSeekerDTO.getSubSeekers()
+										.split(",");
+								if (rides.length > 0) {
+									rideSeekerDTO.setStatus("O");
+									rideSeekerDTO = new RideSeekerDAO()
+											.cancelSubSeekers(con,
+													rideSeekerDTO);
+								}
+							}
+						} else if (approve.equalsIgnoreCase("F")) {
+							new RideSeekerDAO().changeStatus(con,
+									Integer.parseInt(rideId), "I");
+							rideSeekerDTO.setStatus("I");
+							test = false;
+							map.put("errorMessage",
+									"First approver "
+											+ dto.getName()
+											+ " has rejected ride for request ID: "
+											+ rideSeekerDTO.getSeekerID()
+											+ " from '"
+											+ rideSeekerDTO.getFromAddress1()
+											+ "' to '"
+											+ rideSeekerDTO.getToAddress1()
+											+ "' on "
+											+ rideSeekerDTO.getStartdateValue()
+											+ ".");
+
+							String messageContent = "<span style='font-size: 17px;font-weight: bold;text-decoration: underline;'>Ride Details</span><br>B-Code: "
+									+ dto.getbCode()
+									+ "<br>Name: "
+									+ rideSeekerDTO.getUserName()
+									+ "<br>Request ID: "
+									+ rideSeekerDTO.getSeekerID()
+									+ "<br>From: "
+									+ rideSeekerDTO.getFromAddress1()
+									+ "<br>To: "
+									+ rideSeekerDTO.getToAddress1()
+									+ "<br>Date Time: "
+									+ rideSeekerDTO.getStartdateValue()
+									+ "<br>Frequency: "
+									+ frequencyDto.getFrequency().toString();
+							MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+							userMessageDTO.setMessage(messageContent);
+							userMessageDTO
+									.setEmailSubject("Ride request rejected");
+							userMessageDTO.setMessageChannel("E");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							userMessageDTO = new MessageBoardDTO();
+							userMessageDTO
+									.setMessage(Messages
+											.getValue(
+													"ride.option.rejected",
+													new Object[] {
+															dto.getbCode(),
+															rideSeekerDTO
+																	.getSeekerID(),
+															rideSeekerDTO
+																	.getUserName(),
+															rideSeekerDTO
+																	.getFromAddress1(),
+															rideSeekerDTO
+																	.getToAddress1(),
+															rideSeekerDTO
+																	.getStartdateValue() }));
+							userMessageDTO.setMessageChannel("M");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							userMessageDTO = new MessageBoardDTO();
+							userMessageDTO
+									.setMessage(Messages
+											.getValue(
+													"ride.option.rejected",
+													new Object[] {
+															dto.getbCode(),
+															rideSeekerDTO
+																	.getSeekerID(),
+															rideSeekerDTO
+																	.getUserName(),
+															rideSeekerDTO
+																	.getFromAddress1(),
+															rideSeekerDTO
+																	.getToAddress1(),
+															rideSeekerDTO
+																	.getStartdateValue() }));
+							userMessageDTO.setMessageChannel("S");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							if (rideSeekerDTO.getRecurring().equalsIgnoreCase(
+									"Y")) {
+								String[] rides = rideSeekerDTO.getSubSeekers()
+										.split(",");
+								if (rides.length > 0) {
+									rideSeekerDTO.setStatus("I");
+									rideSeekerDTO = new RideSeekerDAO()
+											.cancelSubSeekers(con,
+													rideSeekerDTO);
+								}
+							}
+						}
+
+					} else if (rideSeekerDTO.getStatus().equalsIgnoreCase("O")) {
+						if (approve.equalsIgnoreCase("T")) {
+							new RideSeekerDAO().changeStatus(con,
+									Integer.parseInt(rideId), "A");
+							rideSeekerDTO.setStatus("A");
+							test = true;
+							map.put("successMessage",
+									"First approver "
+											+ dto.getName()
+											+ " has approved ride for request ID: "
+											+ rideSeekerDTO.getSeekerID()
+											+ " from '"
+											+ rideSeekerDTO.getFromAddress1()
+											+ "' to '"
+											+ rideSeekerDTO.getToAddress1()
+											+ "' on "
+											+ rideSeekerDTO.getStartdateValue()
+											+ ".");
+
+							String messageContent = "<span style='font-size: 17px;font-weight: bold;text-decoration: underline;'>Ride Details</span><br>B-Code: "
+									+ dto.getbCode()
+									+ "<br>Name: "
+									+ rideSeekerDTO.getUserName()
+									+ "<br>Request ID: "
+									+ rideSeekerDTO.getSeekerID()
+									+ "<br>From: "
+									+ rideSeekerDTO.getFromAddress1()
+									+ "<br>To: "
+									+ rideSeekerDTO.getToAddress1()
+									+ "<br>Date Time: "
+									+ rideSeekerDTO.getStartdateValue()
+									+ "<br>Frequency: "
+									+ frequencyDto.getFrequency().toString();
+							MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+							userMessageDTO.setMessage(messageContent);
+							userMessageDTO
+									.setEmailSubject("Ride request approved");
+							userMessageDTO.setMessageChannel("E");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							userMessageDTO = new MessageBoardDTO();
+							userMessageDTO
+									.setMessage(Messages
+											.getValue(
+													"ride.option.approved",
+													new Object[] {
+															dto.getbCode(),
+															rideSeekerDTO
+																	.getSeekerID(),
+															rideSeekerDTO
+																	.getUserName(),
+															rideSeekerDTO
+																	.getFromAddress1(),
+															rideSeekerDTO
+																	.getToAddress1(),
+															rideSeekerDTO
+																	.getStartdateValue() }));
+							userMessageDTO.setMessageChannel("M");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							userMessageDTO = new MessageBoardDTO();
+							userMessageDTO
+									.setMessage(Messages
+											.getValue(
+													"ride.option.approved",
+													new Object[] {
+															dto.getbCode(),
+															rideSeekerDTO
+																	.getSeekerID(),
+															rideSeekerDTO
+																	.getUserName(),
+															rideSeekerDTO
+																	.getFromAddress1(),
+															rideSeekerDTO
+																	.getToAddress1(),
+															rideSeekerDTO
+																	.getStartdateValue() }));
+							userMessageDTO.setMessageChannel("S");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							if (rideSeekerDTO.getRecurring().equalsIgnoreCase(
+									"Y")) {
+								String[] rides = rideSeekerDTO.getSubSeekers()
+										.split(",");
+								if (rides.length > 0) {
+									rideSeekerDTO.setStatus("A");
+									rideSeekerDTO = new RideSeekerDAO()
+											.cancelSubSeekers(con,
+													rideSeekerDTO);
+								}
+							}
+						} else if (approve.equalsIgnoreCase("F")) {
+							new RideSeekerDAO().changeStatus(con,
+									Integer.parseInt(rideId), "I");
+							rideSeekerDTO.setStatus("I");
+							test = true;
+							map.put("successMessage",
+									"First approver "
+											+ dto.getName()
+											+ " has rejected ride for request ID: "
+											+ rideSeekerDTO.getSeekerID()
+											+ " from '"
+											+ rideSeekerDTO.getFromAddress1()
+											+ "' to '"
+											+ rideSeekerDTO.getToAddress1()
+											+ "' on "
+											+ rideSeekerDTO.getStartdateValue()
+											+ ".");
+
+							String messageContent = "<span style='font-size: 17px;font-weight: bold;text-decoration: underline;'>Ride Details</span><br>B-Code: "
+									+ dto.getbCode()
+									+ "<br>Name: "
+									+ rideSeekerDTO.getUserName()
+									+ "<br>Request ID: "
+									+ rideSeekerDTO.getSeekerID()
+									+ "<br>From: "
+									+ rideSeekerDTO.getFromAddress1()
+									+ "<br>To: "
+									+ rideSeekerDTO.getToAddress1()
+									+ "<br>Date Time: "
+									+ rideSeekerDTO.getStartdateValue()
+									+ "<br>Frequency: "
+									+ frequencyDto.getFrequency().toString();
+							MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+							userMessageDTO.setMessage(messageContent);
+							userMessageDTO
+									.setEmailSubject("Ride request rejected");
+							userMessageDTO.setMessageChannel("E");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							userMessageDTO = new MessageBoardDTO();
+							userMessageDTO
+									.setMessage(Messages
+											.getValue(
+													"ride.option.rejected",
+													new Object[] {
+															dto.getbCode(),
+															rideSeekerDTO
+																	.getSeekerID(),
+															rideSeekerDTO
+																	.getUserName(),
+															rideSeekerDTO
+																	.getFromAddress1(),
+															rideSeekerDTO
+																	.getToAddress1(),
+															rideSeekerDTO
+																	.getStartdateValue() }));
+							userMessageDTO.setMessageChannel("M");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							userMessageDTO = new MessageBoardDTO();
+							userMessageDTO
+									.setMessage(Messages
+											.getValue(
+													"ride.option.rejected",
+													new Object[] {
+															dto.getbCode(),
+															rideSeekerDTO
+																	.getSeekerID(),
+															rideSeekerDTO
+																	.getUserName(),
+															rideSeekerDTO
+																	.getFromAddress1(),
+															rideSeekerDTO
+																	.getToAddress1(),
+															rideSeekerDTO
+																	.getStartdateValue() }));
+							userMessageDTO.setMessageChannel("S");
+							userMessageDTO.setToMember(Integer
+									.parseInt(rideSeekerDTO.getUserID()));
+							userMessageDTO = new MessageBoardDAO()
+									.insertMessage(con, userMessageDTO);
+							if (rideSeekerDTO.getRecurring().equalsIgnoreCase(
+									"Y")) {
+								String[] rides = rideSeekerDTO.getSubSeekers()
+										.split(",");
+								if (rides.length > 0) {
+									rideSeekerDTO.setStatus("I");
+									rideSeekerDTO = new RideSeekerDAO()
+											.cancelSubSeekers(con,
+													rideSeekerDTO);
+								}
+							}
+						}
+
+					}
+				} else if (dto.getHoponId2().equalsIgnoreCase(approverEmailId)
+						&& dto.getVerificationCode2().equals(verificationCode)) {
+					if (approve.equalsIgnoreCase("T")) {
+						new RideSeekerDAO().changeStatus(con,
+								Integer.parseInt(rideId), "A");
+						rideSeekerDTO.setStatus("A");
+						test = true;
+						map.put("successMessage",
+								"Second approver " + dto.getName()
+										+ " has approved ride for request ID: "
+										+ rideSeekerDTO.getSeekerID()
+										+ " from '"
+										+ rideSeekerDTO.getFromAddress1()
+										+ "' to '"
+										+ rideSeekerDTO.getToAddress1()
+										+ "' on "
+										+ rideSeekerDTO.getStartdateValue()
+										+ ".");
+
+						String messageContent = "<span style='font-size: 17px;font-weight: bold;text-decoration: underline;'>Ride Details</span><br>B-Code: "
+								+ dto.getbCode()
+								+ "<br>Name: "
+								+ rideSeekerDTO.getUserName()
+								+ "<br>Request ID: "
+								+ rideSeekerDTO.getSeekerID()
+								+ "<br>From: "
+								+ rideSeekerDTO.getFromAddress1()
+								+ "<br>To: "
+								+ rideSeekerDTO.getToAddress1()
+								+ "<br>Date Time: "
+								+ rideSeekerDTO.getStartdateValue()
+								+ "<br>Frequency: "
+								+ frequencyDto.getFrequency().toString();
+						MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+						userMessageDTO.setMessage(messageContent);
+						userMessageDTO.setEmailSubject("Ride request approved");
+						userMessageDTO.setMessageChannel("E");
+						userMessageDTO.setToMember(Integer
+								.parseInt(rideSeekerDTO.getUserID()));
+						userMessageDTO = new MessageBoardDAO().insertMessage(
+								con, userMessageDTO);
+						userMessageDTO = new MessageBoardDTO();
+						userMessageDTO.setMessage(Messages.getValue(
+								"ride.option.approved",
+								new Object[] { dto.getbCode(),
+										rideSeekerDTO.getSeekerID(),
+										rideSeekerDTO.getUserName(),
+										rideSeekerDTO.getFromAddress1(),
+										rideSeekerDTO.getToAddress1(),
+										rideSeekerDTO.getStartdateValue() }));
+						userMessageDTO.setMessageChannel("M");
+						userMessageDTO.setToMember(Integer
+								.parseInt(rideSeekerDTO.getUserID()));
+						userMessageDTO = new MessageBoardDAO().insertMessage(
+								con, userMessageDTO);
+						userMessageDTO = new MessageBoardDTO();
+						userMessageDTO.setMessage(Messages.getValue(
+								"ride.option.approved",
+								new Object[] { dto.getbCode(),
+										rideSeekerDTO.getSeekerID(),
+										rideSeekerDTO.getUserName(),
+										rideSeekerDTO.getFromAddress1(),
+										rideSeekerDTO.getToAddress1(),
+										rideSeekerDTO.getStartdateValue() }));
+						userMessageDTO.setMessageChannel("S");
+						userMessageDTO.setToMember(Integer
+								.parseInt(rideSeekerDTO.getUserID()));
+						userMessageDTO = new MessageBoardDAO().insertMessage(
+								con, userMessageDTO);
+						if (rideSeekerDTO.getRecurring().equalsIgnoreCase("Y")) {
+							String[] rides = rideSeekerDTO.getSubSeekers()
+									.split(",");
+							if (rides.length > 0) {
+								rideSeekerDTO.setStatus("A");
+								rideSeekerDTO = new RideSeekerDAO()
+										.cancelSubSeekers(con, rideSeekerDTO);
+							}
+						}
+					} else if (approve.equalsIgnoreCase("F")) {
+						new RideSeekerDAO().changeStatus(con,
+								Integer.parseInt(rideId), "I");
+						rideSeekerDTO.setStatus("I");
+						test = true;
+						map.put("successMessage",
+								"Second approver " + dto.getName()
+										+ " has rejected ride for request ID: "
+										+ rideSeekerDTO.getSeekerID()
+										+ " from '"
+										+ rideSeekerDTO.getFromAddress1()
+										+ "' to '"
+										+ rideSeekerDTO.getToAddress1()
+										+ "' on "
+										+ rideSeekerDTO.getStartdateValue()
+										+ ".");
+
+						String messageContent = "<span style='font-size: 17px;font-weight: bold;text-decoration: underline;'>Ride Details</span><br>B-Code: "
+								+ dto.getbCode()
+								+ "<br>Name: "
+								+ rideSeekerDTO.getUserName()
+								+ "<br>Request ID: "
+								+ rideSeekerDTO.getSeekerID()
+								+ "<br>From: "
+								+ rideSeekerDTO.getFromAddress1()
+								+ "<br>To: "
+								+ rideSeekerDTO.getToAddress1()
+								+ "<br>Date Time: "
+								+ rideSeekerDTO.getStartdateValue()
+								+ "<br>Frequency: "
+								+ frequencyDto.getFrequency().toString();
+						MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+						userMessageDTO.setMessage(messageContent);
+						userMessageDTO.setEmailSubject("Ride request rejected");
+						userMessageDTO.setMessageChannel("E");
+						userMessageDTO.setToMember(Integer
+								.parseInt(rideSeekerDTO.getUserID()));
+						userMessageDTO = new MessageBoardDAO().insertMessage(
+								con, userMessageDTO);
+						userMessageDTO = new MessageBoardDTO();
+						userMessageDTO.setMessage(Messages.getValue(
+								"ride.option.rejected",
+								new Object[] { dto.getbCode(),
+										rideSeekerDTO.getSeekerID(),
+										rideSeekerDTO.getUserName(),
+										rideSeekerDTO.getFromAddress1(),
+										rideSeekerDTO.getToAddress1(),
+										rideSeekerDTO.getStartdateValue() }));
+						userMessageDTO.setMessageChannel("M");
+						userMessageDTO.setToMember(Integer
+								.parseInt(rideSeekerDTO.getUserID()));
+						userMessageDTO = new MessageBoardDAO().insertMessage(
+								con, userMessageDTO);
+						userMessageDTO = new MessageBoardDTO();
+						userMessageDTO.setMessage(Messages.getValue(
+								"ride.option.rejected",
+								new Object[] { dto.getbCode(),
+										rideSeekerDTO.getSeekerID(),
+										rideSeekerDTO.getUserName(),
+										rideSeekerDTO.getFromAddress1(),
+										rideSeekerDTO.getToAddress1(),
+										rideSeekerDTO.getStartdateValue() }));
+						userMessageDTO.setMessageChannel("S");
+						userMessageDTO.setToMember(Integer
+								.parseInt(rideSeekerDTO.getUserID()));
+						userMessageDTO = new MessageBoardDAO().insertMessage(
+								con, userMessageDTO);
+						if (rideSeekerDTO.getRecurring().equalsIgnoreCase("Y")) {
+							String[] rides = rideSeekerDTO.getSubSeekers()
+									.split(",");
+							if (rides.length > 0) {
+								rideSeekerDTO.setStatus("I");
+								rideSeekerDTO = new RideSeekerDAO()
+										.cancelSubSeekers(con, rideSeekerDTO);
+							}
+						}
+					}
+
+				} else {
+					test = false;
+					map.put("errorMessage", "This emailId is not any approver.");
+				}
 			} else {
-				return	"failure";
+				test = false;
+				map.put("errorMessage",
+						"Wrong attemt. There is some problem in verification.");
 			}
-		
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+			test = false;
+			map.put("errorMessage", "There is some problem in verification.");
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		if (test) {
+			return "success";
+		} else {
+			return "failure";
 		}
 	}
 
+	/*
+	 * This is for the <code> RideSummaryMessage</code> Required: ride summary
+	 * Message Creation for Driver
+	 */
+
+	public void CronSummaryMessageToDriver() {
+		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+		MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+		List<SummaryMessageDTO> seekerDtoTemps = new ArrayList<SummaryMessageDTO>();
+		seekerDtoTemps = ListOfValuesManager.getRideSummaryMessage();
+		StringBuilder message = new StringBuilder();
+		for (SummaryMessageDTO seekerDtoTemp : seekerDtoTemps) {
+			message.append(
+					"<br>Ride ID:"
+							+ seekerDtoTemp.getRideID())
+					.append(",<br>StartTime:" + seekerDtoTemp.getStart_time())
+					.append("Passenger contact details<br> Name :"
+							+ seekerDtoTemp.getFirst_name())
+					.append(",<br>MobileNo:" + seekerDtoTemp.getMobile_no())
+					.append(",<br>From:" + seekerDtoTemp.getFromAddress1())
+					.append(",<br>To:" + seekerDtoTemp.getToAddress1());
+		}
+		message	.append(".Please follow strict time schedules.Contact your admin for details.");
+			SummaryMessageDTO seekerDtoTemp=seekerDtoTemps.get(0);
+			String name=seekerDtoTemp.getDrivername();
+		userMessageDTO
+					.setMessage(Messages
+							.getValue(
+									"sms.summary.driver",
+									new Object[] {
+											name,message
+									}));
+		userMessageDTO.setToMember(seekerDtoTemp.getToMember());
+		userMessageDTO.setMessageChannel("S");
+		userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
+
+		RideSeekerDTO dtoSeeker = new RideSeekerDTO();
+
+		dtoSeeker.setIsResult("Y");
+		try {
+			ListOfValuesManager.changeField(dtoSeeker, con);
+
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+			rollbackTest = true;
+		} finally {
+			if (rollbackTest) {
+				try {
+					con.rollback();
+				} catch (SQLException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+				}
+				ListOfValuesManager.releaseConnection(con);
+			} else {
+				try {
+					con.commit();
+				} catch (SQLException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+				}
+				ListOfValuesManager.releaseConnection(con);
+			}
+			rollbackTest = false;
+		}
+
+	}
+}

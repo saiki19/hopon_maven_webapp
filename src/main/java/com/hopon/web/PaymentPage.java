@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.hopon.dto.PaymentDTO;
-import com.hopon.utils.ConfigurationException;
 import com.hopon.utils.ListOfValuesManager;
 import com.hopon.utils.Validator;
 

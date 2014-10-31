@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.hopon.dto.MessageBoardDTO;
+import com.hopon.dto.PaymentRequestDTO;
 import com.hopon.utils.ApplicationUtil;
+import com.hopon.utils.ConfigurationException;
 import com.hopon.utils.ListOfValuesManager;
 import com.hopon.utils.Validator;
 
@@ -68,6 +70,15 @@ public class ProcessTransaction extends HttpServlet {
 		    	float amountNew = (float) ((amount * 2.5)/100);
 		    	float credit = Math.round(amount - amountNew);
 		    	
+		    	PaymentRequestDTO dto = new PaymentRequestDTO();
+		    	dto.setOrderId(request.getParameter("ORDERID"));
+	    		
+		    	dto = ListOfValuesManager.fetchPaymentRequestByOrderId(dto);
+		    	dto.setStatus("S");
+		    	try {
+					ListOfValuesManager.updatePaymentRequestEntryStatusByOrderId(dto);
+				} catch (ConfigurationException e1) { }
+		    	
 		    	String html  ="";	
 				html += "<p>Hi There,</p>";
 				html += "<p>Thank you for purchasing HopOn Credits. Your order details are mentioned below.</p>";
@@ -113,8 +124,29 @@ public class ProcessTransaction extends HttpServlet {
 		    } else {
 		    	String errorMessage = "";
 		    	if(request.getParameter("RESPCODE") != null) {
-		    		if(request.getParameter("RESPCODE").equals("141")) errorMessage = "Sorry! Your payment transaction has been cancelled.";
-		    		else errorMessage = "Sorry! Your payment transaction has failed.";
+		    		if(request.getParameter("RESPCODE").equals("141")) {
+		    			errorMessage = "Sorry! Your payment transaction has been cancelled.";
+		    			PaymentRequestDTO dto = new PaymentRequestDTO();
+				    	dto.setOrderId(request.getParameter("ORDERID"));
+			    		
+				    	dto = ListOfValuesManager.fetchPaymentRequestByOrderId(dto);
+				    	dto.setStatus("C");
+				    	try {
+							ListOfValuesManager.updatePaymentRequestEntryStatusByOrderId(dto);
+						} catch (ConfigurationException e1) { }
+				    	
+		    		} else {
+		    			errorMessage = "Sorry! Your payment transaction has failed.";
+		    			PaymentRequestDTO dto = new PaymentRequestDTO();
+				    	dto.setOrderId(request.getParameter("ORDERID"));
+			    		
+				    	dto = ListOfValuesManager.fetchPaymentRequestByOrderId(dto);
+				    	dto.setStatus("F");
+				    	try {
+							ListOfValuesManager.updatePaymentRequestEntryStatusByOrderId(dto);
+						} catch (ConfigurationException e1) { }
+				    	
+		    		}
 		    	}
 		    }	
 		} else {

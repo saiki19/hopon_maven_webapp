@@ -27,6 +27,7 @@ public class ServerUtility {
 	public static void setServerURL(String serverURL) {
 		ServerUtility.serverURL = serverURL;
 	}
+
 	public String getHelpURL() {
 		HttpServletRequest request = getRequest();
 		HttpSession session = request.getSession();
@@ -39,10 +40,12 @@ public class ServerUtility {
 		}
 		return helpURL;
 	}
+
 	public static String getSiteType() {
 		siteType = "ORL";
 		return siteType.toUpperCase();
 	}
+
 	public static void setSiteType(String siteType) {
 		ServerUtility.siteType = siteType;
 	}
@@ -67,10 +70,12 @@ public class ServerUtility {
 		String[] ipnumerals = ip.split("\\.");
 		return 16777216*(Integer.parseInt(ipnumerals[0])) + 65536*(Integer.parseInt(ipnumerals[1])) + 256*(Integer.parseInt(ipnumerals[2])) + (Integer.parseInt(ipnumerals[3]));	
 	}
+
 	@SuppressWarnings("static-access")
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
+
 	public static String getHTTPBasePath() {
 		return getHTTPBasePath(getRequest());
 	} 
@@ -83,27 +88,33 @@ public class ServerUtility {
 		String _basePath = requestURL.substring(0,requestURL.indexOf(servletPath));
 		return _basePath;
 	}
+
 	public static String getJNDIBasePath() {
 
 		return getJNDIBasePath(getRequest());
 	}
+
 	public static String getJNDIBasePath(HttpServletRequest request) {
 		String path = request.getContextPath();
 		String _basePath = "jndi:/"+request.getServerName()+path;
 
 		return _basePath;
 	}
+
 	public static HttpServletRequest getRequest() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 		return request;
 	}
+
 	public static HttpSession getSession() {
 		return getRequest().getSession();
 	}
+
 	public static ServletContext getApplication() {
 		return getSession().getServletContext();
 	}
+
 	public String getDateFormat() {
 		return DateHelper.DATEFORMAT;
 	}

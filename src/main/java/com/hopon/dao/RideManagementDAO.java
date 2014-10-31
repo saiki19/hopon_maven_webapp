@@ -1,5 +1,6 @@
 package com.hopon.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +23,7 @@ import com.mysql.jdbc.Statement;
 
 public class RideManagementDAO {
 	public RideManagementDTO registerRide(Connection con ,RideManagementDTO rideManagementDTO )throws SQLException{
-System.out.println("RideManagementDAO:"+rideManagementDTO);
+		System.out.println("RideManagementDAO:"+rideManagementDTO);
 		StringBuilder query = new StringBuilder();
 		query.append("INSERT INTO rides_management (ride_id,user_id, start_point, via_point, destination_point,ride_cost,start_time,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,ToCity,FromPin,ToPin,created_by,created_dt,custom, start_point_latitude, start_point_longitude, via_point_latitude, via_point_longitude, end_point_latitude, end_point_longitude, ride_distance, TWstart_early, TWstart_late, TWend_early, TWend_late) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
 
@@ -156,6 +157,7 @@ System.out.println("RideManagementDAO:"+rideManagementDTO);
 			dto.setCreatedBy(rs.getString(13));
 			dto.setCustom(rs.getString(14));
 			rideManagerList.add(dto);
+			System.out.println("Ridemanagae list :"+rideManagerList);
 		}
 		rs.close();
 		pstmt.close();
@@ -312,6 +314,7 @@ ride_seeker_details.ride_match_rideid = rides_management.ride_id AND rides_manag
 			dto.setCreatedBy(rs.getString(13));
 			dto.setCustom(rs.getString(14));
 			rideManagerList.add(dto);
+			System.out.println("Ride ManagerList:"+rideManagerList);
 		}
 		rs.close();
 		pstmt.close();
@@ -393,6 +396,7 @@ ride_seeker_details.ride_match_rideid = rides_management.ride_id AND rides_manag
 			} catch (ParseException e) {}
 			modal.setDate(dateTemp);
 			list.add(modal);
+			System.out.println("List from the riede manager:"+list);
 		}
 		rs.close();
 		pstmt.close();

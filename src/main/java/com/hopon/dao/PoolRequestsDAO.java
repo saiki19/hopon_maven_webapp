@@ -7,8 +7,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import com.hopon.dto.PaymentTxnsDTO;
 import com.hopon.dto.PoolRequestsDTO;
 import com.hopon.dto.RideBillingReportDTO;
 import com.hopon.dto.RideManagementDTO;
@@ -19,6 +23,7 @@ import com.hopon.utils.LoggerSingleton;
 import com.hopon.utils.QueryExecuter;
 import com.hopon.utils.Validator;
 import com.mysql.jdbc.Statement;
+
 public class PoolRequestsDAO {
 	public List<RideBillingReportDTO> gatherRideBillingData(final Connection con, final Date startDate, final Date endDate, int ...circleId) throws SQLException {
 		final List<RideBillingReportDTO> list = new ArrayList<RideBillingReportDTO>();
@@ -480,5 +485,144 @@ WHERE u1.id = '"+dto.getId()+"'*/
 		pstmt.setString(2, rideToDrop.getRideID());
 		pstmt.executeUpdate();
 		pstmt.close();
+	}
+
+	public void fetchAllPreviousDayRides(Connection con)
+			throws SQLException {
+		StringBuilder query = new StringBuilder();
+		query.append("select p.id, p.ride_id, p.rideseeker_id, r1.start_time, r1.user_id, r1.vehicleID, r1.`status`, r2.user_id, r2.ride_distance, r2.MatchInCircle, r2.circle_id, pp.key1, pp.key2, pp.key3, pp.value1, pp.value2, pp.value3 from pool_requests p LEFT OUTER JOIN rides_management r1 ON p.ride_id = r1.ride_id LEFT OUTER JOIN ride_seeker_details r2 ON p.rideseeker_id = r2.seeker_id LEFT OUTER JOIN paymentplan pp ON r2.circle_id = pp.circle_id WHERE DATEDIFF(r1.start_time, '"
+				+ ApplicationUtil.dateFormat1.format(new Date())
+				+ "')  = 0 AND r2.`status` = 'A' ORDER BY p.ride_id, p.rideseeker_id");
+		PreparedStatement pstmt = con
+				.prepareStatement(query.toString());
+		ResultSet rs = QueryExecuter.getResultSet(pstmt,
+				query.toString());
+		// gather minimum rate for ride giver.
+		Map<Integer, Double> minRateMap = new HashMap<Integer, Double>();
+		// gather maximum rate for ride giver.
+		Map<Integer, Double> maxRateMap = new HashMap<Integer, Double>();
+		// gather maximum distance for ride giver.
+		Map<Integer, Double> maxDistanceMap = new HashMap<Integer, Double>();
+		// gather changes applied to rideSeeker for particular ride
+		// giver.
+		Map<String, Map<String, String>> rideSeekerChargeMap = new HashMap<String, Map<String, String>>();
+		// gather total value for ride giver.
+		Map<Integer, Map<String, String>> totalValueMap = new HashMap<Integer, Map<String, String>>();
+		while (rs.next()) {
+			int rideId = rs.getInt(2);
+			int requesterId = rs.getInt(3);
+			double minRate = rs.getDouble(15);
+			double maxRate = rs.getDouble(16);
+			double rideDistance = rs.getDouble(9);
+			int rideUserId = rs.getInt(5);
+			int requesterUserId = rs.getInt(8);
+			if (!minRateMap.containsKey(rideId)
+					|| (minRateMap.containsKey(rideId) && minRate > minRateMap
+							.get(rideId))) {
+				minRateMap.put(rideId, minRate);
+			}
+			if (!maxRateMap.containsKey(rideId)
+					|| (maxRateMap.containsKey(rideId) && maxRate > maxRateMap
+							.get(rideId))) {
+				maxRateMap.put(rideId, maxRate);
+			}
+			if (!maxDistanceMap.containsKey(rideId)
+					|| (maxDistanceMap.containsKey(rideId) && rideDistance > maxDistanceMap
+							.get(rideId))) {
+				maxDistanceMap.put(rideId, rideDistance);
+			}
+
+			double price = rideDistance * minRate;
+			Map<String, String> tempMap = new HashMap<String, String>();
+			tempMap.put("cost", String.valueOf(price));
+			tempMap.put("distance", String.valueOf(rideDistance));
+			tempMap.put("rideUserId", String.valueOf(rideUserId));
+			tempMap.put("requesterUserId",
+					String.valueOf(requesterUserId));
+			rideSeekerChargeMap.put(rideId + "-" + requesterId, tempMap);
+
+			if (totalValueMap.containsKey(rideId)
+					&& totalValueMap.get(rideId).containsKey("cost")) {
+				price += Double.parseDouble(totalValueMap.get(rideId)
+						.get("cost"));
+			}
+
+			tempMap = new HashMap<String, String>();
+			tempMap.put("cost", String.valueOf(price));
+			tempMap.put("rideUserId", String.valueOf(rideUserId));
+
+			totalValueMap.put(rideId, tempMap);
+		}
+
+		rs.close();
+		pstmt.close();
+
+		/*
+		 * Now transfer payment from hopon account to taxi admin
+		 * account.
+		 */
+
+		for (Entry<Integer, Map<String, String>> charges : totalValueMap
+				.entrySet()) {
+			int rideId = charges.getKey();
+			Map<String, String> values = charges.getValue();
+
+			PaymentTxnsDTO paymentTxnsDTO = new PaymentTxnsDTO();
+			paymentTxnsDTO.setCreatedBy(1);
+			paymentTxnsDTO.setFromPayer(100);
+			paymentTxnsDTO.setToPayee(Integer.parseInt(values
+					.get("rideUserId")));
+			paymentTxnsDTO.setTripDetails("");
+			paymentTxnsDTO.setSeekerId(0);
+			paymentTxnsDTO.setCreatedDate(ApplicationUtil
+					.currentTimeStamp());
+			paymentTxnsDTO.setDist(Float.parseFloat(String
+					.valueOf(maxDistanceMap.get(rideId))));
+			paymentTxnsDTO
+					.setAmount(Float.parseFloat(values.get("cost")));
+			new PaymentTxnsDAO().add(con, paymentTxnsDTO);
+
+			new UserRegistrationDAO().updateTotalCreditById(con,
+					Integer.parseInt(values.get("rideUserId")),
+					-Float.parseFloat(values.get("cost")));
+		}
+
+		/*
+		 * Now transfer payment to hopon account from ride seeker user
+		 * account.
+		 */
+
+		for (Entry<String, Map<String, String>> charges : rideSeekerChargeMap
+				.entrySet()) {
+			String key = charges.getKey();
+			Map<String, String> values = charges.getValue();
+			String[] keySplit = key.split("-");
+			if (keySplit.length != 2) {
+				continue;
+			}
+			int rideSeekerIdTemp = Integer.parseInt(keySplit[1]);
+
+			PaymentTxnsDTO paymentTxnsDTO = new PaymentTxnsDTO();
+			paymentTxnsDTO.setCreatedBy(1);
+			paymentTxnsDTO.setFromPayer(Integer.parseInt(values
+					.get("requesterUserId")));
+			paymentTxnsDTO.setToPayee(100);
+			paymentTxnsDTO.setTripDetails("");
+			paymentTxnsDTO.setSeekerId(rideSeekerIdTemp);
+			paymentTxnsDTO.setCreatedDate(ApplicationUtil
+					.currentTimeStamp());
+			paymentTxnsDTO.setDist(Float.parseFloat(values
+					.get("distance")));
+			paymentTxnsDTO
+					.setAmount(Float.parseFloat(values.get("cost")));
+			// use any of one line.
+			// ListOfValuesManager.paymentTxnInsert(paymentTxnsDTO, con);
+			new PaymentTxnsDAO().add(con, paymentTxnsDTO);
+			new UserRegistrationDAO().updateTotalCreditById(con,
+					Integer.parseInt(values.get("requesterUserId")),
+					Float.parseFloat(values.get("cost")));
+
+		}
+
 	}
 }

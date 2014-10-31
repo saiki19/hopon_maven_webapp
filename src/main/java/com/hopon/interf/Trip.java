@@ -153,12 +153,22 @@ public interface Trip {
 	List<CircleOwnerManagerDTO> loadallCorpCircleForLoginUser(Connection con,String userID)throws ConfigurationException;
 	List<CircleOwnerManagerDTO> loadallTaxiCircleForLoginUser(Connection con,String userID)throws ConfigurationException;
 	List<PaymentPlanDTO> fetchPaymentPlanForLoginUser(Connection con,String userID)throws ConfigurationException;
+	PaymentRequestDTO addPaymentRequestEntry(Connection con, PaymentRequestDTO dto)throws ConfigurationException;
+	void updatePaymentRequestEntryStatusById(Connection con, PaymentRequestDTO dto) throws ConfigurationException;
+	void updatePaymentRequestEntryStatusByOrderId(Connection con, PaymentRequestDTO dto) throws ConfigurationException;
+	PaymentRequestDTO fetchPaymentRequestByOrderId(Connection con, PaymentRequestDTO dto) throws ConfigurationException;
 	PaymentTxnsDTO paymentTxnInsert(Connection con, PaymentTxnsDTO paymentTxnsDTO)throws ConfigurationException;
 	PaymentTxnsDTO paymentTxnCancel(Connection con, PaymentTxnsDTO dto)throws ConfigurationException;
 	List<PaymentTxnsDTO> fetchAllTxnByDate(Connection con, Date date)throws ConfigurationException;
 	void paymentTxnHoponToUser(Connection con, HoponAccountDTO hoponAccountDto, UserRegistrationDTO userDto)throws ConfigurationException;
 	void paymentTxnUserToHopon(Connection con, HoponAccountDTO hoponAccountDto, UserRegistrationDTO userDto)throws ConfigurationException;
+	UserRegistrationDTO updateTotalCredit(Connection con,UserRegistrationDTO userRegistrationDTO)throws ConfigurationException;
 	//for ContactUs Method
 	void contactUs(Connection con, ContactusDTO dto) throws ConfigurationException;
+	List<SummaryMessageDTO>  loadRideSummaryMessage() throws ConfigurationException;
+
+	
+
+	
 }
 

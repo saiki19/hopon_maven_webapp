@@ -1,38 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:web="http://java.sun.com/xml/ns/javaee" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
- 
-  <display-name>hopon_local</display-name>
-  
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>hopon</display-name>
   <context-param>
     <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
     <param-value>resources.application</param-value>
   </context-param>
- 
+  <!-- 
+  <session-config>
+    <session-timeout>
+        1
+    </session-timeout>
+    
+</session-config> -->
+
   <listener>
     <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
   </listener>
- 
   <servlet>
     <servlet-name>Faces Servlet</servlet-name>
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-	
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>/faces/*</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>*.xhtml</url-pattern>
   </servlet-mapping>
- 
+  
+ <!-- Mapping for Verify user in UserAction -->
+ <!-- <servlet>
+ <servlet-class>UserAction</servlet-class>
+ <servlet-name>com.hopon.action.UserAction</servlet-name>
+ </servlet>
+ <servlet-mapping>
+ <servlet-name>UserAction</servlet-name>
+ <url-pattern>/action.do</url-pattern>
+ </servlet-mapping> -->
   <filter>
     <filter-name>AuthorizationFilter</filter-name>
     <filter-class>com.hopon.filters.AuthorizationFilter</filter-class>
   </filter>
- 
   <filter-mapping>
     <filter-name>AuthorizationFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
- 
   <filter>
     <filter-name>PrimeFaces FileUpload Filter</filter-name>
     <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
@@ -45,16 +59,18 @@
       <param-value>C:\Users\yogesh\workspace-jee-helios\heponTest</param-value>
     </init-param>
   </filter>
- 
   <filter-mapping>
     <filter-name>PrimeFaces FileUpload Filter</filter-name>
     <servlet-name>Faces Servlet</servlet-name>
   </filter-mapping>
- 
- 
+  <welcome-file-list>
+    <welcome-file>/pages/timeout.xhtml</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
   <error-page>
     <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-    <location>/pages/signin.xhtml</location>
+   <location>/pages/signin.xhtml</location>
   </error-page>
   <error-page>
     <exception-type>java.lang.Exception</exception-type>

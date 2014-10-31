@@ -10,7 +10,7 @@
   <f:view>     
         <pm:page>
 <pm:view>
-	<ui:include src="/WEB-INF/templates/headerScript.xhtml"></ui:include>
+	<ui:include src="../pages/common/headerScript.xhtml"></ui:include>
 
 <link href="../pages/css/excite-bike/jquery-ui-1.10.4.custom.css" rel="stylesheet" />
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
@@ -30,7 +30,7 @@
 
 <h:head></h:head>
 <h:body>
-  <ui:include src="/WEB-INF/templates/headerContent.xhtml"></ui:include>
+  <ui:include src="../pages/common/headerContent.xhtml"></ui:include>
   <!-- Start: MAIN CONTENT -->
   <div class="content">
     <div class="container">
@@ -71,28 +71,44 @@
 		<div class="control-group">
 			<label class="control-label" for="Name">First Name</label>
 			<div class="controls">
-				<h:inputText id="Name" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.first_name}" required="true" requiredMessage="#{msgs.firstName}"/>
+				<h:inputText id="Name" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.first_name}" required="true" requiredMessage="#{msgs['error.firstName']}"/>
+				<div>
+				<h:message for="Name" style="color:#E80000;font-size:14px;">
+				</h:message>
+				</div>
 				<p:watermark for="Name" value="First Name" /> 
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="lastName">Last Name</label>
 			<div class="controls">
-				<h:inputText id="lastName" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.last_name}" required="true" requiredMessage="#{msgs.lastName}"/>
+				<h:inputText id="lastName" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.last_name}" required="true" requiredMessage="#{msgs['error.lastName']}"/>
+				<div>
+				<h:message for="lastName" style="color:#E80000;font-size:14px;">
+				</h:message>
+				</div>
 				<p:watermark for="lastName" value="Last Name" /> 
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="Address">Address</label>
 			<div class="controls">
-				<h:inputText id="Address" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.address}" />
+				<h:inputText id="Address" required="true" requiredMessage="#{msgs['error.address']}" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.address}" />
+				<div>
+				<h:message for="Address" style="color:#E80000;font-size:14px;">
+				</h:message>
+				</div>
 				<p:watermark for="Address" value="Address" />  
 			</div>
 		</div>
 		<div class="control-group" style="display: inline-block;float: left;">
 			<label class="control-label" for="city">City</label>
 			<div class="controls">
-				<p:autoComplete required="true" requiredMessage="#{msgs.city}" id="city" style="display: inline-flex;width: 123px;" value="#{userAction.forregistrationOnly.city}" styleClass="input-xlarge" completeMethod="#{userAction.cityAutoCompleateMethod}" effect="" label="#{userAction.forregistrationOnly.city}"/>
+				<p:autoComplete required="true" requiredMessage="#{msgs['error.city']}" id="city" style="display: inline-flex;width: 123px;" value="#{userAction.forregistrationOnly.city}" styleClass="input-xlarge" completeMethod="#{userAction.cityAutoCompleateMethod}" effect="" label="#{userAction.forregistrationOnly.city}"/>
+				<div>
+				<h:message for="city" style="color:#E80000;font-size:14px;">
+				</h:message>
+				</div>
 				<p:watermark for="city" value="City" />				 
 			</div>
 		</div>
@@ -103,6 +119,10 @@
 				<h:inputText id="pincode" style="width:77px;" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.pincode}" required="true" requiredMessage="#{msgs['error.pin']}" validatorMessage="#{msgs['error.digit']}">
 					<f:validateRegex pattern="[0-9]+" ></f:validateRegex>
 				</h:inputText>
+				<div>
+				<h:message for="pincode" style="color:#E80000;font-size:14px;text-align: right;">
+				</h:message>
+				</div>
 				<p:watermark for="pincode" value="Pin Code" />  
 				<h:inputHidden id="state" value="#{userAction.forregistrationOnly.state}"/>
 				<h:inputHidden id="country" value="#{userAction.forregistrationOnly.country}"/>
@@ -114,6 +134,10 @@
 				<h:inputText id="mobile" style="width:110px;float:left;" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.mobile_no}" required="true" requiredMessage="#{msgs['error.mobileno']}" validatorMessage="Password: #{msgs['error.digit']}">
 					<f:validateRegex pattern="[0-9]+"></f:validateRegex>
 				</h:inputText>
+				
+			<h:message for="mobile" style="color:#E80000;font-size:14px;text-align: right;">
+			</h:message>
+		
 				<p:watermark for="mobile" value="Mobile No" />  
 				
 				<label class="control-label" for="sex" style="width: 30px;float:left;margin-left:8px;">Sex</label>
@@ -121,6 +145,8 @@
 					<f:selectItem itemValue="male" itemLabel="M" />
 					<f:selectItem itemValue="female" itemLabel="F" />
 				</h:selectOneRadio>
+			<h:message for="sex" style="color:#E80000;font-size:14px;text-align: right;">
+			</h:message>
 			</div>
 		</div>
 		<div class="control-group" style="display: table-caption;float:left;clear:both;">
@@ -129,6 +155,11 @@
 				<h:inputText  id="email"  class="input-xlarge" value="#{userAction.forregistrationOnly.email_id}" required="true" requiredMessage="#{msgs.email_required}" validatorMessage="#{msgs['error.email']}">
 					<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
 				</h:inputText>
+				<div>
+				<h:message for="email" style="color:#E80000;font-size:14px;">
+				</h:message>
+				</div>
+				
 				<p:watermark for="email" value="Email" /> 
 			</div>
 		</div>
@@ -136,7 +167,11 @@
 			<label class="control-label" for="password">Password</label>
 			<div class="controls">  
 				<p:password id="password" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.password}" 
-				match="re_password" validatorMessage="Password mismatch." label="password" requiredMessage="#{msgs['error.password']}" required="true"/>                    
+				match="re_password" validatorMessage="Password mismatch." label="password" requiredMessage="#{msgs['error.password']}" required="true"/> 
+				<div>
+				<h:message for="password" style="color:#E80000;font-size:14px;">
+				</h:message> 
+				</div>                
 				<p:watermark for="password" value="Password" /> 
 			</div>
 		</div>
@@ -145,6 +180,10 @@
 			<div class="controls">
 				<p:password id="re_password" styleClass="input-xlarge" value="#{userAction.forregistrationOnly.password}" 
 				requiredMessage="#{msgs['error.passwordAgain']}" label="re_password" required="true" />
+				<div>
+				<h:message for="re_password" style="color:#E80000;font-size:14px;">
+				</h:message>
+				</div>
 				<p:watermark for="re_password" value="Retype Password" />  
 			</div>
 		</div>

@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.in.hopon</groupId>
-	<artifactId>hopon_local</artifactId>
+	<artifactId>hopon_maven</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>hopon Maven Webapp</name>
@@ -119,11 +119,11 @@
 		</dependency>
 
 		<!-- java2word -->
-		<dependency>
+	<!-- 	<dependency>
 			<groupId>com.google.code</groupId>
 			<artifactId>java2word</artifactId>
 			<version>3.3</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- guava -->
 		<dependency>
@@ -147,11 +147,11 @@
 		</dependency>
 
 		<!-- paytm checksum -->
-		<dependency>
+	<!-- 	<dependency>
 			<groupId>paytm-checksum</groupId>
 			<artifactId>paytm-checksum</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- log4j -->
 		<dependency>
@@ -202,15 +202,15 @@
 	</dependencies>
 
 	<build>
-		<finalName>hopon_local</finalName>
+		<finalName>hopon_maven</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>

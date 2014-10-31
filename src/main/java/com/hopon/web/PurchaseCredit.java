@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.hopon.dto.PaymentRequestDTO;
+import com.hopon.utils.ConfigurationException;
+import com.hopon.utils.ListOfValuesManager;
+import com.hopon.utils.LoggerSingleton;
 import com.hopon.utils.Validator;
 
 /**
@@ -28,12 +32,27 @@ public class PurchaseCredit extends HttpServlet {
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
-		if(session != null && !Validator.isEmpty(session.getAttribute("userId"))) {
-			float amountDue = (Float) request.getAttribute("amount");
-			if(amountDue > 0) {
+		String userId = (String) session.getAttribute("userId");
+		if(session != null && !Validator.isEmpty(userId)) {
+			float amount = 0;
+			String amtStr = request.getParameter("amount");
+			amount = Float.parseFloat(amtStr);
+			if(amount > 0) {
 				
 				String orderId = "ORDS"+Math.round((Math.random()*100000000));
 				//Add record into payment request table.
+				
+				PaymentRequestDTO dto = new PaymentRequestDTO();
+				dto.setUserId(Integer.parseInt(userId));
+				dto.setOrderId(orderId);
+				dto.setAmount(amount);
+				dto.setStatus("I");
+				dto.setCreatedBy(Integer.parseInt(userId));
+				try {
+					dto = ListOfValuesManager.addPaymentRequestEntry(dto);
+				} catch (ConfigurationException e1) {
+					response.sendRedirect("/");
+				}
 				
 				
 				com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper.getCheckSumServiceHelper();
@@ -45,7 +64,8 @@ public class PurchaseCredit extends HttpServlet {
 				parameters.put("MID", bundle.getString("paytm.MID")); // Merchant ID (MID) provided by Paytm
 				parameters.put("ORDER_ID", orderId); // Merchant’s order id
 				parameters.put("CUST_ID", "CUST"+session.getAttribute("userId")); // Customer ID registered with merchant
-				parameters.put("TXN_AMOUNT", String.valueOf(amountDue));
+				parameters.put("TXN_AMOUNT", String.valueOf(amount));
+				
 				parameters.put("CHANNEL_ID", bundle.getString("paytm.CHANNEL_ID"));
 				parameters.put("INDUSTRY_TYPE_ID", bundle.getString("paytm.INDUSTRY_TYPE_ID")); //Provided by Paytm
 				parameters.put("WEBSITE", bundle.getString("paytm.WEBSITE")); //Provided by Paytm

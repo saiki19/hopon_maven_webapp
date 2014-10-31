@@ -3,6 +3,7 @@ package com.hopon.dto;
 public class PaymentRequestDTO {
 	private int id;
 	private int userId;
+	private String userName;
 	private String orderId;
 	private String modeOrg;
 	private float amount;
@@ -25,6 +26,12 @@ public class PaymentRequestDTO {
 	}
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	public String getOrderId() {
 		return orderId;

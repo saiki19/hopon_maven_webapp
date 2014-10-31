@@ -1,4 +1,5 @@
 package com.hopon.filters;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +44,7 @@ public class AuthorizationFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		// TODO Auto-generated method stub
 		// place your code here
-   		System.out.println("inside authorization filter");
+   		
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
 		HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
@@ -73,7 +74,7 @@ public class AuthorizationFilter implements Filter {
 		List<String> extensionsAllowed = new ArrayList<String>(Arrays.asList("css", "js", "gif", "png", "jpg", "eot", "svg", "ttf", "woff", "jspx", "ico"));
 		
         String url;
-        if(currentURL.contains("/pages/verification-failure.xhtml") || currentURL.contains("/pages/verification-success.xhtml") || currentURL.contains("/pages/signup.xhtml") || currentURL.contains("/pages/faq.xhtml") ||  currentURL.contains("/pages/contact.xhtml") || currentURL.contains("/emailCron.xhtml")||currentURL.contains("/pages/verify_user.xhtml")){
+        if(currentURL.contains("/pages/verification-failure.xhtml") || currentURL.contains("/pages/verification-success.xhtml") || currentURL.contains("/pages/signup.xhtml") || currentURL.contains("/pages/faq.xhtml") ||  currentURL.contains("/pages/contact.xhtml") || currentURL.contains("/emailCron.xhtml")||currentURL.contains("/pages/verify_user.xhtml")||currentURL.contains("/pages/approve_ride.xhtml")||currentURL.contains("/pages/approver-success.xhtml")||currentURL.contains("/pages/approver-failure.xhtml") ||currentURL.contains("/cron/summarymessage.xhtml")){
         	 chain.doFilter(request, response);
         	 return;
         }
@@ -82,7 +83,7 @@ public class AuthorizationFilter implements Filter {
         if(currentURL.contains("/pages/settings/") || currentURL.contains("/pages/rides/") || currentURL.contains("/pages/taxi/") || currentURL.contains("/pages/provider/") || currentURL.contains("/pages/consumer/") || currentURL.contains("/pages/taxiowner/")){
     		url = serverPath+"/pages/signin.xhtml";
     		if(session != null && session.getAttribute("LoggedIn") != null) {
-    			//session.setAttribute("uri", currentURL);
+    			session.setAttribute("uri", currentURL);
     		}
     	} else {
         	url = serverPath+"/pages/signin.xhtml";

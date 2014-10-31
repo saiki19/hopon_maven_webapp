@@ -41,13 +41,32 @@
 	<navigation-rule>
 		<from-view-id>/pages/verify_user.xhtml</from-view-id>
 		<navigation-case>
+			<display-name>#{userAction.verifyUser}</display-name>
 			<from-outcome>success</from-outcome>
 			<to-view-id>/pages/verification-success.xhtml</to-view-id>
+			<redirect />
 		</navigation-case>
-
 		<navigation-case>
+			<display-name>#{userAction.verifyUser}</display-name>
 			<from-outcome>failure</from-outcome>
 			<to-view-id>/pages/verification-failure.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/pages/approve_ride.xhtml</from-view-id>
+		<navigation-case>
+			<display-name>#{userAction.approverRide}</display-name>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/pages/approver-success.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<display-name>#{userAction.approverRide}</display-name>
+			<from-outcome>failure</from-outcome>
+			<to-view-id>/pages/approver-failure.xhtml</to-view-id>
+			<redirect />
 		</navigation-case>
 	</navigation-rule>
 
@@ -246,6 +265,16 @@
 		<navigation-case>
 			<from-outcome>registerCompany</from-outcome>
 			<to-view-id>/pages/settings/editcompany.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<!-- This is for ContactUs Form Bean -->
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/pages/contact.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>contactUs</from-outcome>
+			<to-view-id>/pages/signin.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
 	</navigation-rule>

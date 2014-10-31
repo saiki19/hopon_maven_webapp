@@ -1,5 +1,7 @@
 package com.hopon.dto;
 
+import javax.faces.bean.SessionScoped;
+
 public class ManageRideFormDTO {
 	private String from;
 	private String to;

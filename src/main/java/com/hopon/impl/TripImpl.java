@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.hopon.dao.ApproverDAO;
 import com.hopon.dao.CircleAffiliationsDAO;
 import com.hopon.dao.CircleDAO;
 import com.hopon.dao.CircleMemberDAO;
@@ -26,14 +27,15 @@ import com.hopon.dao.MessageBoardDAO;
 import com.hopon.dao.PageStoreDAO;
 import com.hopon.dao.PaymentDAO;
 import com.hopon.dao.PaymentPlanDAO;
+import com.hopon.dao.PaymentRequestDAO;
 import com.hopon.dao.PaymentTxnsDAO;
 import com.hopon.dao.PoolRequestsDAO;
 import com.hopon.dao.RideManagementDAO;
 import com.hopon.dao.RideSeekerDAO;
+import com.hopon.dao.RideSummaryMessageToDriverDAO;
 import com.hopon.dao.UserPreferencesDAO;
 import com.hopon.dao.UserRegistrationDAO;
 import com.hopon.dao.VehicleMasterDAO;
-import com.hopon.dao.ApproverDAO;
 import com.hopon.dto.ApproverDTO;
 import com.hopon.dto.CircleAffiliationsDTO;
 import com.hopon.dto.CircleDTO;
@@ -55,12 +57,14 @@ import com.hopon.dto.MessageBoardDTO;
 import com.hopon.dto.PageStoreDTO;
 import com.hopon.dto.PaymentDTO;
 import com.hopon.dto.PaymentPlanDTO;
+import com.hopon.dto.PaymentRequestDTO;
 import com.hopon.dto.PaymentTxnsDTO;
 import com.hopon.dto.PoolRequestsDTO;
 import com.hopon.dto.RideManagementDTO;
 import com.hopon.dto.RidePreVehicle;
 import com.hopon.dto.RideSeekerDTO;
 import com.hopon.dto.SmsReplyDTO;
+import com.hopon.dto.SummaryMessageDTO;
 import com.hopon.dto.UserPreferencesDTO;
 import com.hopon.dto.UserRegistrationDTO;
 import com.hopon.dto.VehicleMasterDTO;
@@ -368,6 +372,7 @@ public class TripImpl implements Trip {
 		return frequencyDTO;
 	}
 
+
 	@Override
 	public List<RideManagementDTO> loadAllRidemanagement(Connection con,
 			String userName) throws ConfigurationException {
@@ -595,6 +600,7 @@ public class TripImpl implements Trip {
 		}
 		return dto;
 	}
+		
 
 	@Override
 	public List<FavoritePlacesDTO> loadAllPlaces(Connection con, String userName)
@@ -993,6 +999,8 @@ public class TripImpl implements Trip {
 		}
 		return rideSeekerDTO;
 	}
+	
+	
 
 	@Override
 	public RideSeekerDTO changeField(Connection con, RideSeekerDTO rideSeekerDTO)
@@ -2907,6 +2915,44 @@ public class TripImpl implements Trip {
 		}
 		return dtos;
 	}
+	@Override
+	public PaymentRequestDTO addPaymentRequestEntry(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
+		try {
+			dto = dao.addPaymentRequestEntry(con, dto);
+		} catch(SQLException e) {
+			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		}
+		return dto;
+	}
+	@Override
+	public void updatePaymentRequestEntryStatusById(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
+		try {
+			dao.updatePaymentRequestEntryStatusById(con, dto);
+		} catch(SQLException e) {
+			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		}
+	}
+	@Override
+	public void updatePaymentRequestEntryStatusByOrderId(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
+		try {
+			dao.updatePaymentRequestEntryStatusByOrderId(con, dto);
+		} catch(SQLException e) {
+			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		}
+	}
+	@Override
+	public PaymentRequestDTO fetchPaymentRequestByOrderId(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
+		try {
+			dto = dao.fetchPaymentRequestByOrderId(con, dto);
+		} catch(SQLException e) {
+			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		}
+		return dto;
+	}
 
 	@Override
 	public PaymentTxnsDTO paymentTxnInsert(Connection con,
@@ -3019,4 +3065,26 @@ public class TripImpl implements Trip {
 		}
 
 	}
+	@Override
+	public List<SummaryMessageDTO> loadRideSummaryMessage()
+			throws ConfigurationException {
+		RideSummaryMessageToDriverDAO dao=DAOProvider.getMessageToDriverDAO();
+		List<SummaryMessageDTO> dto=new ArrayList<>();
+		
+			dto=dao.rideSummaryMessage();
+			System.out.println("Inside the TripImpleMent is:"+dto);
+			
+		
+		return dto;
+	
+	}
+
+	@Override
+	public UserRegistrationDTO updateTotalCredit(Connection con,
+			UserRegistrationDTO userRegistrationDTO)
+			throws ConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
+

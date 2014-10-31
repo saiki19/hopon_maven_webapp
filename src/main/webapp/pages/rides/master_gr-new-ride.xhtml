@@ -43,7 +43,9 @@ alert(url+"|" +proto + "|"+hostnme+"|"+pathnme);
 Date.prototype.format=function(b){var c={"M+":this.getMonth()+1,"d+":this.getDate(),"h+":this.getHours(),"m+":this.getMinutes(),"s+":this.getSeconds(),"q+":Math.floor((this.getMonth()+3)/3),S:this.getMilliseconds()};if(/(y+)/.test(b)){b=b.replace(RegExp.$1,(this.getFullYear()+"").substr(4-RegExp.$1.length))}for(var a in c){if(new RegExp("("+a+")").test(b)){b=b.replace(RegExp.$1,RegExp.$1.length==1?c[a]:("00"+c[a]).substr((""+c[a]).length))}}return b};jQuery(document).ready(function(){updatePart();googleLoc()});
 function updatePart(){$("#tab1\\:curentDate").datetimepicker({dateFormat:"dd M y,",timeFormat:"hh.mm TT",minDate:new Date(),onSelect:function(){var d=$("#tab1\\:curentDate").datepicker("getDate");d.setDate(d.getDate()+1);var c=$("#tab1\\:curentDate").datepicker("getDate");c.setDate(c.getDate()+61);$("#tab1\\:curentDate2").datepicker("option","minDate",d);$("#tab1\\:curentDate2").datepicker("option","maxDate",c)}});$("#tab1\\:curentDate2").datetimepicker({dateFormat:"dd M y,",timeFormat:"hh.mm TT",minDate:Date.parseString("#{userAction.minDate}","dd NNN yy, HH.mm a")});var a=new Date();a.setDate(a.getDate()+1);var b=new Date();b.setDate(b.getDate()+60);$("#tab1\\:curentDate2").datepicker("option","minDate",a);$("#tab1\\:curentDate2").datepicker("option","maxDate",b);$("#tab1\\:fromcity, #tab1\\:frompin, #tab1\\:tocity, #tab1\\:topin").prop("readonly",true);if($("#tab1\\:recurring").is(":checked")){$("#ifYes").show()}else{$("#ifYes").hide()}$("#tab1\\:recurring").click(function(){if($(this).is(":checked")){var c=Date.parseString($("#tab1\\:curentDate").val(),"dd NNN yy, HH.mm a");if(c!=null){currentTime=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate());currentTime.setDate(currentTime.getDate()+2);if(!(c>=currentTime)){$("#tab1\\:curentDate").val("")}}currentTime=new Date();currentTime.setDate(currentTime.getDate()+2);$("#tab1\\:curentDate").datepicker("option","minDate",currentTime);$("#ifYes").show()}else{$("#ifYes").hide();$("#tab1\\:curentDate").datepicker("option","minDate",new Date())}});$("#tab1\\:fullDay").val("N");$("#tab1\\:fullDayCheck").click(function(){if($(this).is(":checked")){$("#tab1\\:fullDay").val("Y");$("#tab1\\:toaddress").prop("readonly",true)}else{$("#tab1\\:fullDay").val("N");$("#tab1\\:toaddress").prop("readonly",false)}})}function check(){document.getElementById("form:takeride").className+=" btn btn-small btn-success"};
 </script>
+
  <c:set value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}" property ="url" var="url"/> 
+ 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
 
 <script src="../../resources/js/checkbox_hide.js"></script>
@@ -51,6 +53,7 @@ function updatePart(){$("#tab1\\:curentDate").datetimepicker({dateFormat:"dd M y
 <script src="../../resources/js/jquery.min.js"></script>
 
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
 
 <script>
 var x=jQuery.noConflict();function googleLoc(){x(function(){x("#tab1\\:fromaddress").autocomplete({source:function(b,a){$("#tab1\\:fromcity").val("");$("#tab1\\:frompin").val("");$("#tab1\\:startPoinLat").val("");$("#tab1\\:startPoinLng").val("");x.ajax({url:"http://maps.googleapis.com/maps/api/geocode/json",data:{sensor:false,address:b.term,components:"country:IN"},success:function(f){var l=new Array();for(var e in f.results){var h="";var g="";for(var d in f.results[e]["address_components"]){for(var c in f.results[e]["address_components"][d]["types"]){if(f.results[e]["address_components"][d]["types"][c]=="locality"){h=f.results[e]["address_components"][d]["long_name"];break}if(f.results[e]["address_components"][d]["types"][c]=="postal_code"){g=f.results[e]["address_components"][d]["long_name"];break}}}l.push({formatted_address:f.results[e]["formatted_address"],lat:f.results[e]["geometry"]["location"]["lat"],lng:f.results[e]["geometry"]["location"]["lng"],city:h,postal_code:g})}a($.map(l,function(i){return{label:i.formatted_address,value:i.formatted_address,lat:i.lat,lng:i.lng,city:i.city,postal_code:i.postal_code}}))}})},minLength:2,select:function(a,b){$("#tab1\\:fromcity").val(b.item.city);$("#tab1\\:frompin").val(b.item.postal_code);$("#tab1\\:startPoinLat").val(b.item.lat);$("#tab1\\:startPoinLng").val(b.item.lng)}});x("#tab1\\:toaddress").autocomplete({source:function(b,a){$("#tab1\\:tocity").val("");$("#tab1\\:topin").val("");$("#tab1\\:endPoinLat").val("");$("#tab1\\:endPoinLng").val("");x.ajax({url:"http://maps.googleapis.com/maps/api/geocode/json",data:{sensor:false,address:b.term,components:"country:IN"},success:function(f){var l=new Array();for(var e in f.results){var h="";var g="";for(var d in f.results[e]["address_components"]){for(var c in f.results[e]["address_components"][d]["types"]){if(f.results[e]["address_components"][d]["types"][c]=="locality"){h=f.results[e]["address_components"][d]["long_name"];break}if(f.results[e]["address_components"][d]["types"][c]=="postal_code"){g=f.results[e]["address_components"][d]["long_name"];break}}}l.push({formatted_address:f.results[e]["formatted_address"],lat:f.results[e]["geometry"]["location"]["lat"],lng:f.results[e]["geometry"]["location"]["lng"],city:h,postal_code:g})}a($.map(l,function(i){return{label:i.formatted_address,value:i.formatted_address,lat:i.lat,lng:i.lng,city:i.city,postal_code:i.postal_code}}))}})},minLength:2,select:function(a,b){$("#tab1\\:tocity").val(b.item.city);$("#tab1\\:topin").val(b.item.postal_code);$("#tab1\\:endPoinLat").val(b.item.lat);$("#tab1\\:endPoinLng").val(b.item.lng)}})})};
@@ -82,6 +85,7 @@ function validate_rideSeeker(){var a=Date.parseString($("#tab1\\:curentDate").va
          <pm:content>
          <span style="display:none">
           ${userAction.clearNewRide()}
+          ${userAction.validateUserPayment()}
           </span>
           <h:form id="tab1" styleClass="form-horizontal">
         
@@ -300,21 +304,26 @@ function validate_rideSeeker(){var a=Date.parseString($("#tab1\\:curentDate").va
                         <input type="password" id="inputPassword" placeholder="Address1">
                       </div>
                     </div> -->
-                    <div class="control-group">
+                    
+                    
+                    <!-- Kirty -->
+                <!--     <div class="control-group">
                       <label class="control-label" for="inputEmail">City</label>
-                      <div class="controls">
-                        <h:inputText id="tocity" value="#{userAction.rideRegistered.toAddressCity}" />
-                      </div>
+                      <div class="controls"> -->
+                        <h:inputHidden id="tocity" value="#{userAction.rideRegistered.toAddressCity}" />
+                <!--       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Pin</label>
-                      <div class="controls">
-                         	<h:inputText id="topin" value="#{userAction.rideRegistered.toAddressPin}"/>
+                      <div class="controls"> -->
+                         	<h:inputHidden id="topin" value="#{userAction.rideRegistered.toAddressPin}"/>
 							<h:inputHidden id="endPoinLat" value="#{userAction.rideRegistered.endPointLatitude}"/>
                       		<h:inputHidden id="endPoinLng" value="#{userAction.rideRegistered.endPointLongitude}"/>
-                      </div>
+                     <!--  </div>
                     </div>
-                   
+                    -->
+                    
+                    <!-- Kirty -->
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Tag (20 limit)</label>
                       <div class="controls">
@@ -371,6 +380,7 @@ function validate_rideSeeker(){var a=Date.parseString($("#tab1\\:curentDate").va
           <h:commandButton styleClass="btn btn-large btn-danger" value="Clear"><p:ajax listener="#{userAction.clearNewRide}" update="@form"/></h:commandButton> &nbsp;
 
          </p>
+
         <!-- table section ends here -->
 			
       </div>

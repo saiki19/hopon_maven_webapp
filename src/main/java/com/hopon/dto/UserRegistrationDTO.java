@@ -4,8 +4,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 
-@ManagedBean(name="userAction", eager=true)
-@RequestScoped
 public class UserRegistrationDTO {
 	private String id;
 	private String first_name;
@@ -14,7 +12,6 @@ public class UserRegistrationDTO {
 	private String mobile_no;
 	private String birthdate;
 	private String gender;
-	@ManagedProperty(value="#{param.email_id")
 	private String email_id;
 	private String password;
 
@@ -31,7 +28,6 @@ public class UserRegistrationDTO {
 	private float averageRating;
 	private String defaultTimeSlice;
 	private char isVerified;
-	@ManagedProperty(value="#{param.verificationCode")
 	private String verificationCode;
 	private int signupType;
 	private String state;

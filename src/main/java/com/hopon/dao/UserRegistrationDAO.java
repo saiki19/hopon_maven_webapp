@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hopon.dto.UserRegistrationDTO;
 import com.hopon.utils.ApplicationUtil;
 import com.hopon.utils.QueryExecuter;
 import com.hopon.utils.ServerUtility;
@@ -418,6 +419,34 @@ public class UserRegistrationDAO {
 			pstmt.close();
 		}
 		return dto;
+	}
+
+	public UserRegistrationDTO updateTotalCredit(Connection con,
+			UserRegistrationDTO dto) throws SQLException {
+		StringBuilder query = new StringBuilder();
+		query.append("UPDATE users SET totalCredit = ? WHERE id = ?");
+		PreparedStatement pstmt = con.prepareStatement(query.toString());
+		pstmt.setFloat(1, dto.getTotalCredit());
+		pstmt.setString(2, dto.getId());
+		pstmt.executeUpdate();
+		pstmt.close();
+		return dto;
+	}
+
+	public void updateTotalCreditById(Connection con, int userId,
+			float amount) throws SQLException {
+		StringBuilder query = new StringBuilder();
+		if (amount > 0) {
+			query.append("UPDATE users SET totalCredit = totalCredit + ? WHERE id = ?");
+		} else {
+			query.append("UPDATE users SET totalCredit = totalCredit - ? WHERE id = ?");
+		}
+		PreparedStatement pstmt = con
+				.prepareStatement(query.toString());
+		pstmt.setFloat(1, amount > 0 ? amount : amount * -1);
+		pstmt.setInt(2, userId);
+		pstmt.executeUpdate();
+		pstmt.close();
 	}
 }
 
