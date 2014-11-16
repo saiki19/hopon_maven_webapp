@@ -809,6 +809,29 @@ public class TripImpl implements Trip {
 
 		return tripList;
 	}
+	
+	@Override
+	public List<CombineRideDTO> getAllTodaysCombineVehicleList(Connection con,
+			String startPoint, String endPoint, String companyName, int circleId)
+			throws ConfigurationException {
+		// TODO Auto-generated method stub
+		List<CombineRideDTO> tripList = new ArrayList<CombineRideDTO>();
+		MatchTripDAO matchTripDAO = DAOProvider.getMatchTripDAO();
+		try {
+			tripList = matchTripDAO.getAllTodaysCombineVehicleList(con, startPoint,
+					endPoint, companyName, circleId);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+
+		return tripList;
+	}
 
 	@Override
 	public List<CombineRideDTO> getAllCombineVehicleList(Connection con,

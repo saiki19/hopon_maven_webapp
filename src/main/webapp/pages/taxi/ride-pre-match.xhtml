@@ -25,7 +25,7 @@ function scroll(){
 <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
 	<script type="text/javascript" src="../../resources/js/bootstrap-tooltip.js"></script>
-	<script type="text/javascript">jQuery(document).ready(function(){$("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}});updateVehicleDatePicker()});</script>
+	<script type="text/javascript">jQuery(document).ready(function(){ $("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}});updateVehicleDatePicker()});</script>
   <!-- Start: MAIN CONTENT -->
   <div class="content">
     <div class="container">
@@ -79,7 +79,7 @@ function scroll(){
         		</pm:content>
         		  		
               	<pm:content>
-              	<h:form styleClass="form-inline">
+              	<h:form styleClass="form-inline" id="form1">
 	               	<h:inputText id="from" value="#{userAction.rideSeekerDTO.fromAddress1}" style="width:180px;"></h:inputText> &nbsp;
 	               	<p:watermark for="from" value="From"></p:watermark>
 	               	<h:inputText id="to" value="#{userAction.rideSeekerDTO.toAddress1}" style="width:180px;"></h:inputText> &nbsp;
@@ -90,7 +90,7 @@ function scroll(){
 	               		<f:selectItem itemLabel="Affiliated Circles"></f:selectItem>
 						<f:selectItems value="#{userAction.allAffiliateCircleForTaxiUser}"/>
 					</h:selectOneMenu> &nbsp;
-	             	<h:commandLink onclick="if(!$(this).parent().find('select:last').val() > 0) { alert('Please Select affiliated circle.'); return false; }" styleClass="btn btn-info" value="Search" action="#{userAction.rideMatchedTripListByCondition}" />
+	             	<h:commandLink onclick="if(!$(this).parent().find('select:last').val() > 0) { alert('Please Select affiliated circle.'); return false; }" styleClass="btn btn-info" value="Search" id="search" action="#{userAction.rideMatchedTripListByCondition}" />
              	</h:form> 
              	</pm:content>
              

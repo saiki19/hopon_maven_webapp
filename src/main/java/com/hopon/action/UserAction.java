@@ -2502,6 +2502,29 @@ public class UserAction extends HPBaseAction {
 		this.setRideIdToTake(0);
 	}
 
+	public void todaysCombineVehicleSearch() {
+		String date1 = "";
+		DateFormat dateFormat = new SimpleDateFormat(
+				ApplicationUtil.datePattern1);
+		// SimpleDateFormat formatter1 = new
+		// SimpleDateFormat(ApplicationUtil.datePattern2);
+		// date = formatter1.parse(dto1.getStartDate());
+		System.out.println("todays combine vehicles ");
+		if (rideManagementDTO.getStartDate() != null) {
+			date1 = dateFormat.format(rideManagementDTO.getStartDate());
+		}
+		combineVehicleCondition.clear();
+		combineVehicleCondition = ListOfValuesManager
+				.getAllTodaysCombineVehicleList(
+						rideManagementDTO.getFromAddress1(),
+						rideManagementDTO.getToAddress1(),
+						ApplicationUtil.currentTimeStamp(),
+						circleDTO.getCircleID());
+
+		combineVehicleDataModel = new CombineVehicleDataModel(
+				combineVehicleCondition);
+	}
+
 	public void combineVehicleSearch() {
 		String date1 = "";
 		DateFormat dateFormat = new SimpleDateFormat(
@@ -2889,6 +2912,7 @@ public class UserAction extends HPBaseAction {
 		return "matchedTrip";
 	}
 
+	
 	public String matchRideForCompany() {
 
 		System.out
@@ -9351,9 +9375,8 @@ public class UserAction extends HPBaseAction {
 	}
 
 	/*
-	 * This is for the <code> CronSummaryMessageToDriver</code>
-	 * In this method creating both rideSummary Message to Driver and calling
-	 * CronTestSummary 
+	 * This is for the <code> CronSummaryMessageToDriver</code> In this method
+	 * creating both rideSummary Message to Driver and calling CronTestSummary
 	 */
 
 	public void CronSummaryMessageToDriver() {
@@ -9400,7 +9423,7 @@ public class UserAction extends HPBaseAction {
 						.append(",From:" + seekerDtoTemp.getFromAddress1())
 						.append(",To:" + seekerDtoTemp.getToAddress1());
 				lastvalue = currentValue;
-				
+
 				CronTestSummary(Lists, message, seekerDtoTemps, temp,
 						currentValue);
 			} else {
@@ -9422,7 +9445,7 @@ public class UserAction extends HPBaseAction {
 							.append(",From:" + seekerDtoTemp.getFromAddress1())
 							.append(",To:" + seekerDtoTemp.getToAddress1());
 					lastvalue = currentValue;
-					
+
 					CronTestSummary(Lists, message, seekerDtoTemps, temp,
 							currentValue);
 
@@ -9462,7 +9485,7 @@ public class UserAction extends HPBaseAction {
 							.append(",To:" + seekerDtoTemp.getToAddress1());
 
 					lastvalue = currentValue;
-					
+
 					CronTestSummary(Lists, message, seekerDtoTemps, temp,
 							currentValue);
 				}

@@ -50,7 +50,7 @@ function scroll(){
           
           <pm:content rendered="#{sessionScope.user_role == 'T' }">
           <script type="text/javascript" src="../../resources/js/bootstrap-tooltip.js"></script>
-	<script type="text/javascript">jQuery(document).ready(function(){updateToolTip();jQuery("#form2\\:noResult").hide()});function updateToolTip(){$("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}})};</script>
+	<script type="text/javascript">jQuery(document).ready(function(){updateToolTip(); $("#form1\\:searchvehicle").trigger("click");  jQuery("#form2\\:noResult").hide()});function updateToolTip(){$("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}})};</script>
  		<script type="text/javaScript">function validateDropTake(f,d,b){var c=new Array();var e=0;if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":drop"){if(d.is(":checked")){d.parent().parent().find("input[type=checkbox][id$=take]").prop("checked",false)}}else{if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":take"){if(d.is(":checked")){d.parent().parent().find("input[type=checkbox][id$=drop]").prop("checked",false)}}}$("#form2\\:member").find("input[type=checkbox][id$=drop]").each(function(){if($(this).is(":checked")){e+=1}});var a=0;$("#form2\\:member").find("input[type=checkbox][id$=take]").each(function(){if($(this).is(":checked")){a+=1}});if(e>1){c.push("Only one ride can be dropped at a time.")}if(a>1){c.push("Only one ride can be taken at a time.")}if(c.length>0){d.prop("checked",false);alert(c.join("\n"))}else{if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":drop"){if(d.is(":checked")){$("#form2\\:rideIdToDrop").val(b)}}else{if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":take"){if(d.is(":checked")){$("#form2\\:rideIdToTake").val(b)}}}}}function validateCombine(){if(parseInt($("#form2\\:rideIdToDrop").val())>0){if(parseInt($("#form2\\:rideIdToTake").val())>0){return true}}alert("Please select one ride to drop and one ride to take.");return false};</script>
           
           	${userAction.clearScreenMessage()}	
@@ -82,7 +82,10 @@ function scroll(){
 	               		<f:selectItem itemLabel="Affiliated Circles"></f:selectItem>
 						<f:selectItems value="#{userAction.allAffiliateCircleForTaxiUser}"/>
 					</h:selectOneMenu> &nbsp;
-	             	<h:commandLink styleClass="btn btn-info" value="Search" >
+					<h:commandLink styleClass="btn btn-info" value="Search" id="searchvehicle" style="display:none">
+	             	<p:ajax process="@form" listener="#{userAction.todaysCombineVehicleSearch}" update="@form,:form2,:messagePanel" oncomplete="updateDataTable1();updateToolTip();"/>
+	             	</h:commandLink>
+	             	<h:commandLink styleClass="btn btn-info" value="Search"  >
 	             	<p:ajax process="@form" listener="#{userAction.combineVehicleSearch}" update="@form,:form2,:messagePanel" oncomplete="updateDataTable1();updateToolTip();"/>
 	             	</h:commandLink>
              </h:form>

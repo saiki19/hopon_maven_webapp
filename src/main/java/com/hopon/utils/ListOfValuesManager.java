@@ -3250,6 +3250,26 @@ public class ListOfValuesManager {
 		}
 		return dto;
 	}
+	
+	public static List<CombineRideDTO> getAllTodaysCombineVehicleList(
+			String fromAddress, String toAddress, String rideDate, int circleID) {
+		List<CombineRideDTO> matchedList = new ArrayList<CombineRideDTO>();
+		Connection con = getLocalConnection();
+		try {
+			matchedList = getTripService().getAllTodaysCombineVehicleList(con,
+					fromAddress, toAddress, rideDate, circleID);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return matchedList;
+	}
+	
 
 	public static List<CombineRideDTO> getAllCombineVehicleList(
 			String fromAddress, String toAddress, String rideDate, int circleID) {

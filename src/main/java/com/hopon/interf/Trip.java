@@ -170,6 +170,8 @@ public interface Trip {
 	CircleDTO getCircleType(Connection con,
 			int userId) throws ConfigurationException;
 /*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
+	List<CombineRideDTO> getAllTodaysCombineVehicleList(Connection con,
+			String fromAddress, String toAddress, String rideDate, int circleID)throws ConfigurationException;
 	
 
 	
