@@ -11,7 +11,12 @@
   <pm:page>
    <pm:view>
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
-
+<script>
+function scroll(){
+	
+	 window.scrollTo(0, 2000);
+}
+</script>
    <h:head></h:head>
    <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -75,7 +80,7 @@
                 <div class="control-group">
                   <div class="controls">
                   <h:commandButton styleClass="btn btn-success btn-large" value="Create Circle">
-                  	<p:ajax listener="#{userAction.registerCircle}" process="@this,inputName,inputDescription,circleType,circleTypeTaxi" update="circle-form,:messagePanel" />
+                  	<p:ajax listener="#{userAction.registerCircle}" process="@this,inputName,inputDescription,circleType,circleTypeTaxi" update="circle-form,:messagePanel" oncomplete="scroll();"/>
                   </h:commandButton>
                   </div>
                 </div>

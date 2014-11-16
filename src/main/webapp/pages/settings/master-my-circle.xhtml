@@ -11,6 +11,12 @@
   <pm:page>
    <pm:view>
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
+<script>
+function scroll(){
+	
+	 window.scrollTo(0, 2000);
+}
+</script>
    <h:head></h:head>
    <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -108,7 +114,7 @@
 			<div class="controls">
 			    <h:inputText value="#{userAction.circleDTO.name}"/>&nbsp;
 				<h:commandButton styleClass="btn btn-info" value="Search">
-					<p:ajax process="@form" update="@form,:searchResult" listener="#{userAction.findCircleByName}" oncomplete="modalUpdate();updateDataTable();"/>
+					<p:ajax process="@form" update="@form,:searchResult" listener="#{userAction.findCircleByName}" oncomplete="modalUpdate();updateDataTable();scroll();"/>
 				</h:commandButton>
 			</div>
 			</h:form>

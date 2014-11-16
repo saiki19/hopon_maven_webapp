@@ -14,7 +14,12 @@
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
 
 		<script type="text/javascript">$(document).ready(function(){if($("#ui-table-1 tr th:first").length>0){$("#ui-table-1 tr th:first").attr("class","").html("")}$("#vehicleDownloadform\\:vehicleDownloadLink").attr("class","btn btn-xs btn-link").attr("style","background: none repeat scroll 0 0 rgba(0, 0, 0, 0);border: medium none;box-shadow: 0 0 0 #FFFFFF;color: #0088CC;display: inline;font-size: 12px;font-weight:normal;margin: -6px 1px 0 9px;padding: 3px;");$("#vehicleDownloadform").css("display","inline");$("#vehicleDownloadform\\:vehicleDownloadLink").find("span:first").css("margin-top","3px");$("#vehicleDownloadform\\:vehicleDownloadLink").unbind("hover")});function validateAddVehicle(){if($("#add\\:make").val().trim().length==0){$("#add-msg").html("Make is required.");return false}if($("#add\\:regNo").val().trim().length==0){$("#add-msg").html("Reg. No. is required.");return false}var a=parseInt($("#add\\:cap").val());if(isNaN(a)){$("#add-msg").html("Capacity is required.");return false}else{if(1>a){$("#add-msg").html("Capacity must be Betbeen 1 to 60.");return false}if(a>60){$("#add-msg").html("Capacity must be Betbeen 1 to 60.");return false}}return true}function validateEditVehicle(){if($("#update\\:make").val().trim().length==0){$("#update-msg").html("Make is required.");return false}if($("#update\\:regNo").val().trim().length==0){$("#update-msg").html("Reg. No. is required.");return false}var a=parseInt($("#update\\:editcap").val());if(isNaN(a)){$("#update-msg").html("Capacity is required.");return false}else{if(1>a){$("#update-msg").html("Capacity must be Betbeen 1 to 60");return false}if(a>60){$("#update-msg").html("Capacity must be Betbeen 1 to 60");return false}}return true};</script>
-		
+		<script>
+function scroll(){
+	
+	 window.scrollTo(0, 2000);
+}
+</script>
 	<h:head></h:head>
 <h:body> 
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -174,7 +179,7 @@
 		            <f:validateLongRange minimum="1" maximum="60"></f:validateLongRange> 
 		            </h:inputText>&nbsp;
 		            <h:commandButton onclick="return validateAddVehicle();" styleClass="btn btn-success" value="Save">
-		            	<p:ajax oncomplete="updateDataTable1();modalUpdate();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html('');" process="@this,add" update=":add,:form1" listener="#{userAction.registerVehicleMaster}"/>
+		            	<p:ajax oncomplete="updateDataTable1();modalUpdate();scroll();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html('');" process="@this,add" update=":add,:form1" listener="#{userAction.registerVehicleMaster}"/>
 		            </h:commandButton>
 				</h:panelGrid>   
 				</h:form>
@@ -203,7 +208,19 @@
 		            <f:validateLongRange minimum="1" maximum="60"></f:validateLongRange>
 		            </h:inputText>&nbsp;
 		            <h:commandButton onclick="return validateEditVehicle();" styleClass="btn btn-success" value="Save">
-		            	<p:ajax listener="#{userAction.updateVehicle}" oncomplete="updateDataTable1();modalUpdate();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html('');" process="@this,update" update=":update,:form1,:messagePanel" />
+		            	<p:ajax listener="#{userAction.updateVehicle}" oncomplete="updateDataTable1();modalUpdate();scroll();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html('');" process="@this,update" update=":update,:form1,:messagePanel" />
+		           <p:panel id="messagePanel" style="border:none;margin-left: -18px;margin-right: -18px;">
+					<c:forEach var="successMessage" items="${userAction.successMessage}">
+					<div style="color:#55AB55;">
+						<span class="form-message">${"Vehicle updated successfully. !!!"}</span>
+					</div> 
+					</c:forEach>
+					<c:forEach var="errorMessage" items="${userAction.errorMessage}">
+					<div style="color:#55AB55;">
+						<span class="form-message">${"Vehicle cannot be updated as already assigned. !!!"}</span>
+					</div> 
+					</c:forEach>
+					</p:panel>  
 		            </h:commandButton>
 				</h:panelGrid>  
 				</h:form>

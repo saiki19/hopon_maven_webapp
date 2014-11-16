@@ -11,6 +11,12 @@
   <pm:page>
    <pm:view>
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
+		<script>
+function scroll(){
+	
+	 window.scrollTo(0, 2000);
+}
+</script>
 		<h:head></h:head>
    <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -81,7 +87,7 @@
 		<div class="circle-div">
 			<p:selectOneListbox id="mycircles" styleClass="input-xlarge" value="#{userAction.taxiCircle.circleID}" style="width:215px;height:100px" >
 				<f:selectItems value="#{userAction.allCilcleForLoginUserDropDownList}"></f:selectItems>
-				<p:ajax listener="#{userAction.processValueChange3}" process="@this,mycircles" update="member,pendingMember"/>
+				<p:ajax listener="#{userAction.processValueChange3}" process="@this,mycircles" update="member,pendingMember" oncomplete="scroll();"/>
 			</p:selectOneListbox>
 		</div>
 	</div>
@@ -92,7 +98,7 @@
 		<h:commandLink styleClass="btn btn-info ui-corner-all" value="Add" >
 			<p:ajax process="@this,taxi_circle,mycircles,affiliateCircleId" oncomplete="$('input[id*=\'taxi_circle_input\']').val(''); updateMember();" 
 			listener="#{userAction.makeCircleAffiliated}" update="member,pendingMember,:messagePanel" 
-			onstart="$('input[id$=\'\\:affiliateCircleId\']').val($('input[id$=\'\\:taxi_circle_hinput\']').val().trim());"></p:ajax>
+			onstart="$('input[id$=\'\\:affiliateCircleId\']').val($('input[id$=\'\\:taxi_circle_hinput\']').val().trim());" oncomplete="scroll();"></p:ajax>
 		</h:commandLink>
 	</div>
 	<div class="span10">
@@ -105,7 +111,7 @@
 		</span>
 		<h:commandLink styleClass="btn btn-danger ui-corner-all" value="Remove" style="display: inline;margin-left: 4px;vertical-align: top;">
 			<f:param value="2" name="decline"></f:param>
-			<p:ajax process="@this,member,mycircles" listener="#{userAction.confirmOrDeclineAffiliatedCircle}" update="member,pendingMember,:messagePanel" oncomplete="updateMember();"/>
+			<p:ajax process="@this,member,mycircles" listener="#{userAction.confirmOrDeclineAffiliatedCircle}" update="member,pendingMember,:messagePanel" oncomplete="updateMember();scroll();"/>
 		</h:commandLink>
 	</div>
 	<div class="span4">
@@ -123,7 +129,7 @@
 			<h:inputTextarea value="#{userAction.message}" style="width:333px;" cols="25" rows="5" id="memberMessage" name="memberMessage"></h:inputTextarea>
 		</span>
 		<h:commandLink styleClass="btn btn-info ui-corner-all span" value="Send Message" style="display: block;margin-left: 4px;margin-top: 16px;vertical-align: top;">
-			<p:ajax process="@this,member,pendingMember,memberMessage,:messagePanel" listener="#{userAction.sendMessage}" update="memberMessage,:messagePanel" />
+			<p:ajax process="@this,member,pendingMember,memberMessage,:messagePanel" listener="#{userAction.sendMessage}" update="memberMessage,:messagePanel" oncomplete="scroll();" />
 		</h:commandLink>
 		
 	</div>

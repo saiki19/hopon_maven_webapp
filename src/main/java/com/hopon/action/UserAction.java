@@ -224,17 +224,20 @@ public class UserAction extends HPBaseAction {
 	}
 
 	Object fieldValue;
+
 	public void gatherAffiliatedCircle(int circleId) {
 		allCircleAffiliationsDTO.clear();
 		allPendingCircleAffiliationsDTO.clear();
-		System.out.println("circleId =="+circleId);
+		System.out.println("circleId ==" + circleId);
 		allCircleAffiliationsDTO = ListOfValuesManager
 				.getAllAffiliatedCircle("" + circleId);
-		for(CircleAffiliationsDTO circleAffiliationsDTO:allCircleAffiliationsDTO) {
-		  fieldValue = circleAffiliationsDTO.getAffilicatedCircleId();
-		    System.out.println("fieldValue=====>"+fieldValue);
+		for (CircleAffiliationsDTO circleAffiliationsDTO : allCircleAffiliationsDTO) {
+			fieldValue = circleAffiliationsDTO.getAffilicatedCircleId();
+			System.out.println("fieldValue=====>" + fieldValue);
 		}
-		System.out.println("================fieldValue============================="+fieldValue);
+		System.out
+				.println("================fieldValue============================="
+						+ fieldValue);
 		allPendingCircleAffiliationsDTO = ListOfValuesManager
 				.getAllPendingCircle("" + circleId);
 
@@ -2385,7 +2388,9 @@ public class UserAction extends HPBaseAction {
 		}
 		return list;
 	}
-int affilicatedCircleId;
+
+	int affilicatedCircleId;
+
 	public List<SelectItem> getAllAffiliatedCilcleMember() {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		// allCircleAffiliationsDTO
@@ -2406,7 +2411,7 @@ int affilicatedCircleId;
 	}
 
 	public List<String> getAllPendingCilcleMemberForLoginUser() {
-		
+
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < allPendingCircleMemberList.size(); i++) {
 			String listText = "";
@@ -2451,29 +2456,29 @@ int affilicatedCircleId;
 		}
 		return list;
 	}
-/*
-	public void circleTypeMethod(){
-		System.out.println("Reaching circleType()");
+
+	/*
+	 * <!-- Code Changed by Kirty for selection Ride option with different User
+	 * Id-->
+	 */
+	public void circleTypeMethod() {
 		CircleDTO dto = new CircleDTO();
-		
-		if (userRegistrationDTO.getId() != null){
-			System.out.println("userRegistrationDTO.getId()  ==="+userRegistrationDTO.getId());
-			dto = ListOfValuesManager
-					.getCircleType(Integer
-							.parseInt(userRegistrationDTO.getId()));
-			System.out.println("dto = "+dto.getCircleType());
+
+		if (userRegistrationDTO.getId() != null) {
+			dto = ListOfValuesManager.getCircleType(Integer
+					.parseInt(userRegistrationDTO.getId()));
 		}
-		if(dto.getCircleType().equals("T")){
+		if (dto.getCircleType().equals("T")) {
 			circleType = "T";
-			System.out.println(circleType + "circleType");
-		}
-		else{
+		} else {
 			circleType = "";
-			System.out.println(circleType + " =====circleType");
 		}
 	}
-	
-	*/
+
+	/*
+	 * <!-- Code Changed by Kirty for selection Ride option with different User
+	 * Id-->
+	 */
 	public void makeRidePreMatchInactive() {
 		ridePreMatchFormTest = false;
 	}
@@ -2586,9 +2591,10 @@ int affilicatedCircleId;
 													.getToAddress1().substring(
 															0, 25) : rideToDrop
 													.getFromAddress1(),
-											(rideToDrop.getToAddress1().length() > 25) ? rideToDrop
-													.getToAddress1().substring(0,
-															25) : rideToDrop
+											(rideToDrop.getToAddress1()
+													.length() > 25) ? rideToDrop
+													.getToAddress1().substring(
+															0, 25) : rideToDrop
 													.getToAddress1(),
 											rideToDrop.getStartdateValue() }));
 					userMessageDTO
@@ -2885,9 +2891,11 @@ int affilicatedCircleId;
 
 	public String matchRideForCompany() {
 
-		System.out.println("##############  Inside matchRideForCompany()   ##############");
-		System.out.println("manageRideFormDTO.getAffiliatedCircleId() ===>"+manageRideFormDTO.getAffiliatedCircleId());
-		
+		System.out
+				.println("##############  Inside matchRideForCompany()   ##############");
+		System.out.println("manageRideFormDTO.getAffiliatedCircleId() ===>"
+				+ manageRideFormDTO.getAffiliatedCircleId());
+
 		if (manageRideFormDTO.getRideDate() != null
 				&& !manageRideFormDTO.getRideDate().equals("")) {
 			SimpleDateFormat df1 = new SimpleDateFormat(
@@ -6163,22 +6171,27 @@ int affilicatedCircleId;
 
 	public void updateVehicle() {
 		clearScreenMessage();
-		final int initialCapacity = Integer.parseInt(vehicleMasterDTO.getCapacity());;
+		final int initialCapacity = Integer.parseInt(vehicleMasterDTO
+				.getCapacity());
+		;
 		int finalCapacity;
 		vehicleMasterDTO = ListOfValuesManager
 				.getUpdateVehicle(vehicleMasterDTO);
 		finalCapacity = Integer.parseInt(vehicleMasterDTO.getCapacity());
 		System.out.println(initialCapacity);
 		System.out.println(finalCapacity);
-		if(initialCapacity == finalCapacity){
-		successMessage.add(Messages.getValue("success.update",
-				new Object[] { "Vehicle" }));
+		if (initialCapacity == finalCapacity) {
+			successMessage.add(Messages.getValue("success.update",
+					new Object[] { "Vehicle" }));
 		}
-		else{
-		errorMessage.add(Messages.getValue("error.update",
-				new Object[] { "Vehicle" }));
+		// Code added by Kirty on 18th Oct 2014 for artf52898: Vehicle capacity
+		// -Modification started here
+		else {
+			errorMessage.add(Messages.getValue("error.update",
+					new Object[] { "Vehicle" }));
 		}
-		// Code added by Kirty on 18th Oct 2014 for artf52898: Vehicle capacity -Modification ended here
+		// Code added by Kirty on 18th Oct 2014 for artf52898: Vehicle capacity
+		// -Modification ended here
 		rollbackTest = false;
 		// vehicleMasterDTO = new VehicleMasterDTO();
 		vehicleList();
@@ -8624,8 +8637,6 @@ int affilicatedCircleId;
 	public String verifyUser() {
 		boolean test = false;
 		Connection con = null;
-		HttpServletResponse response = null;
-	
 		String email = verifyuser.getEmail();
 		String verificationcode = verifyuser.getVerificationcode();
 		try {
@@ -8634,7 +8645,7 @@ int affilicatedCircleId;
 			dto.setEmail_id(email);
 			dto.setVerificationCode(URLDecoder.decode(verificationcode));
 			test = new UserRegistrationDAO().verifyUser(con, dto);
-			
+
 		} catch (SQLException e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"
@@ -8660,14 +8671,13 @@ int affilicatedCircleId;
 	public String approverRide() {
 		boolean test = false;
 		HttpServletResponse response = null;
-
 		String rideId = approverRideDTO.getRideId();
 		String verificationCode = approverRideDTO.getVerificationCode();
 		String approve = approverRideDTO.getApprove();
 		String approverId = approverRideDTO.getApproverId();
 		String approverEmailId = approverRideDTO.getApproverEmailId();
 		Connection con = null;
-		Map<String, String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String, String>();
 		verificationCode = URLDecoder.decode(verificationCode);
 		try {
 			con = ListOfValuesManager.getLocalConnection();
@@ -9312,78 +9322,297 @@ int affilicatedCircleId;
 	 * Message Creation for Driver
 	 */
 
-	public void CronSummaryMessageToDriver() {
+	public void CronTestSummary(List<List<String>> Lists,
+			StringBuilder message, List<SummaryMessageDTO> seekerDtoTemps,
+			int temp, int currentValue) {
+		int lastvalue;
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 		MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+		if (temp == seekerDtoTemps.size()) {
+			message.append(".Please follow strict time schedules.Contact your admin for details.");
+			SummaryMessageDTO seekerDtoTemp2 = seekerDtoTemps.get(0);
+			String name1 = seekerDtoTemp2.getDrivername();
+			userMessageDTO.setMessage(Messages.getValue("sms.summary.driver",
+					new Object[] { name1, message }));
+			userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp2
+					.getDriverid()));
+			userMessageDTO.setMessageChannel("S");
+			userMessageDTO = ListOfValuesManager
+					.getInsertedMessage(userMessageDTO);
+			CreateXslSheetMessage1(Lists, seekerDtoTemp2);
+			lastvalue = 0;
+			message.setLength(0);
+			for (int j = 0; j < Lists.size(); j++) {
+				Lists.get(j).clear();
+			}
+		} else {
+			lastvalue = currentValue;
+		}
+	}
+
+	/*
+	 * This is for the <code> CronSummaryMessageToDriver</code>
+	 * In this method creating both rideSummary Message to Driver and calling
+	 * CronTestSummary 
+	 */
+
+	public void CronSummaryMessageToDriver() {
+		int currentValue;
+		int lastvalue = 0;
+		int temp = 0;
+		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+		MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+
 		List<SummaryMessageDTO> seekerDtoTemps = new ArrayList<SummaryMessageDTO>();
 		seekerDtoTemps = ListOfValuesManager.getRideSummaryMessage();
 		StringBuilder message = new StringBuilder();
+		List<String> RideID = new ArrayList<String>();
+		List<String> StartTime = new ArrayList<String>();
+		List<String> StartPoint = new ArrayList<String>();
+		List<String> EndPoint = new ArrayList<String>();
+		List<String> Name = new ArrayList<String>();
+		List<String> Contact = new ArrayList<String>();
+		List<List<String>> Lists = new ArrayList<List<String>>();
+
+		Lists.add(RideID);
+		Lists.add(StartTime);
+		Lists.add(StartPoint);
+		Lists.add(EndPoint);
+		Lists.add(Name);
+		Lists.add(Contact);
+
 		for (SummaryMessageDTO seekerDtoTemp : seekerDtoTemps) {
-			message.append(
-					"<br>Ride ID:"
-							+ seekerDtoTemp.getRideID())
-					.append(",<br>StartTime:" + seekerDtoTemp.getStart_time())
-					.append("Passenger contact details<br> Name :"
-							+ seekerDtoTemp.getFirst_name())
-					.append(",<br>MobileNo:" + seekerDtoTemp.getMobile_no())
-					.append(",<br>From:" + seekerDtoTemp.getFromAddress1())
-					.append(",<br>To:" + seekerDtoTemp.getToAddress1());
+			temp = temp + 1;
+			currentValue = seekerDtoTemp.getRideID();
+			if (lastvalue == 0) {
+				RideID.add(Integer.toString(seekerDtoTemp.getRideID()));
+				StartTime.add(seekerDtoTemp.getStart_time());
+				StartPoint.add(seekerDtoTemp.getFromAddress1());
+				EndPoint.add(seekerDtoTemp.getToAddress1());
+				Name.add(seekerDtoTemp.getFirst_name());
+				Contact.add(Long.toString(seekerDtoTemp.getMobile_no()));
+
+				message.append("Ride ID:" + seekerDtoTemp.getRideID())
+						.append(",StartTime:" + seekerDtoTemp.getStart_time())
+						.append("Passenger contact details Name :"
+								+ seekerDtoTemp.getFirst_name())
+						.append(",MobileNo:" + seekerDtoTemp.getMobile_no())
+						.append(",From:" + seekerDtoTemp.getFromAddress1())
+						.append(",To:" + seekerDtoTemp.getToAddress1());
+				lastvalue = currentValue;
+				
+				CronTestSummary(Lists, message, seekerDtoTemps, temp,
+						currentValue);
+			} else {
+				if (lastvalue == currentValue) {
+
+					RideID.add(Integer.toString(seekerDtoTemp.getRideID()));
+					StartTime.add(seekerDtoTemp.getStart_time());
+					StartPoint.add(seekerDtoTemp.getFromAddress1());
+					EndPoint.add(seekerDtoTemp.getToAddress1());
+					Name.add(seekerDtoTemp.getFirst_name());
+					Contact.add(Long.toString(seekerDtoTemp.getMobile_no()));
+
+					message.append("Ride ID:" + seekerDtoTemp.getRideID())
+							.append(",StartTime:"
+									+ seekerDtoTemp.getStart_time())
+							.append("Passenger contact details Name :"
+									+ seekerDtoTemp.getFirst_name())
+							.append(",MobileNo:" + seekerDtoTemp.getMobile_no())
+							.append(",From:" + seekerDtoTemp.getFromAddress1())
+							.append(",To:" + seekerDtoTemp.getToAddress1());
+					lastvalue = currentValue;
+					
+					CronTestSummary(Lists, message, seekerDtoTemps, temp,
+							currentValue);
+
+				} else {
+
+					message.append(".Please follow strict time schedules.Contact your admin for details.");
+					SummaryMessageDTO seekerDtoTemp2 = seekerDtoTemps.get(0);
+					String name1 = seekerDtoTemp2.getDrivername();
+					userMessageDTO.setMessage(Messages.getValue(
+							"sms.summary.driver",
+							new Object[] { name1, message }));
+					userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp2
+							.getDriverid()));
+					userMessageDTO.setMessageChannel("S");
+					userMessageDTO = ListOfValuesManager
+							.getInsertedMessage(userMessageDTO);
+					CreateXslSheetMessage1(Lists, seekerDtoTemp2);
+					message.setLength(0);
+					for (int j = 0; j < Lists.size(); j++) {
+						Lists.get(j).clear();
+					}
+
+					RideID.add(Integer.toString(seekerDtoTemp.getRideID()));
+					StartTime.add(seekerDtoTemp.getStart_time());
+					StartPoint.add(seekerDtoTemp.getFromAddress1());
+					EndPoint.add(seekerDtoTemp.getToAddress1());
+					Name.add(seekerDtoTemp.getFirst_name());
+					Contact.add(Long.toString(seekerDtoTemp.getMobile_no()));
+
+					message.append("Ride ID:" + seekerDtoTemp.getRideID())
+							.append(",StartTime:"
+									+ seekerDtoTemp.getStart_time())
+							.append("Passenger contact details Name :"
+									+ seekerDtoTemp.getFirst_name())
+							.append(",MobileNo:" + seekerDtoTemp.getMobile_no())
+							.append(",From:" + seekerDtoTemp.getFromAddress1())
+							.append(",To:" + seekerDtoTemp.getToAddress1());
+
+					lastvalue = currentValue;
+					
+					CronTestSummary(Lists, message, seekerDtoTemps, temp,
+							currentValue);
+				}
+			}
 		}
-		message	.append(".Please follow strict time schedules.Contact your admin for details.");
-			SummaryMessageDTO seekerDtoTemp=seekerDtoTemps.get(0);
-			String name=seekerDtoTemp.getDrivername();
-		userMessageDTO
-					.setMessage(Messages
-							.getValue(
-									"sms.summary.driver",
-									new Object[] {
-											name,message
-									}));
-		userMessageDTO.setToMember(seekerDtoTemp.getToMember());
-		userMessageDTO.setMessageChannel("S");
+	}
+
+	public void CreateXslSheetMessage1(List<List<String>> Lists,
+			SummaryMessageDTO seekerDtoTemp2) {
+
+		System.out.println("Lists of Values:" + Lists);
+		MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+
+		try {
+			String path = ApplicationUtil.demoDirectoryPath;
+			System.out.println("File Path is" + path);
+			int noOfFiles = 0;
+			try {
+				noOfFiles = new java.io.File(path).listFiles().length;
+			} catch (NullPointerException e) {
+
+			}
+			String fileName = "attachement_" + (noOfFiles + 1) + ".xls";
+			System.out.println("filename:" + fileName);
+
+			WritableWorkbook workbook = Workbook
+					.createWorkbook(new java.io.File(path + fileName));
+			System.out.println("workbook is :" + workbook);
+			WritableSheet writablesheet = workbook.createSheet("Sheet1", 0);
+			writablesheet.addCell(new Label(1, 0, "Ride ID"));
+			writablesheet.addCell(new Label(2, 0, "Start Time"));
+			writablesheet.addCell(new Label(3, 0, "From Address"));
+			writablesheet.addCell(new Label(4, 0, "To Address"));
+			writablesheet.addCell(new Label(5, 0, "Name"));
+			writablesheet.addCell(new Label(6, 0, "Mobile No"));
+			writablesheet.addCell(new Label(7, 0, "Log-in"));
+			writablesheet.addCell(new Label(8, 0, "Log-out"));
+			writablesheet.addCell(new Label(9, 0, "Signature"));
+			int counter = 1;
+
+			for (int i = 0; i < Lists.get(0).size(); i++) {
+
+				System.out.println("list2 is getting :" + Lists);
+				writablesheet.addCell(new Label(0, counter, counter + ""));
+
+				writablesheet
+						.addCell(new Label(1, counter, Lists.get(0).get(i)));
+				writablesheet
+						.addCell(new Label(2, counter, Lists.get(1).get(i)));
+				writablesheet
+						.addCell(new Label(3, counter, Lists.get(2).get(i)));
+				writablesheet
+						.addCell(new Label(4, counter, Lists.get(3).get(i)));
+				writablesheet
+						.addCell(new Label(5, counter, Lists.get(4).get(i)));
+				writablesheet
+						.addCell(new Label(6, counter, Lists.get(5).get(i)));
+				counter++;
+			}
+			workbook.write();
+			workbook.close();
+			Map<String, String> attachements = new HashMap<String, String>();
+			attachements.put("Ride list.xls", path + fileName);
+			userMessageDTO.setAttachements(attachements);
+
+		} catch (WriteException e) {
+			e.printStackTrace();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+
+		}
+		userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp2
+				.getDriverid()));
+		userMessageDTO.setMessageChannel("E");
 		userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
 
-		RideSeekerDTO dtoSeeker = new RideSeekerDTO();
+	}
 
-		dtoSeeker.setIsResult("Y");
+	// This is for <code>CreteXslSheetMessage</code> Method public void
+	public void GroupXslSheet() {
+
+		MessageBoardDTO userMessageDTO = new MessageBoardDTO();
+
+		List<SummaryMessageDTO> Lists = new ArrayList<SummaryMessageDTO>();
+		Lists = ListOfValuesManager.getRideSummaryMessage();
+
 		try {
-			ListOfValuesManager.changeField(dtoSeeker, con);
+			String path = ApplicationUtil.demoDirectoryPath;
+			System.out.println("File Path is" + path);
+			int noOfFiles = 0;
+			try {
+				noOfFiles = new java.io.File(path).listFiles().length;
+			} catch (NullPointerException e) {
 
-		} catch (ConfigurationException e) {
-			LoggerSingleton.getInstance().error(
-					e.getStackTrace()[0].getClassName() + "->"
-							+ e.getStackTrace()[0].getMethodName() + "() : "
-							+ e.getStackTrace()[0].getLineNumber() + " :: "
-							+ e.getMessage());
-			rollbackTest = true;
-		} finally {
-			if (rollbackTest) {
-				try {
-					con.rollback();
-				} catch (SQLException e) {
-					LoggerSingleton.getInstance().error(
-							e.getStackTrace()[0].getClassName() + "->"
-									+ e.getStackTrace()[0].getMethodName()
-									+ "() : "
-									+ e.getStackTrace()[0].getLineNumber()
-									+ " :: " + e.getMessage());
-				}
-				ListOfValuesManager.releaseConnection(con);
-			} else {
-				try {
-					con.commit();
-				} catch (SQLException e) {
-					LoggerSingleton.getInstance().error(
-							e.getStackTrace()[0].getClassName() + "->"
-									+ e.getStackTrace()[0].getMethodName()
-									+ "() : "
-									+ e.getStackTrace()[0].getLineNumber()
-									+ " :: " + e.getMessage());
-				}
-				ListOfValuesManager.releaseConnection(con);
 			}
-			rollbackTest = false;
+			String fileName = "attachement_" + (noOfFiles + 1) + ".xls";
+			System.out.println("filename:" + fileName);
+
+			WritableWorkbook workbook = Workbook
+					.createWorkbook(new java.io.File(path + fileName));
+			System.out.println("workbook is :" + workbook);
+			WritableSheet writablesheet = workbook.createSheet("Sheet1", 0);
+			writablesheet.addCell(new Label(1, 0, "Ride ID"));
+			writablesheet.addCell(new Label(2, 0, "Start Time"));
+			writablesheet.addCell(new Label(3, 0, "From Address"));
+			writablesheet.addCell(new Label(4, 0, "To Address"));
+			writablesheet.addCell(new Label(5, 0, "Name"));
+			writablesheet.addCell(new Label(6, 0, "Mobile No"));
+			writablesheet.addCell(new Label(7, 0, "Log-in"));
+			writablesheet.addCell(new Label(8, 0, "Log-out"));
+			writablesheet.addCell(new Label(9, 0, "Signature"));
+
+			int counter = 1;
+			for (SummaryMessageDTO dto : Lists) {
+
+				System.out.println("list2 is getting :" + Lists);
+				writablesheet.addCell(new Label(0, counter, counter + ""));
+
+				writablesheet.addCell(new Label(1, counter, Integer
+						.toString(dto.getRideID())));
+				writablesheet
+						.addCell(new Label(2, counter, dto.getStart_time()));
+				writablesheet.addCell(new Label(3, counter, dto
+						.getFromAddress1()));
+				writablesheet
+						.addCell(new Label(4, counter, dto.getToAddress1()));
+				writablesheet
+						.addCell(new Label(5, counter, dto.getFirst_name()));
+				writablesheet.addCell(new Label(6, counter, Long.toString(dto
+						.getMobile_no())));
+				counter++;
+			}
+			workbook.write();
+			workbook.close();
+			Map<String, String> attachements = new HashMap<String, String>();
+			attachements.put("Ride list.xls", path + fileName);
+			userMessageDTO.setAttachements(attachements);
+
+		} catch (WriteException e) {
+			e.printStackTrace();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+
 		}
+		SummaryMessageDTO dto2 = Lists.get(0);
+		userMessageDTO.setToMember(Integer.parseInt(dto2.getDriverid()));
+		userMessageDTO.setMessageChannel("E");
+		userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
 
 	}
 }

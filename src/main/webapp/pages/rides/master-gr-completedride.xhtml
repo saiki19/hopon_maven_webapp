@@ -354,7 +354,7 @@ function scroll(){
 							<h:inputTextarea value="#{userAction.poolRequestsDTO.rideGiverNotes}"></h:inputTextarea>
 							<h:outputText value=" "></h:outputText>
 							<h:commandButton styleClass="btn btn-info" value="RateRide" >
-                         		<p:ajax oncomplete="modalUpdate();updateDataTable();" listener="#{userAction.rateAndWriteNotes}" process="@form" update="@form,:form2,:form3"></p:ajax>
+                         		<p:ajax oncomplete="modalUpdate();updateDataTable();scroll();" listener="#{userAction.rateAndWriteNotes}" process="@form" update="@form,:form2,:form3"></p:ajax>
                          	</h:commandButton>
                 		</h:panelGrid> <br/>
                 	

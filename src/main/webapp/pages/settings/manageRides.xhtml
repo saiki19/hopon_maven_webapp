@@ -12,7 +12,17 @@
   <pm:page>
    <pm:view>
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
-		<style type="text/css">.circle-div ul li{background:none repeat scroll 0 0 #fff;border:1px solid #fff;border-radius:0;color:#313131;margin:auto 2px;padding:1px 0 1px 3px}.circle-div ul li:hover{background:none repeat scroll 0 0 #39f;border:1px solid #2f96b4;border-radius:0;color:#fff;margin:auto 2px;padding:1px 0 1px 3px}.circle-div ul li.ui-state-highlight{background:none repeat scroll 0 0 #5bc0de;border:1px solid #56ad56;border-radius:0;color:#fff;margin:auto 2px;padding:1px 0 1px 3px}</style>
+		<script>
+function scroll(){
+	
+	 window.scrollTo(0, 2000);
+}
+</script>
+		<style type="text/css">.circle-div ul li{
+		background:none repeat scroll 0 0 #fff;
+		border:1px solid #fff;
+		border-radius:0;
+		color:#313131;margin:auto 2px;padding:1px 0 1px 3px}.circle-div ul li:hover{background:none repeat scroll 0 0 #39f;border:1px solid #2f96b4;border-radius:0;color:#fff;margin:auto 2px;padding:1px 0 1px 3px}.circle-div ul li.ui-state-highlight{background:none repeat scroll 0 0 #5bc0de;border:1px solid #56ad56;border-radius:0;color:#fff;margin:auto 2px;padding:1px 0 1px 3px}</style>
    <h:head></h:head>
    <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -77,26 +87,43 @@
 			</h:selectOneMenu> &nbsp;
 		</div>
 		<div class="span10" style="margin-top:15px;">
-	       	<h:selectOneMenu id="affiliatedMember" value="#{userAction.manageRideFormDTO.affiliatedCircleId}" style="width: 150px;">
-           		<f:selectItem itemLabel="Affiliated Circles"></f:selectItem>
-				<f:selectItems value="#{userAction.allAffiliatedCilcleMember}"/>
-			</h:selectOneMenu> &nbsp;
-			<!-- userAction.allAffiliateCircleForTaxiUser -->
-			<h:selectOneMenu style="width :190px;" value="#{userAction.manageRideFormDTO.rideOption}" id="rideOption">
-				<f:selectItem itemLabel="Pending Rides - Open" itemValue="pending"></f:selectItem>
-				<f:selectItem itemLabel="Pending Rides - Matched" itemValue="matchedPending"></f:selectItem>
-				<f:selectItem itemLabel="Completed Rides" itemValue="completed"></f:selectItem>
-			</h:selectOneMenu> &nbsp;
-			
-           	<h:commandLink styleClass="btn btn-info" value="Search" action="#{userAction.matchRideForCompany}" />
-           	
-           	
-           	
-        </div>
-        		
+		<span>${userAction.circleTypeMethod()}</span>
 		
-        
-        
+	       	<h:selectOneMenu id="affiliatedMember" value="#{userAction.manageRideFormDTO.affiliatedCircleId}" rendered="true" style="width: 150px;">
+           		<f:selectItem itemLabel="Affiliated Circles"></f:selectItem>
+           		<c:if test="#{(userAction.circleType eq 'T')}">
+           		<f:selectItems value="#{userAction.allAffiliateCircleForTaxiUser}"/>
+           		 </c:if>
+           		 <c:if test="#{userAction.circleType eq ''}">
+           		 <f:selectItems value="#{userAction.allAffiliatedCilcleMember}"/>
+           		  </c:if>
+           		 
+			</h:selectOneMenu> &nbsp;
+		
+<!--  Code Changed by Kirty for selection Ride option with different User Id-->	
+			<span>${userAction.circleTypeMethod()}</span>
+
+			<h:panelGroup rendered="#{(userAction.circleType) eq ''}">
+				<h:selectOneMenu style="width :190px;" value="#{userAction.manageRideFormDTO.rideOption}" id="rideOption">
+			
+					<f:selectItem itemLabel="Pending Rides - Open" itemValue="pending"></f:selectItem>
+					<f:selectItem itemLabel="Pending Rides - Matched" itemValue="matchedPending"></f:selectItem>
+					<f:selectItem itemLabel="Completed Rides" itemValue="completed"></f:selectItem> 
+				</h:selectOneMenu>&nbps;
+			</h:panelGroup>
+			<h:panelGroup rendered="#{(userAction.circleType) eq 'T'}">
+				<h:selectOneMenu style="width :190px;" value="#{userAction.manageRideFormDTO.rideOption}" id="rideOption2">
+					<f:selectItem itemLabel="Pending Rides - Matched" itemValue="matchedPending"></f:selectItem>
+					<f:selectItem itemLabel="Completed Rides" itemValue="completed"></f:selectItem> 
+			
+				</h:selectOneMenu>&nbps;&nbps;&nbps;
+			</h:panelGroup>
+			
+<!--  Code Changed by Kirty for selection Ride option with different User Id-->	
+   
+           	<h:commandLink styleClass="btn btn-info" value="Search" action="#{userAction.matchRideForCompany}" />
+         </div>
+               
         </h:form>
         
          
@@ -129,7 +156,8 @@
                <c:forEach items="#{userAction.manageRideDTOs}" var="ride">
                
                <tr>
-               	 <pm:content rendered="#{userAction.manageRideDTOs[0].rideOption ne 'completed'}"><td> <h:selectBooleanCheckbox onchange="updateRideData();"/> </td></pm:content>
+               	 <pm:content rendered="#{userAction.manageRideDTOs[0].rideOption ne 'completed'}"><td> 
+               	 <h:selectBooleanCheckbox onchange="updateRideData();"/> </td></pm:content>
         			<td> 
         			<pm:content rendered="#{ride.rideOption eq 'pending'}"><h:outputText value="#{ride.requestId}"></h:outputText></pm:content>
         			<pm:content rendered="#{ride.rideOption eq 'matchedPending'}">

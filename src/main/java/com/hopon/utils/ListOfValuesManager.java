@@ -3489,10 +3489,10 @@ public class ListOfValuesManager {
 			releaseConnection(con);
 		}
 	}
-	/*	
+/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
 		public static CircleDTO getCircleType(
 				int userId){
-			System.out.println("Reaching here in ListOdValueManager === userId"+userId);
+			
 			Connection con = getLocalConnection();
 			CircleDTO dto = new CircleDTO();
 			try {
@@ -3505,8 +3505,9 @@ public class ListOfValuesManager {
 			{
 				ListOfValuesManager.releaseConnection(con);
 			}
-			retur*/
-
+			return dto;
+		}
+/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
 //contactUs method 
 	public static boolean getContactInfo(Connection con,ContactusDTO contactusDTO) {
 		 con = getLocalConnection();
@@ -3528,7 +3529,7 @@ public class ListOfValuesManager {
 //SummaryMessage Method
 	public static List<SummaryMessageDTO> getRideSummaryMessage() {
 		Connection con = getLocalConnection();
-		List<SummaryMessageDTO> dto = new ArrayList<>();
+		List<SummaryMessageDTO> dto = new ArrayList<SummaryMessageDTO>();
 		try {
 			dto = getTripService().loadRideSummaryMessage();
 		} catch (ConfigurationException e) {
@@ -3542,4 +3543,5 @@ public class ListOfValuesManager {
 		}
 		return dto;
 	}
+	
 }

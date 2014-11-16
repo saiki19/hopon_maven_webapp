@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hopon.dto.RideManagementDTO;
 import com.hopon.dto.SummaryMessageDTO;
-import com.hopon.utils.ApplicationUtil;
 import com.hopon.utils.ListOfValuesManager;
 import com.hopon.utils.QueryExecuter;
 
@@ -52,7 +50,7 @@ public class RideSummaryMessageToDriverDAO {
 						+ "\nRideId:" + rs.getInt(10) + "\nVehicleId:"
 						+ rs.getInt(11));
 				messageList.add(dto);
-				}
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();

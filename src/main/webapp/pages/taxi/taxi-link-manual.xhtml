@@ -13,7 +13,12 @@
   <pm:page>
    <pm:view>
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
+	<script>
+function scroll(){
 	
+	 window.scrollTo(0, 2000);
+}
+</script>
 		
 		<script type="text/javascript">$(document).ready(function(){if($("#ui-table-1 tr th:first").length>0){$("#ui-table-1 tr th:first").attr("class","").html("")}});function linkingTest(){var b=[];$("#form select[id^=form\\:member]").each(function(){var d=$(this).parent().parent().index()+1;var c=$(this).find(":selected").val();if($(this).parent().parent().find("td:first").find(".ui-chkbox-box").hasClass("ui-state-active")){b[d]=c}});if(b.length==0){alert("select a ride to link");return false}for(var a in b){if(b[a]==parseInt(b[a])){if(0>parseInt(b[a])){alert("Select vehicle before linking.");return false}}else{alert("Select vehicle before linking.");return false}}return true}function xhr2(){var a=[];$("#form select[id^=form\\:member]").each(function(){var d=$(this).parent().parent().index()+1;var c=$(this).find(":selected").val();var b=$(this).parent().parent().find("td:last").find("input:first").val();if(parseInt(c)>0){if(a[c]==undefined||b>parseInt(a[c])){a[c]=b}}});$("#form select[id^=form\\:member]").each(function(){var d=$(this).parent().parent().index()+1;var c=$(this).find(":selected").val();var b=$(this).parent().parent().find("td:last").find("input:first").val();if(a[c]>0){$(this).parent().parent().find("td:last").find("span").html(a[c]);$(this).parent().parent().find("td:last").find("input:nth-child(2)").val(a[c]);a[c]=a[c]-1}else{if(a[c]==0){$(this).parent().parent().find("td:last").find("span").html("Seat Full");$(this).parent().parent().find("td:last").find("input:nth-child(2)").val(0);$(this).parent().parent().find("td:first").find("input[type=checkbox]").attr("disabled",true);$(this).parent().parent().find("td:first").find("span").attr("class","")}}})}function xr1(){var a=1000;var b=0;$("#form select[id^=form\\:member]").each(function(){var e=$(this).parent().parent().index()+1;var d=$(this).find(":selected").val();var c=$(this).parent().parent().find("td:last").find("input").val();if(d==($("#link_count_value").val())){b++;if(a>c){a=c}}});$("#form select[id^=form\\:member]").each(function(){var e=$(this).parent().parent().index()+1;var d=$(this).find(":selected").val();var c=$(this).parent().parent().find("td:last").find("input").val();if(e==($("#link_count_number").val())){if(d==($("#link_count_value").val())){if(b>1){$(this).parent().parent().find("td:last").find("input").val(a-1);$(this).parent().parent().find("td:last").find("span").html(a-1);if(1>$(this).parent().parent().find("td:last").find("input").val()){$(this).parent().parent().find("td:first").find("input[type=checkbox]").attr("disabled",true)}}}}})};</script>
 		
@@ -142,7 +147,7 @@ $('#x1').attr('class', 'modal-backdrop fade in');
 $('#x1, a.close').bind('click', function(){ $('#x1').attr('class', ''); $('#modalPanel-2').hide(); });
 $('#modalid2').find('a').hide();
 }
-$('#ui-table-1 tr th:first').attr('class', '').html('');updateDataTable1();" listener="#{userAction.processValue}" process="@this" update="@form"/>
+$('#ui-table-1 tr th:first').attr('class', '').html('');updateDataTable1();scroll();" listener="#{userAction.processValue}" process="@this" update="@form"/>
                <f:param value="#{row}" name="row"></f:param>
                <f:param name="startDate" value="#{tripList.startDate}"></f:param>
                </h:selectOneMenu>

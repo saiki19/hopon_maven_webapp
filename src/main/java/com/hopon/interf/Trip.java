@@ -166,7 +166,10 @@ public interface Trip {
 	//for ContactUs Method
 	void contactUs(Connection con, ContactusDTO dto) throws ConfigurationException;
 	List<SummaryMessageDTO>  loadRideSummaryMessage() throws ConfigurationException;
-
+/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
+	CircleDTO getCircleType(Connection con,
+			int userId) throws ConfigurationException;
+/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
 	
 
 	

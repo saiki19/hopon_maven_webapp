@@ -149,11 +149,18 @@ public class HPBaseAction {
 	protected List<PaymentDTO> duePaymentList = new ArrayList<PaymentDTO>();
 	public boolean userCirclePaymentPending = false;
 	protected List<PaymentPlanDTO> userPaymentPlanList = new ArrayList<PaymentPlanDTO>();
+	/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
+	  protected String circleType;
+	  
+	  public String getCircleType() {
+		return circleType;
+	}
 
-	
-	
-	
-	
+	public void setCircleType(String circleType) {
+		this.circleType = circleType;
+	}
+	/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
+
 	protected List<SelectItem> allCompany;
 	protected List<SelectItem> companySector;
 	protected List<SelectItem> allCircleOption;

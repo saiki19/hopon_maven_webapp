@@ -292,13 +292,16 @@ public class TripImpl implements Trip {
 		// TODO Auto-generated method stub
 
 		RideSeekerDAO rideSeekerDAO = DAOProvider.getRideSeekerDAO();
-		System.out.println("In TripImplementation class object:"+rideSeekerDAO);
+		System.out.println("In TripImplementation class object:"
+				+ rideSeekerDAO);
 		try {
 			if (category.equals("all")) {
 
 				rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
 						rideSeekerDTO);
-				System.out.println("---In tripImplement get the data from DAO Method-------"+rideSeekerDAO);
+				System.out
+						.println("---In tripImplement get the data from DAO Method-------"
+								+ rideSeekerDAO);
 			} else if (category.equals("findByDTO")) {
 				rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
 						rideSeekerDTO);
@@ -371,7 +374,6 @@ public class TripImpl implements Trip {
 		}
 		return frequencyDTO;
 	}
-
 
 	@Override
 	public List<RideManagementDTO> loadAllRidemanagement(Connection con,
@@ -600,7 +602,6 @@ public class TripImpl implements Trip {
 		}
 		return dto;
 	}
-		
 
 	@Override
 	public List<FavoritePlacesDTO> loadAllPlaces(Connection con, String userName)
@@ -999,8 +1000,6 @@ public class TripImpl implements Trip {
 		}
 		return rideSeekerDTO;
 	}
-	
-	
 
 	@Override
 	public RideSeekerDTO changeField(Connection con, RideSeekerDTO rideSeekerDTO)
@@ -1436,10 +1435,14 @@ public class TripImpl implements Trip {
 		// TODO Auto-generated method stub
 		MessageBoardDTO message = null;
 		MessageBoardDAO dao = DAOProvider.getMessageBoardDAO();
-		System.out.println("Inside the TripImpleMent loadInsertedMessage method:"+dao);
+		System.out
+				.println("Inside the TripImpleMent loadInsertedMessage method:"
+						+ dao);
 		try {
 			message = dao.insertMessage(con, messagedto);
-			System.out.println("Getting From The DAO loadInsertedMessage method:"+message);
+			System.out
+					.println("Getting From The DAO loadInsertedMessage method:"
+							+ message);
 		} catch (SQLException e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"
@@ -2915,41 +2918,73 @@ public class TripImpl implements Trip {
 		}
 		return dtos;
 	}
+
 	@Override
-	public PaymentRequestDTO addPaymentRequestEntry(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+	public PaymentRequestDTO addPaymentRequestEntry(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException {
 		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
 		try {
 			dto = dao.addPaymentRequestEntry(con, dto);
-		} catch(SQLException e) {
-			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
 		}
 		return dto;
 	}
+
 	@Override
-	public void updatePaymentRequestEntryStatusById(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+	public void updatePaymentRequestEntryStatusById(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException {
 		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
 		try {
 			dao.updatePaymentRequestEntryStatusById(con, dto);
-		} catch(SQLException e) {
-			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
 		}
 	}
+
 	@Override
-	public void updatePaymentRequestEntryStatusByOrderId(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+	public void updatePaymentRequestEntryStatusByOrderId(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException {
 		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
 		try {
 			dao.updatePaymentRequestEntryStatusByOrderId(con, dto);
-		} catch(SQLException e) {
-			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
 		}
 	}
+
 	@Override
-	public PaymentRequestDTO fetchPaymentRequestByOrderId(Connection con, PaymentRequestDTO dto) throws ConfigurationException {
+	public PaymentRequestDTO fetchPaymentRequestByOrderId(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException {
 		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
 		try {
 			dto = dao.fetchPaymentRequestByOrderId(con, dto);
-		} catch(SQLException e) {
-			LoggerSingleton.getInstance().error(e.getStackTrace()[0].getClassName()+"->"+e.getStackTrace()[0].getMethodName()+"() : "+e.getStackTrace()[0].getLineNumber()+" :: "+"Problem in db operation. "+e.getMessage()); throw new ConfigurationException("Exception in retriving providers",e);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
 		}
 		return dto;
 	}
@@ -3047,7 +3082,6 @@ public class TripImpl implements Trip {
 		}
 	}
 
-
 	@Override
 	public void contactUs(Connection con, ContactusDTO dto)
 			throws ConfigurationException {
@@ -3065,18 +3099,17 @@ public class TripImpl implements Trip {
 		}
 
 	}
+
 	@Override
 	public List<SummaryMessageDTO> loadRideSummaryMessage()
 			throws ConfigurationException {
-		RideSummaryMessageToDriverDAO dao=DAOProvider.getMessageToDriverDAO();
-		List<SummaryMessageDTO> dto=new ArrayList<>();
-		
-			dto=dao.rideSummaryMessage();
-			System.out.println("Inside the TripImpleMent is:"+dto);
-			
-		
+		RideSummaryMessageToDriverDAO dao = DAOProvider.getMessageToDriverDAO();
+		List<SummaryMessageDTO> dto = new ArrayList<SummaryMessageDTO>();
+
+		dto = dao.rideSummaryMessage();
+
 		return dto;
-	
+
 	}
 
 	@Override
@@ -3086,5 +3119,31 @@ public class TripImpl implements Trip {
 		// TODO Auto-generated method stub
 		return null;
 	}
-}
 
+	/*
+	 * <!-- Code Changed by Kirty for selection Ride option with different User
+	 * Id-->
+	 */
+	@Override
+	public CircleDTO getCircleType(final Connection con, final int userId)
+			throws ConfigurationException {
+		CircleDTO dto = new CircleDTO();
+		final CircleDAO dao = new CircleDAO();
+		try {
+			dto = dao.getCircleType(con, userId);
+		} catch (final SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dto;
+	}
+	/*
+	 * <!-- Code Changed by Kirty for selection Ride option with different User
+	 * Id-->
+	 */
+}

@@ -14,43 +14,41 @@
 			<script src="../resources/js/jquery.min.js"></script>
 			<h:head>
 				<script>
-					function get(){ 
-								var url = $(location).attr('href');
-								var spliturl=url.split("?")[1];
-								var emailstring=spliturl.split("&#038;")[0].split("=")[1];
-								var verificationcode=spliturl.split("&#038;")[1].split("=")[1];
-							/* 	var sessionItem=emailstring+":"+verificationcode; */
-								$("#inputform\\:email").val(emailstring);
-								$("#inputform\\:verificationcode").val(verificationcode);
-								$("#inputform\\:btn").trigger('click');
-							
-				 	} 
+					function get() {
+						var url = $(location).attr('href');
+						var spliturl = url.split("?")[1];
+						var emailstring = spliturl.split("&#038;")[0]
+								.split("=")[1];
+						var verificationcode = spliturl.split("&#038;")[1]
+								.split("=")[1];
+
+						$("#inputform\\:email").val(emailstring);
+						$("#inputform\\:verificationcode")
+								.val(verificationcode);
+						$("#inputform\\:btn").trigger('click');
+					}
 				</script>
 			</h:head>
 			<h:body onload="return get();">
 				<ui:include src="../pages/common/headerContent.xhtml"></ui:include>
-				<!-- <c:set value=return get(); var="email" scope="session"></c:set> -->
-				
+
 				<div class="content">
 					<div class="container">
-					
 						<h:form id="inputform">
-							<h:commandButton action="#{userAction.verifyUser}" id="btn" style="background:#fff;border:none;" ></h:commandButton>
-							
-						<h:inputHidden id="email" value="#{userAction.verifyuser.email}"></h:inputHidden>
-						<h:inputHidden id="verificationcode" value="#{userAction.verifyuser.verificationcode}"></h:inputHidden>
-						</h:form>
-						
-						<center> <h3 class="success">Verifying....</h3>
-						
-								
-						
-						</center>
+							<h:commandButton action="#{userAction.verifyUser}" id="btn"
+								style="background:#fff;border:none;"></h:commandButton>
 
+							<h:inputHidden id="email" value="#{userAction.verifyuser.email}"></h:inputHidden>
+							<h:inputHidden id="verificationcode"
+								value="#{userAction.verifyuser.verificationcode}"></h:inputHidden>
+						</h:form>
+
+						<center>
+							<h3 class="success">Verifying....</h3>
+						</center>
 					</div>
 				</div>
 				<ui:include src="../pages/common/footer-content.xhtml"></ui:include>
-
 			</h:body>
 		</pm:view>
 	</pm:page>

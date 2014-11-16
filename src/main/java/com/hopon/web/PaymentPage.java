@@ -46,10 +46,12 @@ public class PaymentPage extends HttpServlet {
 				amountDue += dto.getAmount();
 			}
 			
-			if(amountDue > 0) {
-				com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper.getCheckSumServiceHelper();
-				
-				ResourceBundle bundle = ResourceBundle.getBundle("resource.paytm");
+
+		      if (amountDue > 0) {
+		        com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper.getCheckSumServiceHelper();
+		        
+		        ResourceBundle bundle = ResourceBundle.getBundle("resource.paytm");
+		        	
 				
 				TreeMap<String,String> parameters = new TreeMap<String,String>();
 				String merchantKey = bundle.getString("paytm.merchantKey"); //Key provided by Paytm

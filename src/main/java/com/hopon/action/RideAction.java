@@ -2,7 +2,7 @@ package com.hopon.action;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.channels.SeekableByteChannel;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DateFormat;

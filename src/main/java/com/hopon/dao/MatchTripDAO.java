@@ -431,97 +431,218 @@ public class MatchTripDAO {
 		
 		return rideList;
 	}
-	public List<ManageRideDTO> findPendingMatchedManageRide(final Connection con, ManageRideFormDTO manageRideFormDTO) throws SQLException {
-		final List<ManageRideDTO>  rideList = new ArrayList<ManageRideDTO>();
-		StringBuilder query = new StringBuilder();
-		
-		String sql1 = "select ride_seeker_details.seeker_id, ride_seeker_details.start_point,ride_seeker_details.destination_point, ride_seeker_details.start_tw_early,ride_seeker_details.user_id,users.first_name, users.gender, ratingandnotes.ridegiverrating, pool_requests.ride_id from ride_seeker_details left outer join users ON ride_seeker_details.user_id = users.id LEFT OUTER JOIN pool_requests ON pool_requests.rideseeker_id = ride_seeker_details.seeker_id left outer join ratingandnotes ON pool_requests.id = ratingandnotes.poolrequestid WHERE ride_seeker_details.isSharedTaxi = '0' AND ride_seeker_details.is_result = 'Y' AND ride_seeker_details.status = 'A' AND ride_seeker_details.start_tw_early > '" +ApplicationUtil.currentTimeStamp()+"' ";
-		String sql2 = "select pool_requests.ride_id, rides_management.start_point, rides_management.destination_point, rides_management.start_time, rides_management.user_id, users.first_name, users.gender, ratingandnotes.ridetakerrating from pool_requests left outer join rides_management ON pool_requests.ride_id = rides_management.ride_id left outer join users ON rides_management.user_id = users.id left outer join ratingandnotes ON pool_requests.id = ratingandnotes.poolrequestid  where rides_management.status ='A' AND rides_management.start_time > '" +ApplicationUtil.currentTimeStamp()+"' ";
+	 /*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
+	  String circletype;
+	  public List<ManageRideDTO> findPendingMatchedManageRide(final Connection con, ManageRideFormDTO manageRideFormDTO) throws SQLException {
+	    final List<ManageRideDTO> rideList = new ArrayList<ManageRideDTO>();
+	    StringBuilder query = new StringBuilder();
+	    
+	    String sql1 = "select ride_seeker_details.seeker_id, ride_seeker_details.start_point,ride_seeker_details.destination_point,"
+	    		+ " ride_seeker_details.start_tw_early,ride_seeker_details.user_id,users.first_name, users.gender,"
+	    		+ " ratingandnotes.ridegiverrating,"
+	    		+ " pool_requests.ride_id from ride_seeker_details left outer join users ON ride_seeker_details.user_id = users.id "
+	    		+ "LEFT OUTER JOIN pool_requests ON pool_requests.rideseeker_id = ride_seeker_details.seeker_id"
+	    		+ " left outer join ratingandnotes "
+	    		+ "ON pool_requests.id = ratingandnotes.poolrequestid WHERE ride_seeker_details.isSharedTaxi = '0'"
+	    		+ " AND ride_seeker_details.is_result = 'Y' "
+	    		+ "AND ride_seeker_details.status = 'A' AND ride_seeker_details.start_tw_early > '"+ ApplicationUtil.currentTimeStamp() + "' ";
+	    String sql2 = "select pool_requests.ride_id, rides_management.start_point, rides_management.destination_point, rides_management.start_time, "
+	    		+ "rides_management.user_id, users.first_name, users.gender, ratingandnotes.ridetakerrating from pool_requests "
+	    		+ "left outer join rides_management ON pool_requests.ride_id = rides_management.ride_id "
+	    		+ "left outer join users ON rides_management.user_id = users.id left outer join ratingandnotes ON pool_requests.id = ratingandnotes.poolrequestid  "
+	    		+ "where rides_management.status ='A' AND rides_management.start_time > '"+ ApplicationUtil.currentTimeStamp() + "' ";
+	    
+	    if (manageRideFormDTO.getFrom() != null && !manageRideFormDTO.getFrom().trim().equals("")) {
+	      sql1 += " AND ride_seeker_details.start_point like '%" + manageRideFormDTO.getFrom().trim() + "%' ";
+	      sql2 += " AND rides_management.start_point like '%" + manageRideFormDTO.getFrom().trim() + "%' ";
+	    }
+	    if (manageRideFormDTO.getTo() != null && !manageRideFormDTO.getTo().trim().equals("")) {
+	      sql1 += " AND ride_seeker_details.destination_point like '%" + manageRideFormDTO.getTo().trim() + "%' ";
+	      sql2 += " AND rides_management.destination_point like '%" + manageRideFormDTO.getTo().trim() + "%' ";
+	    }
+	    if (manageRideFormDTO.getRideDate() != null && !manageRideFormDTO.getRideDate().equals("")) {
+	      sql1 += " AND DATE(ride_seeker_details.start_tw_early) = '" + manageRideFormDTO.getRideDate() + "' ";
+	      sql2 += " AND DATE(rides_management.start_time) = '" + manageRideFormDTO.getRideDate() + "' ";
+	    }
+	    
+	    
+	    query.append("select circle_type from circles where Circle_Id ="+ manageRideFormDTO.getMyCircleId());
+	    PreparedStatement pstmt1 = con.prepareStatement(query.toString());
+	    ResultSet rs1 = QueryExecuter.getResultSet(pstmt1, query.toString());
+	    
+	    while (rs1.next()) 
+	    circletype = rs1.getString(1);
+	    if(circletype.equals("T"))
+	    {
+	    	if (manageRideFormDTO.getMyCircleId() > 0) 
+	    		{
 
-		if(manageRideFormDTO.getFrom() != null && !manageRideFormDTO.getFrom().trim().equals("")) {
-			sql1 += " AND ride_seeker_details.start_point like '%"+ manageRideFormDTO.getFrom().trim() +"%' ";
-			sql2 += " AND rides_management.start_point like '%"+ manageRideFormDTO.getFrom().trim() +"%' ";
-		}
-		if(manageRideFormDTO.getTo() != null && !manageRideFormDTO.getTo().trim().equals("")) {
-			sql1 += " AND ride_seeker_details.destination_point like '%"+ manageRideFormDTO.getTo().trim() +"%' ";
-			sql2 += " AND rides_management.destination_point like '%"+ manageRideFormDTO.getTo().trim() +"%' ";
-		}
-		if(manageRideFormDTO.getRideDate() != null && !manageRideFormDTO.getRideDate().equals("")) {
-			sql1 += " AND DATE(ride_seeker_details.start_tw_early) = '"+ manageRideFormDTO.getRideDate() +"' ";
-			sql2 += " AND DATE(rides_management.start_time) = '"+ manageRideFormDTO.getRideDate() +"' ";
-		}
-		if(manageRideFormDTO.getMyCircleId() > 0 ) {
-			sql1 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner where circle_members.CircleId = circle_owner.CircleId AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId = "+manageRideFormDTO.getMyCircleId()+") ";
-			sql2 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner where circle_members.CircleId = circle_owner.CircleId AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId = "+manageRideFormDTO.getMyCircleId()+") ";
-		}
-		if(manageRideFormDTO.getAffiliatedCircleId() > 0) {
-			sql1 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id WHERE circleaffiliations.AffilicatedCircle = "+ manageRideFormDTO.getAffiliatedCircleId() +") ";
-			sql2 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id WHERE circleaffiliations.AffilicatedCircle = "+ manageRideFormDTO.getAffiliatedCircleId() +") ";
-		}
-		if(manageRideFormDTO.getUserId() > 0) {
-			sql1 += " AND users.id = " + manageRideFormDTO.getUserId() + " ";
-			sql2 += " AND users.id = " + manageRideFormDTO.getUserId() + " ";
-		}
-		//sql1 += " FOR UPDATE";
-	
-		sql1 += " ORDER BY ride_seeker_details.start_tw_early DESC ";
-		sql2 += " ORDER BY rides_management.start_time DESC ";
-		
-		query.append(sql1);
-		PreparedStatement pstmt = con.prepareStatement(query.toString());
-		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
-		while(rs.next()) {
-			ManageRideDTO dto = new ManageRideDTO();
-			dto.setRequestId(rs.getInt(1));
-			dto.setRideId(rs.getInt(9));
-			dto.setFrom(rs.getString(2));
-			dto.setTo(rs.getString(3));
-			dto.setRideTime(rs.getString(4));
-			SimpleDateFormat formatter = new SimpleDateFormat(ApplicationUtil.datePattern3);
-			SimpleDateFormat formatter1 = new SimpleDateFormat(ApplicationUtil.datePattern9);
-			try {
-				Date date = formatter.parse(rs.getString(4));
-				dto.setRideTime(formatter1.format(date));
-			}
-			catch (ParseException e) { }
-			dto.setName(rs.getString(6));
-			dto.setGender(rs.getString(7));
-			dto.setRideRating(rs.getString(8));
-			dto.setRole("taker");
-			dto.setRideOption("matchedPending");
-			rideList.add(dto);
-		}
-		rs.close();
-		pstmt.close();
-		
-		query = new StringBuilder();
-		query.append(sql2);
-		pstmt = con.prepareStatement(query.toString());
-		rs = QueryExecuter.getResultSet(pstmt, query.toString());
-		while(rs.next()) {
-			ManageRideDTO dto = new ManageRideDTO();
-			dto.setRideId(rs.getInt(1));
-			dto.setFrom(rs.getString(2));
-			dto.setTo(rs.getString(3));
-			dto.setRideTime(rs.getString(4));
-			SimpleDateFormat formatter = new SimpleDateFormat(ApplicationUtil.datePattern3);
-			SimpleDateFormat formatter1 = new SimpleDateFormat(ApplicationUtil.datePattern9);
-			try {
-				Date date = formatter.parse(rs.getString(4));
-				dto.setRideTime(formatter1.format(date));
-			}
-			catch (ParseException e) { }
-			dto.setName(rs.getString(6));
-			dto.setGender(rs.getString(7));
-			dto.setRideRating(rs.getString(8));
-			dto.setRole("giver");
-			dto.setRideOption("matchedPending");
-			rideList.add(dto);
-		}
-		rs.close();
-		pstmt.close();
-		return rideList;
-	}
+		    		if ( manageRideFormDTO.getAffiliatedCircleId() > 0)
+			 	 	{
+				 		
+				       sql1 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner "
+				       		+ "where circle_members.CircleId = circle_owner.CircleId "
+				       		+ "AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId  = "
+			 				+  manageRideFormDTO.getAffiliatedCircleId() +") ";
+				     	    
+				       sql2 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner "
+				       		+ "where circle_members.CircleId = circle_owner.CircleId "
+				       		+ "AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId = "
+			 				+  manageRideFormDTO.getAffiliatedCircleId() +") ";
+		    		}
+		    		else if ( manageRideFormDTO.getAffiliatedCircleId() <= 0)
+		    		{
+		    			
+		 		       sql1 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner "
+		 		       		+ "where circle_members.CircleId = circle_owner.CircleId "
+		 		       		+ "AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId  IN ("
+		     		      		+ "select circleaffiliations.CircleId from circleaffiliations where  circleaffiliations.AffilicatedCircle = "
+		     		          		 + manageRideFormDTO.getMyCircleId()+"))";
+		 		     	    
+		 		       sql2 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner "
+		 		       		+ "where circle_members.CircleId = circle_owner.CircleId "
+		 		       		+ "AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId  IN ("
+		     		      		+ "select circleaffiliations.CircleId from circleaffiliations where  circleaffiliations.AffilicatedCircle = "
+		     		          		 + manageRideFormDTO.getMyCircleId()+"))";
+		    			
+		    		}
+	    		}
+		 	 /*if ( manageRideFormDTO.getAffiliatedCircleId() > 0)
+		 	 	{
+		 			System.out.println("sql1  ======manageRideFormDTO.getAffiliatedCircleId() > 0==in if part========"+manageRideFormDTO.getAffiliatedCircleId());
+		 		  sql1 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+		 				+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+		 				+ "WHERE circleaffiliations.AffilicatedCircle = "  + manageRideFormDTO.getAffiliatedCircleId() + ") ";
+		 		  sql2 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+		 				+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+		 				+ "WHERE circleaffiliations.AffilicatedCircle = "
+		 				+  manageRideFormDTO.getAffiliatedCircleId() +") ";
+		 	 	}
+		 	 else if ( manageRideFormDTO.getAffiliatedCircleId() <= 0)
+		 	 	{
+		 		System.out.println("sql1  ======manageRideFormDTO.getAffiliatedCircleId() <= 0==in else part========");
+		 		   sql1 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+		 				+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+		 				+ "WHERE circleaffiliations.AffilicatedCircle = "
+		 								 + manageRideFormDTO.getMyCircleId()+")";
+		 		   sql2 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+		 				+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+		 				+ "WHERE circleaffiliations.AffilicatedCircle  = "
+		 								 + manageRideFormDTO.getMyCircleId()+")";
+		 			   
+		 	 	}*/
+	    }
+	    else{
+	    	
+	    	 if (manageRideFormDTO.getMyCircleId() > 0)
+		 		 {
+	 			
+		 			sql1 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner "
+		     		      		+ "where circle_members.CircleId = circle_owner.CircleId "
+		     		      		+ "AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId = "
+		     		      		+ manageRideFormDTO.getMyCircleId() + ") ";
+		     		    	    
+		     		 sql2 += " AND users.id IN (select circle_members.MemberId from circle_members, circle_owner "
+		     		      		+ "where circle_members.CircleId = circle_owner.CircleId "
+		     		      		+ "AND circle_owner.Status = '1' AND circle_members.Status = '1' AND circle_owner.CircleId = "
+		     		      		+ manageRideFormDTO.getMyCircleId() + ") ";
+		     	 }	
+	 		 if ( manageRideFormDTO.getAffiliatedCircleId() > 0) 
+	 			{
+	 			 	
+	     		 sql1 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+	     		      		+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+	     		      		+ "WHERE circleaffiliations.AffilicatedCircle = " 
+	     		      		+ manageRideFormDTO.getAffiliatedCircleId() + ") ";
+	     		 sql2 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+	     		      		+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+	     		      		+ "WHERE circleaffiliations.AffilicatedCircle = "
+	     		      		+ manageRideFormDTO.getAffiliatedCircleId() + ") ";
+	     		}
+	 		else if ( manageRideFormDTO.getAffiliatedCircleId() <= 0) 
+	 			{
+	 			
+	 				sql1 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+		      		      		+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+		      		      		+ "WHERE circleaffiliations.AffilicatedCircle IN (select circleaffiliations.AffilicatedCircle from circleaffiliations "
+		      		      		+ "WHERE circleaffiliations.CircleId ="
+		      		      		+ manageRideFormDTO.getMyCircleId() + ")) ";
+		      		 sql2 += " AND users.id IN (select circles.CircleOwner_Member_Id_P from circleaffiliations "
+		      		      		+ "LEFT outer join circles on circleaffiliations.CircleId = circles.Circle_Id "
+		      		      		+ "WHERE circleaffiliations.AffilicatedCircle IN (select circleaffiliations.AffilicatedCircle from circleaffiliations "
+		      		      		+ "WHERE circleaffiliations.CircleId ="
+		      		      		+ manageRideFormDTO.getMyCircleId() + ")) ";
+		      		 	   
+	 			}
+	    }
+	      if (manageRideFormDTO.getUserId() > 0) {
+	        sql1 += " AND users.id = " + manageRideFormDTO.getUserId() + " ";
+	        sql2 += " AND users.id = " + manageRideFormDTO.getUserId() + " ";
+	      }
+	    // sql1 += " FOR UPDATE";
+	    
+	    sql1 += " ORDER BY ride_seeker_details.start_tw_early DESC ";
+	    sql2 += " ORDER BY rides_management.start_time DESC ";
+	    query = new StringBuilder();
+	    query.append(sql1);
+	    System.out.println("query sql1 = "+ sql1);
+	    PreparedStatement pstmt = con.prepareStatement(query.toString());
+	    ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
+	    while (rs.next()) {
+	      ManageRideDTO dto = new ManageRideDTO();
+	      dto.setRequestId(rs.getInt(1));
+	      dto.setRideId(rs.getInt(9));
+	      dto.setFrom(rs.getString(2));
+	      dto.setTo(rs.getString(3));
+	      dto.setRideTime(rs.getString(4));
+	      SimpleDateFormat formatter = new SimpleDateFormat(ApplicationUtil.datePattern3);
+	      SimpleDateFormat formatter1 = new SimpleDateFormat(ApplicationUtil.datePattern9);
+	      try {
+	        Date date = formatter.parse(rs.getString(4));
+	        dto.setRideTime(formatter1.format(date));
+	      } catch (ParseException e) {
+	      }
+	      dto.setName(rs.getString(6));
+	      dto.setGender(rs.getString(7));
+	      dto.setRideRating(rs.getString(8));
+	      dto.setRole("taker");
+	      dto.setRideOption("matchedPending");
+	      rideList.add(dto);
+	    }
+	    rs.close();
+	    pstmt.close();
+	    
+	    query = new StringBuilder();
+	    query.append(sql2);
+	    System.out.println("query sql2 = "+ sql2);
+	    pstmt = con.prepareStatement(query.toString());
+	    rs = QueryExecuter.getResultSet(pstmt, query.toString());
+	    while (rs.next()) {
+	      ManageRideDTO dto = new ManageRideDTO();
+	      dto.setRideId(rs.getInt(1));
+	      dto.setFrom(rs.getString(2));
+	      dto.setTo(rs.getString(3));
+	      dto.setRideTime(rs.getString(4));
+	      SimpleDateFormat formatter = new SimpleDateFormat(ApplicationUtil.datePattern3);
+	      SimpleDateFormat formatter1 = new SimpleDateFormat(ApplicationUtil.datePattern9);
+	      try {
+	        Date date = formatter.parse(rs.getString(4));
+	        dto.setRideTime(formatter1.format(date));
+	      } catch (ParseException e) {
+	      }
+	      dto.setName(rs.getString(6));
+	      dto.setGender(rs.getString(7));
+	      dto.setRideRating(rs.getString(8));
+	      dto.setRole("giver");
+	      dto.setRideOption("matchedPending");
+	      rideList.add(dto);
+	    }
+	    rs.close();
+	    pstmt.close();
+	    return rideList;
+	  }
+	  /*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/ 
+
 
 	public List<MatchedTripDTO> findMatchTripByGroupId(final Connection con , final List<String> groupId) throws SQLException {
 		final List<MatchedTripDTO>  tripList = new ArrayList<MatchedTripDTO>();
