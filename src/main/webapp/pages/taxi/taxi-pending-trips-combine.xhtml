@@ -8,6 +8,7 @@
     xmlns:pm="http://primefaces.org/mobile"      
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
     contentType="text/html" renderKitId="PRIMEFACES_MOBILE">
+  
   <f:view>    
   <pm:page>
    <pm:view>
@@ -18,11 +19,16 @@ function scroll(){
 	 window.scrollTo(0, 0);
 }
 
+ function tablehidedisplay(){
+	$("#modalPanel-3").show();
 
+}
+function tablehide(){
+	$("#modalPanel-3").hide();
+
+}
+ 
 </script>
-
-
-
 <h:head></h:head>
 <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -50,9 +56,153 @@ function scroll(){
           
           <pm:content rendered="#{sessionScope.user_role == 'T' }">
           <script type="text/javascript" src="../../resources/js/bootstrap-tooltip.js"></script>
-	<script type="text/javascript">jQuery(document).ready(function(){updateToolTip(); $("#form1\\:searchvehicle").trigger("click");  jQuery("#form2\\:noResult").hide()});function updateToolTip(){$("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}})};</script>
- 		<script type="text/javaScript">function validateDropTake(f,d,b){var c=new Array();var e=0;if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":drop"){if(d.is(":checked")){d.parent().parent().find("input[type=checkbox][id$=take]").prop("checked",false)}}else{if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":take"){if(d.is(":checked")){d.parent().parent().find("input[type=checkbox][id$=drop]").prop("checked",false)}}}$("#form2\\:member").find("input[type=checkbox][id$=drop]").each(function(){if($(this).is(":checked")){e+=1}});var a=0;$("#form2\\:member").find("input[type=checkbox][id$=take]").each(function(){if($(this).is(":checked")){a+=1}});if(e>1){c.push("Only one ride can be dropped at a time.")}if(a>1){c.push("Only one ride can be taken at a time.")}if(c.length>0){d.prop("checked",false);alert(c.join("\n"))}else{if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":drop"){if(d.is(":checked")){$("#form2\\:rideIdToDrop").val(b)}}else{if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":take"){if(d.is(":checked")){$("#form2\\:rideIdToTake").val(b)}}}}}function validateCombine(){if(parseInt($("#form2\\:rideIdToDrop").val())>0){if(parseInt($("#form2\\:rideIdToTake").val())>0){return true}}alert("Please select one ride to drop and one ride to take.");return false};</script>
-          
+	<script type="text/javascript">
+	jQuery(document).ready(function(){
+		updateToolTip();jQuery("#form2\\:noResult").hide()});
+	function updateToolTip(){
+		$("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}})
+		};
+	</script>
+ 		<script type="text/javascript">
+ 			
+
+function validateDropTake(f,d,b)
+ 		{
+ 				var c=new Array();
+ 				if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":select1")
+			    	{
+	    	    	  alert("select1");
+			    		alert(b);
+		  				$("#form3\\:vehicleRegNoToTake").val(b);
+		  		 		 
+		    		 }
+ 				else if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":drop")
+ 					{
+ 						if(d.is(":checked"))
+ 							{
+ 							
+ 								d.parent().parent().find("input[type=checkbox][id$=take]").prop("checked",false)
+ 							}
+ 					}else{
+ 							if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":take")
+ 								{
+ 									if(d.is(":checked"))
+ 										{
+ 										
+ 										d.parent().parent().find("input[type=checkbox][id$=drop]").prop("checked",false)
+ 										}
+ 								}
+ 							else if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":reassign")
+								{
+									if(d.is(":checked"))
+										{
+										
+									alert(" : Ride has been selected to reassign :");
+										}
+								}
+ 						 }
+ 				var e=0;
+ 				$("#form2\\:member").find("input[type=checkbox][id$=drop]").each(
+ 								 					function(){
+ 								 							if($(this).is(":checked"))
+ 								 							{
+ 								 								e+=1
+ 								 							}
+ 								 							 }
+ 								 					);
+ 						 var a=0;
+ 						 $("#form2\\:member").find("input[type=checkbox][id$=take]").each(
+ 								 function()
+ 								 {
+ 									 if($(this).is(":checked"))
+ 									 {
+ 										 a+=1
+ 									 }
+ 								  }
+ 								 );
+ 						var g=0;
+						 $("#form2\\:member").find("input[type=checkbox][id$=reassign]").each(
+								 function()
+								 {
+									 if($(this).is(":checked"))
+									 {
+										 g+=1
+									 }
+								  }
+								 );
+						 var w=0;
+						 $("#form3\\:table1").find("input[type=checkbox][id$=select1]").each(
+								 function()
+								 {
+									 if($(this).is(":checked"))
+									 {
+										 w+=1
+									 }
+								  }
+								 );
+						 if(w>1){
+							 c.push("Only one Vehicle can be taken at a time.")
+							    }
+ 						 if(e>1){
+ 							 c.push("Only one ride can be dropped at a time.")
+ 							     }
+ 						 if(a>1){
+ 							 c.push("Only one ride can be taken at a time.")
+ 							    }
+ 						if(g>1){
+							 c.push("Only one ride can be taken at a time.")
+							    }
+ 						 if(c.length>0){
+ 							    	  d.prop("checked",false);
+ 							    	   alert(c.join("\n"))
+ 							    	   }
+ 						 else{
+ 							 if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":drop")
+ 							    {
+ 							    	if(d.is(":checked"))
+ 							    	     {
+ 							    			$("#form2\\:rideIdToDrop").val(b)
+ 							    		 }
+ 							    }else {
+ 							    	     if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":take")
+ 							    	        {
+ 							    	        	if(d.is(":checked"))
+ 							    	        		 {
+ 							    	        			$("#form2\\:rideIdToTake").val(b);
+ 							    	        			$("#form2\\:rideIdToTake1").val(b);
+ 							    	        			alert(b);
+ 							    	        		 }
+ 							    	         }
+ 							    	     else if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":reassign")
+ 							    	    	 {
+ 							    	    		if(d.is(":checked"))
+					    	        			 {
+ 							    	    			alert(b);
+ 							    	    			$("#form2\\:rideIdToReassign").val(b);
+ 							    	    			$("#form2\\:rideIdToReassign1").val(b);
+ 							    	    			alert(b);
+					    	        		 	 }
+ 							    	    	 }
+ 							    	    
+ 				                      }
+ 							 }
+ 		  }
+ 		
+ 		
+ 		function validateCombine()
+ 			{ 
+ 			 if(parseInt($("#form2\\:rideIdToDrop").val())>0)
+ 			 { 
+ 				 if(parseInt($("#form2\\:rideIdToTake").val())>0)
+ 				    {return true}
+ 			 }
+ 			 alert("Please select one ride to drop and one ride to take.");
+ 			 return false
+ 			};
+ 			
+ 
+ 	</script>
+        
           	${userAction.clearScreenMessage()}	
 		<p:panel id="messagePanel" style="border:none;">		
 			<c:forEach var="sucMessage" items="${userAction.successMessage}">
@@ -82,22 +232,30 @@ function scroll(){
 	               		<f:selectItem itemLabel="Affiliated Circles"></f:selectItem>
 						<f:selectItems value="#{userAction.allAffiliateCircleForTaxiUser}"/>
 					</h:selectOneMenu> &nbsp;
-					<h:commandLink styleClass="btn btn-info" value="Search" id="searchvehicle" style="display:none">
-	             	<p:ajax process="@form" listener="#{userAction.todaysCombineVehicleSearch}" update="@form,:form2,:messagePanel" oncomplete="updateDataTable1();updateToolTip();"/>
-	             	</h:commandLink>
-	             	<h:commandLink styleClass="btn btn-info" value="Search"  >
+	             	<h:commandLink styleClass="btn btn-info" value="Search" >
 	             	<p:ajax process="@form" listener="#{userAction.combineVehicleSearch}" update="@form,:form2,:messagePanel" oncomplete="updateDataTable1();updateToolTip();"/>
 	             	</h:commandLink>
              </h:form>
              </pm:content>
-             
+           
              <pm:content>
+             
               <h:form styleClass="form-inline" id="form2">
-				<p:panel rendered="#{userAction.combineVehicleCondition.size() le 0}" id="noResult" style="border:none;background:#FCFCFC;margin-left: -15px;">No result is found.</p:panel>
+				<p:panel rendered="#{userAction.combineVehicleCondition.size() le 0}" id="noResult" 
+				style="border:none;background:#FCFCFC;margin-left: -15px;">No result is found.</p:panel>
                	<div id="ui-table-1">
-				<p:dataTable rowKey="#{tripList}" id="member" styleClass="table table-bordered table-striped" value="#{userAction.combineVehicleDataModel}" var="tripList" rendered="#{not empty userAction.combineVehicleCondition}" selection="#{userAction.combineVehicleDtos}" rowIndexVar="row" widgetVar="matches">
-             	<p:column headerText="Drop" width="5%"><h:selectBooleanCheckbox value="#{tripList.drop}" onchange="validateDropTake(#{row}, $(this), #{tripList.rideId});" id="drop"/></p:column>
-				<p:column headerText="Take" width="5%"><h:selectBooleanCheckbox value="#{tripList.take}" onchange="validateDropTake(#{row}, $(this), #{tripList.rideId});" id="take"/></p:column>
+				<p:dataTable rowKey="#{tripList}" id="member" styleClass="table table-bordered table-striped" 
+				value="#{userAction.combineVehicleDataModel}" var="tripList" rendered="#{not empty userAction.combineVehicleCondition}" 
+				selection="#{userAction.combineVehicleDtos}" rowIndexVar="row" widgetVar="matches">
+             	<p:column headerText="Drop" width="5%">
+             	<h:selectBooleanCheckbox value="#{tripList.drop}" onchange="validateDropTake(#{row}, $(this), #{tripList.rideId});" id="drop"/>
+             	</p:column>
+				<p:column headerText="Take" width="5%">
+				<h:selectBooleanCheckbox value="#{tripList.take}" onchange="validateDropTake(#{row}, $(this), #{tripList.rideId});" id="take"/>
+				</p:column>
+              	<p:column headerText="Re-Assign" width="11%">
+             	<h:selectBooleanCheckbox value="#{tripList.reassign}"  onchange="validateDropTake(#{row}, $(this), #{tripList.rideId});" id="reassign"/>
+             	</p:column>
               	<p:column headerText="Vehicle" width="8%"><h:outputText value="#{tripList.vehicleRegNo}"/></p:column>
 				<p:column headerText="From" sortBy="startPoint" style="width:29%">
               	<span data-toggle="tooltip" title="${tripList.startPoint}">${(fn:length(tripList.startPoint) > 30) ? fn:substring(tripList.startPoint, 0, 30) : tripList.startPoint} ${(fn:length(tripList.startPoint) > 30) ? '...' : ''}</span>
@@ -109,28 +267,84 @@ function scroll(){
  				<p:column headerText="Capacity" width="7%"><h:outputText value="#{tripList.usedCapacity} / #{tripList.capacity}"/></p:column>
 				</p:dataTable>
               	</div>
-				
 				<h:inputHidden value="#{userAction.rideIdToDrop}" id="rideIdToDrop"/>
 				<h:inputHidden value="#{userAction.rideIdToTake}" id="rideIdToTake"/>
-				
-               	<h:commandLink styleClass="btn btn-success" value="Combine Vehicles" rendered="#{not empty userAction.combineVehicleCondition}" onclick="return validateCombine();">
-               		<p:ajax process="@form" listener="#{userAction.combineVehicle}" update="@form,:form1,:messagePanel" oncomplete="updateDataTable1();updateToolTip();"/>
+			     <h:inputHidden value="#{userAction.rideIdToReassign}" id="rideIdToReassign"/>
+             	<h:outputText value="#{userAction.rideIdToReassign}" id="rideIdToReassign1"/>
+			    <h:outputText value="#{userAction.rideIdToTake}" id="rideIdToTake1"/>
+			<h:commandLink styleClass="btn btn-success" value="Combine Vehicles" rendered="#{not empty userAction.combineVehicleCondition}" onclick="return validateCombine();">
+            <p:ajax process="@form" listener="#{userAction.combineVehicle}" update="@form,:form1,:messagePanel" oncomplete="updateDataTable1();updateToolTip();"/>
+            </h:commandLink>&nbps;
+               	
+				<h:commandLink styleClass="btn btn-success" value="Re-Assign Vehicle" 
+					rendered="#{not empty userAction.combineVehicleCondition}" onclick="tablehidedisplay()">
+					<p:ajax update="@form,:form1,:form2," 
+					oncomplete="modalUpdate();updateDataTable1();updateToolTip();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html(''); "
+					listener="#{userAction.vehicleList}" 
+					process="@this" />
                	</h:commandLink>
+				
+
               </h:form>
               </pm:content>
               </pm:content>
               
 			<pm:content rendered="#{sessionScope.user_role != 'T' }">
-              	<span class="span10 muted lead"><h3><h:outputText value="${msgs['error.permissionDenied']}"></h:outputText></h3></span>
+              	<span class="span10 muted lead">
+              	<h3><h:outputText value="${msgs['error.permissionDenied']}"></h:outputText></h3>
+              	</span>
 			</pm:content>
               
         </div>
         
-                       </div>
+                       
         <!-- table section ends here -->
+   <div id="modalPanel-3" class="modal hide fade in" style="display: none; ">
+        	
+        	<div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Vehicle List</h3></div>
+        	<div class="modal-body">		
+        	
+	<pm:content rendered="#{not empty userAction.vehicleMasterDTOList}" >
+	<h:form id="form3">	
+	
+		<div id="ui-table-1">
+				  
+			<p:dataTable rowKey="#{veh}" id="table1"  rendered="#{not empty userAction.vehicleMasterDTOList}" 
+			value="#{userAction.vehicleMasterDataModel}" var="veh" selection="#{userAction.vehicleMasterDTO}"  
+			rowIndexVar="row" widgetVar="matches">
+				
+				<p:column headerText="" width="3%">
+             	<h:selectBooleanCheckbox id="select1" value="#{veh.select}" 
+             	onchange="validateDropTake(#{row}, $(this), #{veh.vehicleID});" />
+             	</p:column>
+             	
+				<p:column headerText="List Of Vehicles">
+				<h:outputText value="#{veh.reg_NO}" id="regno"></h:outputText>
+				</p:column>
+				
+				
+				 </p:dataTable>
+				 </div>
+				 <h:inputHidden value="#{userAction.vehicleRegNoToTake}" id="vehicleRegNoToTake"/>
+				  <h:inputHidden value="#{userAction.vehicleRegNoToDrop}" id="vehicleRegNoToDrop"/>
+				  <h:outputText value ="#{userAction.vehicleRegNoToTake}"></h:outputText>
+	
+				<h:commandLink styleClass="btn btn-success" value="Save" onclick="tablehide()">
+			    <p:ajax listener="#{userAction.reassignVehicle}" oncomplete="updateDataTable1();modalUpdate();scroll();" 
+			    process="@this" update="@form,:form2" />
+			    </h:commandLink>
+			   
+		   
+		
+	</h:form>
+	</pm:content>
+			</div>  	
+</div> 
+		
+		
       </div>
 
-
+</div>
     </div>
   </div><br/><br/><br/><br/>
   <!-- End: MAIN CONTENT -->
@@ -143,4 +357,5 @@ function scroll(){
 </pm:view>
 </pm:page>
 </f:view>
+
 </html>

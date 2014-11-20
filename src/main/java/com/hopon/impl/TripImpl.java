@@ -3169,4 +3169,29 @@ public class TripImpl implements Trip {
 	 * <!-- Code Changed by Kirty for selection Ride option with different User
 	 * Id-->
 	 */
+
+	@Override
+	public List<PaymentTxnsDTO> searchCompletedTransaction(
+			Connection paramConnection, String paramString, Date paramDate1,
+			Date paramDate2) throws ConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<PaymentRequestDTO> searchPaymentTransfer(
+			Connection paramConnection, String paramString1,
+			String paramString2, Date paramDate1, Date paramDate2,
+			double paramDouble1, double paramDouble2, String paramString3)
+			throws ConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void fetchAllPreviousDayRides(Connection paramConnection)
+			throws ConfigurationException {
+		// TODO Auto-generated method stub
+		
+	}
 }

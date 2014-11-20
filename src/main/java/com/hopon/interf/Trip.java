@@ -173,7 +173,19 @@ public interface Trip {
 	List<CombineRideDTO> getAllTodaysCombineVehicleList(Connection con,
 			String fromAddress, String toAddress, String rideDate, int circleID)throws ConfigurationException;
 	
+	public abstract List<PaymentTxnsDTO> searchCompletedTransaction(
+			Connection paramConnection, String paramString,
+			Date paramDate1, Date paramDate2)
+			throws ConfigurationException;
 
+	public abstract List<PaymentRequestDTO> searchPaymentTransfer(
+			Connection paramConnection, String paramString1,
+			String paramString2, Date paramDate1, Date paramDate2,
+			double paramDouble1, double paramDouble2, String paramString3)
+			throws ConfigurationException;
+
+	public void fetchAllPreviousDayRides(Connection paramConnection)
+			throws ConfigurationException;
 	
 }
 

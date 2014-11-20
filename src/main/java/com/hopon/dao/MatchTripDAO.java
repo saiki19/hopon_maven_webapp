@@ -191,16 +191,24 @@ public class MatchTripDAO {
 		final StringBuilder query = new StringBuilder();
 		System.out.println("circle id:" + circleId);
 		if (circleId > 0) {
-			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name, v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id INNER JOIN users u ON r1.user_id = u.id INNER JOIN vehicles_master v ON r1.vehicleID = v.id INNER JOIN circle_members cm ON r1.user_id = cm.MemberId WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
+			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name,"
+					+ " v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p "
+					+ "INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id "
+					+ "INNER JOIN users u ON r1.user_id = u.id "
+					+ "INNER JOIN vehicles_master v ON r1.vehicleID = v.id "
+					+ "INNER JOIN circle_members cm ON r1.user_id = cm.MemberId WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
 					+ ApplicationUtil.currentTimeStamp()
 					+ "' AND p.request_status = 'A' ");
 		} else {
-			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name, v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id INNER JOIN users u ON r1.user_id = u.id INNER JOIN vehicles_master v ON r1.vehicleID = v.id WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
+			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name, "
+					+ "v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p "
+					+ "INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id INNER JOIN users u ON r1.user_id = u.id"
+					+ " INNER JOIN vehicles_master v ON r1.vehicleID = v.id WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
 					+ ApplicationUtil.currentTimeStamp()
 					+ "' AND p.request_status = 'A' ");
 		}
 
-		System.out.println("ride date :" + rideDate);
+		
 		if (startPoint != null && !startPoint.trim().equals(""))
 			query.append(" AND r1.start_point like '%" + startPoint + "%' ");
 		if (rideDate != null && !rideDate.trim().equals(""))
@@ -212,7 +220,7 @@ public class MatchTripDAO {
 					+ "' ");
 		}
 		query.append(" group by r1.ride_id, v.id ORDER BY r1.start_time ASC");
-
+		System.out.println("query :" + query);
 		final PreparedStatement pstmt = con.prepareStatement(query.toString());
 		final ResultSet rs = QueryExecuter
 				.getResultSet(pstmt, query.toString());

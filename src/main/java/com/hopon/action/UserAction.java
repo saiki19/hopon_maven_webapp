@@ -2544,9 +2544,28 @@ public class UserAction extends HPBaseAction {
 		combineVehicleDataModel = new CombineVehicleDataModel(
 				combineVehicleCondition);
 	}
+	
+	public void reassignVehicle()
+	{
+		System.out.println("#####reassignVehicle()#########");
+		System.out.println(vehicleRegNoToDrop +"--"+ vehicleRegNoToTake);
+		clearScreenMessage();
+		System.out.println("rideIdToReassign :"+rideIdToReassign);
+		
+		if (rideIdToReassign <= 0)
+			errorMessage.add("Please select ride to Reassign.");
+		if (errorMessage.size() == 0)
+		{
+			ListOfValuesManager
+			.getRideManagerPopupDataDirect(rideIdToDrop + "");
+	    } 
+	}
+
 
 	public void combineVehicle() {
 		clearScreenMessage();
+		System.out.println("rideIdToDrop");
+		System.out.println("rideIdToTake");
 		if (rideIdToDrop <= 0)
 			errorMessage.add("Please select ride to drop.");
 		if (rideIdToTake <= 0)

@@ -1,4 +1,4 @@
-package com.hopon.web;
+/*package com.hopon.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,16 +19,16 @@ import com.hopon.dto.PaymentDTO;
 import com.hopon.utils.ListOfValuesManager;
 import com.hopon.utils.Validator;
 
-/**
+*//**
  * Servlet implementation class PaymentPage
- */
+ *//*
 @WebServlet("/payment.do")
 public class PaymentPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
+	*//**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	 *//*
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
@@ -94,3 +94,4 @@ public class PaymentPage extends HttpServlet {
 	}
 
 }
+*/

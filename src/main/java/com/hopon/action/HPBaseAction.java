@@ -164,7 +164,33 @@ public class HPBaseAction {
 	protected List<SelectItem> allCompany;
 	protected List<SelectItem> companySector;
 	protected List<SelectItem> allCircleOption;
+	public String vehicleRegNoToDrop;
+	public String vehicleRegNoToTake;
+	protected int rideIdToReassign;
 
+		public int getRideIdToReassign() {
+		return rideIdToReassign;
+	}
+
+	public void setRideIdToReassign(int rideIdToReassign) {
+		this.rideIdToReassign = rideIdToReassign;
+	}
+
+		public String getVehicleRegNoToDrop() {
+		return vehicleRegNoToDrop;
+	}
+
+	public void setVehicleRegNoToDrop(String vehicleRegNoToDrop) {
+		this.vehicleRegNoToDrop = vehicleRegNoToDrop;
+	}
+
+	public String getVehicleRegNoToTake() {
+		return vehicleRegNoToTake;
+	}
+
+	public void setVehicleRegNoToTake(String vehicleRegNoToTake) {
+		this.vehicleRegNoToTake = vehicleRegNoToTake;
+	}
 	// Start ContactUsDTO class
 	protected ContactusDTO contactusDTO = new ContactusDTO();
 
