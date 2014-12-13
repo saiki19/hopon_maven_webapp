@@ -13,7 +13,7 @@ public class DataSource {
 	private static DataSource     datasource;
 	private BoneCP connectionPool;
 	private DataSource() throws IOException, SQLException, PropertyVetoException {
-		ResourceBundle bundle = ResourceBundle.getBundle("resource.Database");
+		ResourceBundle bundle = ResourceBundle.getBundle("Database");
 		try {
 			Class.forName(bundle.getString("driver").trim());
 		} catch (Exception e) {

@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.in.hopon</groupId>
-	<artifactId>hopon_maven1</artifactId>
+	<artifactId>hopon_maven</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>hopon Maven Webapp</name>
@@ -10,8 +10,8 @@
 	<repositories>
 		<repository>
 			<id>prime-repo</id>
-            <name>PrimeFaces Maven Repository</name>
-            <url>http://repository.primefaces.org</url>
+			<name>PrimeFaces Maven Repository</name>
+			<url>http://repository.primefaces.org</url>
 		</repository>
 	</repositories>
 	<properties>
@@ -119,11 +119,8 @@
 		</dependency>
 
 		<!-- java2word -->
-		<!-- <dependency>
-			<groupId>com.google.code</groupId>
-			<artifactId>java2word</artifactId>
-			<version>3.3</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>com.google.code</groupId> <artifactId>java2word</artifactId> 
+			<version>3.3</version> </dependency> -->
 
 		<!-- guava -->
 		<dependency>
@@ -147,11 +144,8 @@
 		</dependency>
 
 		<!-- paytm checksum -->
-		<!-- <dependency>
-			<groupId>paytm-checksum</groupId>
-			<artifactId>paytm-checksum</artifactId>
-			<version>1.0</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>paytm-checksum</groupId> <artifactId>paytm-checksum</artifactId> 
+			<version>1.0</version> </dependency> -->
 
 		<!-- log4j -->
 		<dependency>
@@ -201,8 +195,104 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+	
+	<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>Using local.properties</echo>
+										<copy file="src/main/resources/local.properties"
+											tofile="${project.build.outputDirectory}/Database.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	
+		<profile>
+			<id>prod</id>
+			
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>Using prod.properties</echo>
+										<copy file="src/main/resources/prod.properties"
+											tofile="${project.build.outputDirectory}/Database.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>dev</id>
+			
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>Using dev.properties</echo>
+										<copy file="src/main/resources/dev.properties"
+											tofile="${project.build.outputDirectory}/Database.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+
+
+
 	<build>
-		<finalName>hopon_maven1</finalName>
+		<finalName>hopon_maven</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
