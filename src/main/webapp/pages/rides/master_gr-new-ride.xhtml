@@ -11,47 +11,15 @@
         <pm:page>
 <pm:view>
 		<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
- <!-- <script type="text/javascript">
-$(document).ready(function() {
-	  
-	   var url = $(location).attr('href');
-	   url2=url.split("/")[0]+"//"+url.split("/")[2]+"/"+url.split("/")[3]
-	   url3=url2+"/pages/rides/master-gr-pending-trips.xhtml";
-	   alert("created first"+url);
-	   alert("created append"+url2);
-	   alert("created pending"+url3);
-});	   
-</script>  -->
+<c:set value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}" property="url" var="url"/>
 
-<!-- <script>
-$(document).ready(function() {
-var url = $(location).attr('href');
-var proto = url.split("/")[0];
-var hostnme = url.split("/")[2];
-var pathnme = url.split("/")[3];
-
-	//window.location.protocol = proto;
-	// window.location.host = hostnme;
-	// window.location.pathname = pathnme; 
-	// var newURL = window.location.protocol + "://" + window.location.host + "/" + window.location.pathname;
-
-//alert(newURL);
-alert(url+"|" +proto + "|"+hostnme+"|"+pathnme);
-});
-</script> -->
 <script type="text/javascript">
 Date.prototype.format=function(b){var c={"M+":this.getMonth()+1,"d+":this.getDate(),"h+":this.getHours(),"m+":this.getMinutes(),"s+":this.getSeconds(),"q+":Math.floor((this.getMonth()+3)/3),S:this.getMilliseconds()};if(/(y+)/.test(b)){b=b.replace(RegExp.$1,(this.getFullYear()+"").substr(4-RegExp.$1.length))}for(var a in c){if(new RegExp("("+a+")").test(b)){b=b.replace(RegExp.$1,RegExp.$1.length==1?c[a]:("00"+c[a]).substr((""+c[a]).length))}}return b};jQuery(document).ready(function(){updatePart();googleLoc()});
 function updatePart(){$("#tab1\\:curentDate").datetimepicker({dateFormat:"dd M y,",timeFormat:"hh.mm TT",minDate:new Date(),onSelect:function(){var d=$("#tab1\\:curentDate").datepicker("getDate");d.setDate(d.getDate()+1);var c=$("#tab1\\:curentDate").datepicker("getDate");c.setDate(c.getDate()+61);$("#tab1\\:curentDate2").datepicker("option","minDate",d);$("#tab1\\:curentDate2").datepicker("option","maxDate",c)}});$("#tab1\\:curentDate2").datetimepicker({dateFormat:"dd M y,",timeFormat:"hh.mm TT",minDate:Date.parseString("#{userAction.minDate}","dd NNN yy, HH.mm a")});var a=new Date();a.setDate(a.getDate()+1);var b=new Date();b.setDate(b.getDate()+60);$("#tab1\\:curentDate2").datepicker("option","minDate",a);$("#tab1\\:curentDate2").datepicker("option","maxDate",b);$("#tab1\\:fromcity, #tab1\\:frompin, #tab1\\:tocity, #tab1\\:topin").prop("readonly",true);if($("#tab1\\:recurring").is(":checked")){$("#ifYes").show()}else{$("#ifYes").hide()}$("#tab1\\:recurring").click(function(){if($(this).is(":checked")){var c=Date.parseString($("#tab1\\:curentDate").val(),"dd NNN yy, HH.mm a");if(c!=null){currentTime=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate());currentTime.setDate(currentTime.getDate()+2);if(!(c>=currentTime)){$("#tab1\\:curentDate").val("")}}currentTime=new Date();currentTime.setDate(currentTime.getDate()+2);$("#tab1\\:curentDate").datepicker("option","minDate",currentTime);$("#ifYes").show()}else{$("#ifYes").hide();$("#tab1\\:curentDate").datepicker("option","minDate",new Date())}});$("#tab1\\:fullDay").val("N");$("#tab1\\:fullDayCheck").click(function(){if($(this).is(":checked")){$("#tab1\\:fullDay").val("Y");$("#tab1\\:toaddress").prop("readonly",true)}else{$("#tab1\\:fullDay").val("N");$("#tab1\\:toaddress").prop("readonly",false)}})}function check(){document.getElementById("form:takeride").className+=" btn btn-small btn-success"};
 </script>
 
- <c:set value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}" property ="url" var="url"/> 
- 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
-
-<script src="../../resources/js/checkbox_hide.js"></script>
-
-<script src="../../resources/js/jquery.min.js"></script>
-
+<script src="//code.jquery.com/jquery-1.9.1.js"></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 
@@ -59,80 +27,7 @@ function updatePart(){$("#tab1\\:curentDate").datetimepicker({dateFormat:"dd M y
 var x=jQuery.noConflict();function googleLoc(){x(function(){x("#tab1\\:fromaddress").autocomplete({source:function(b,a){$("#tab1\\:fromcity").val("");$("#tab1\\:frompin").val("");$("#tab1\\:startPoinLat").val("");$("#tab1\\:startPoinLng").val("");x.ajax({url:"http://maps.googleapis.com/maps/api/geocode/json",data:{sensor:false,address:b.term,components:"country:IN"},success:function(f){var l=new Array();for(var e in f.results){var h="";var g="";for(var d in f.results[e]["address_components"]){for(var c in f.results[e]["address_components"][d]["types"]){if(f.results[e]["address_components"][d]["types"][c]=="locality"){h=f.results[e]["address_components"][d]["long_name"];break}if(f.results[e]["address_components"][d]["types"][c]=="postal_code"){g=f.results[e]["address_components"][d]["long_name"];break}}}l.push({formatted_address:f.results[e]["formatted_address"],lat:f.results[e]["geometry"]["location"]["lat"],lng:f.results[e]["geometry"]["location"]["lng"],city:h,postal_code:g})}a($.map(l,function(i){return{label:i.formatted_address,value:i.formatted_address,lat:i.lat,lng:i.lng,city:i.city,postal_code:i.postal_code}}))}})},minLength:2,select:function(a,b){$("#tab1\\:fromcity").val(b.item.city);$("#tab1\\:frompin").val(b.item.postal_code);$("#tab1\\:startPoinLat").val(b.item.lat);$("#tab1\\:startPoinLng").val(b.item.lng)}});x("#tab1\\:toaddress").autocomplete({source:function(b,a){$("#tab1\\:tocity").val("");$("#tab1\\:topin").val("");$("#tab1\\:endPoinLat").val("");$("#tab1\\:endPoinLng").val("");x.ajax({url:"http://maps.googleapis.com/maps/api/geocode/json",data:{sensor:false,address:b.term,components:"country:IN"},success:function(f){var l=new Array();for(var e in f.results){var h="";var g="";for(var d in f.results[e]["address_components"]){for(var c in f.results[e]["address_components"][d]["types"]){if(f.results[e]["address_components"][d]["types"][c]=="locality"){h=f.results[e]["address_components"][d]["long_name"];break}if(f.results[e]["address_components"][d]["types"][c]=="postal_code"){g=f.results[e]["address_components"][d]["long_name"];break}}}l.push({formatted_address:f.results[e]["formatted_address"],lat:f.results[e]["geometry"]["location"]["lat"],lng:f.results[e]["geometry"]["location"]["lng"],city:h,postal_code:g})}a($.map(l,function(i){return{label:i.formatted_address,value:i.formatted_address,lat:i.lat,lng:i.lng,city:i.city,postal_code:i.postal_code}}))}})},minLength:2,select:function(a,b){$("#tab1\\:tocity").val(b.item.city);$("#tab1\\:topin").val(b.item.postal_code);$("#tab1\\:endPoinLat").val(b.item.lat);$("#tab1\\:endPoinLng").val(b.item.lng)}})})};
 </script>
 <script type="text/javascript">
-function validate_rideSeeker(){
-	var a=Date.parseString($("#tab1\\:curentDate").val(),"dd NNN yy, HH.mm a");
-	var f=Date.parseString($("#tab1\\:curentDate2").val(),"dd NNN yy, HH.mm a");
-	var e=$("#tab1\\:fromaddress").val();
-	var d=$("#tab1\\:toaddress").val();
-	var g=$("#tab1\\:recurring").is(":checked");
-	var b=new Array();
-	if(a==null)
-		{
-			b.push("Please select Start Date.");
-			 window.scrollTo(0,0);
-		}
-	if(g){
-		if(f==null){
-			b.push("Please select End Date.");
-			 window.scrollTo(0,0);
-					}
-		}
-	if($.trim(e).length==0){
-					b.push("Please enter source address.");
-					 window.scrollTo(0,0);
-					
-				}
-	if($("#tab1\\:fullDay").val()=="N")
-		{
-		if($.trim(d).length==0)
-			{
-				b.push("Please enter destination address.");
-				 window.scrollTo(0,0);
-			}
-		}
-	if($("#tab1\\:vehicleId"))
-		{
-			if(parseInt($("#tab1\\:vehicleId").val())==0)
-				{
-					b.push("Please select Vehicle.");
-					 window.scrollTo(0,0);
-				}
-		}
-	if(g)
-		{
-			if(a>f)
-				{
-					b.push("End date should be after start date.");
-					 window.scrollTo(0,0);
-				}
-		}
-	if(g)
-		{
-			if((f-a)>1000*60*60*24*60)
-				{
-					b.push("Recurring ride can be booked only for 2 months from the start date.");
-					 window.scrollTo(0,0);
-				}
-		}
-	if(b.length>0)
-		{
-			$("#errorMessage").show();
-			 window.scrollTo(0,0);
-			$("#errorMessage").find(".form-message").html("");
-				for(var c in b)
-				{ 
-					$("#errorMessage").find(".form-message").append(b[c]+"&lt;br>");
-					 window.scrollTo(0,0);
-				}
-		}
-	else
-		{
-		$("#errorMessage").hide();
-		$("#errorMessage").find(".form-message").html("");
-		return true
-		}
-	return false
-	};
+function validate_rideSeeker(){var a=Date.parseString($("#tab1\\:curentDate").val(),"dd NNN yy, HH.mm a");var f=Date.parseString($("#tab1\\:curentDate2").val(),"dd NNN yy, HH.mm a");var e=$("#tab1\\:fromaddress").val();var d=$("#tab1\\:toaddress").val();var g=$("#tab1\\:recurring").is(":checked");var b=new Array();if(a==null){b.push("Please select Start Date.")}if(g){if(f==null){b.push("Please select End Date.")}}if($.trim(e).length==0){b.push("Please enter source address.")}if($("#tab1\\:fullDay").val()=="N"){if($.trim(d).length==0){b.push("Please enter destination address.")}}if($("#tab1\\:vehicleId")){if(parseInt($("#tab1\\:vehicleId").val())==0){b.push("Please select Vehicle.")}}if(g){if(a>f){b.push("End date should be after start date.")}}if(g){if((f-a)>1000*60*60*24*60){b.push("Recurring ride can be booked only for 2 months from the start date.")}}if(b.length>0){$("#errorMessage").show();$("#errorMessage").find(".form-message").html("");for(var c in b){$("#errorMessage").find(".form-message").append(b[c]+"&lt;br>")}}else{$("#errorMessage").hide();$("#errorMessage").find(".form-message").html("");return true}return false};
 </script>
 
 <h:head></h:head>
@@ -158,7 +53,6 @@ function validate_rideSeeker(){
          <pm:content>
          <span style="display:none">
           ${userAction.clearNewRide()}
-          ${userAction.validateUserPayment()}
           </span>
           <h:form id="tab1" styleClass="form-horizontal">
         
@@ -251,25 +145,20 @@ function validate_rideSeeker(){
                         <h:inputText id="fromaddress" value="#{userAction.rideRegistered.fromAddress1}" />
                       </div>
                     </div>
-                    
-                    
-                   <!--  kirty -->
-                   
-                   
-                     <!-- <div class="control-group">
+                    <div class="control-group">
                       <label class="control-label" for="inputEmail">City</label>
                       <div class="controls">
- -->                        <h:inputHidden id="fromcity" value="#{userAction.rideRegistered.fromAddressCity}"/>
-                      <!-- </div>
-                    </div> 
+                        <h:inputText id="fromcity" value="#{userAction.rideRegistered.fromAddressCity}"/>
+                      </div>
+                    </div>
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Pin</label>
-                      <div class="controls">-->
-                        <h:inputHidden id="frompin" value="#{userAction.rideRegistered.fromAddressPin}"/>
+                      <div class="controls">
+                        <h:inputText id="frompin" value="#{userAction.rideRegistered.fromAddressPin}"/>
                       	<h:inputHidden id="startPoinLat" value="#{userAction.rideRegistered.startPointLatitude}"/>
                       	<h:inputHidden id="startPoinLng" value="#{userAction.rideRegistered.startPointLongitude}"/>
-                    <!--   </div>
-                    </div>  -->
+                      </div>
+                    </div>
                   
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Tag (20 limit)</label>
@@ -328,11 +217,11 @@ function validate_rideSeeker(){
                     <div class="control-group">
                     	<div style="margin-bottom: 22px;padding: 7px 1px;">
                     	<pm:content rendered="#{(userAction.userRegistrationDTO.travel == 'B' and userAction.ridePicker ==1) or userAction.userRegistrationDTO.travel == 'C'}">
-						<span style="margin-right:1px;"><h:selectBooleanCheckbox value="#{userAction.rideRegistered.sharedTaxi}" id="carpool" class="ridecheck1"/> Carpool&nbsp;</span>
-						<span style="margin-right:2px;"><h:selectBooleanCheckbox id="fullDayCheck" class="ridecheck" /> Full Day&nbsp;</span>
+						<span style="margin-right:1px;"><h:selectBooleanCheckbox value="#{userAction.rideRegistered.sharedTaxi}" id="carpool"/> Carpool&nbsp;</span>
+						<span style="margin-right:2px;"><h:selectBooleanCheckbox id="fullDayCheck"/> Full Day&nbsp;</span>
 						<h:inputHidden id="fullDay" value="#{userAction.rideRegistered.fullDay}"/>
 						</pm:content>
-                    	<h:selectBooleanCheckbox  id="checkboxes-0" value="#{userAction.rideRegistered.automatchInCircle}" class="ridecheck" /> Auto Match-In circle only 
+                    	<h:selectBooleanCheckbox  id="checkboxes-0" value="#{userAction.rideRegistered.automatchInCircle}"  /> Auto Match-In circle only 
                     	</div>
                       	
                        <pm:content rendered="#{(userAction.userRegistrationDTO.travel == 'B' and userAction.ridePicker ==1) or userAction.userRegistrationDTO.travel == 'C'}">
@@ -382,26 +271,21 @@ function validate_rideSeeker(){
                         <input type="password" id="inputPassword" placeholder="Address1">
                       </div>
                     </div> -->
-                    
-                    
-                    <!-- Kirty -->
-                <!--     <div class="control-group">
+                    <div class="control-group">
                       <label class="control-label" for="inputEmail">City</label>
-                      <div class="controls"> -->
-                        <h:inputHidden id="tocity" value="#{userAction.rideRegistered.toAddressCity}" />
-                <!--       </div>
+                      <div class="controls">
+                        <h:inputText id="tocity" value="#{userAction.rideRegistered.toAddressCity}" />
+                      </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Pin</label>
-                      <div class="controls"> -->
-                         	<h:inputHidden id="topin" value="#{userAction.rideRegistered.toAddressPin}"/>
+                      <div class="controls">
+                         	<h:inputText id="topin" value="#{userAction.rideRegistered.toAddressPin}"/>
 							<h:inputHidden id="endPoinLat" value="#{userAction.rideRegistered.endPointLatitude}"/>
                       		<h:inputHidden id="endPoinLng" value="#{userAction.rideRegistered.endPointLongitude}"/>
-                     <!--  </div>
+                      </div>
                     </div>
-                    -->
-                    
-                    <!-- Kirty -->
+                   
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Tag (20 limit)</label>
                       <div class="controls">
@@ -416,14 +300,7 @@ function validate_rideSeeker(){
                     
                     <!--  -->
                     ${userAction.userRatingUpdate()}
- 		<script type="text/javascript">
-			jQuery(document).ready(function(){var a="#{userAction.userRegistrationDTO.defaultTimeSlice}";
-            if(a.length>5){
-            	a=a.substring(0,5)
-            	}
-            $("#tab1\\:before_input").val(a);
-            $("#tab1\\:after_input").val(a)});
-		</script>
+<script type="text/javascript">jQuery(document).ready(function(){var a="#{userAction.userRegistrationDTO.defaultTimeSlice}";if(a.length>5){a=a.substring(0,5)}$("#tab1\\:before_input").val(a);$("#tab1\\:after_input").val(a)});</script>
         
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Time before</label>

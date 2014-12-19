@@ -1,0 +1,686 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile" contentType="text/html"
+	renderKitId="PRIMEFACES_MOBILE">
+
+<f:view>
+
+	<pm:page>
+		<pm:view>
+			<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
+
+			<!-- bootstarp css and js -->
+			<!-- <script src="resources/js/bootstrap.min.js"></script>
+			<link rel="stylesheet" href="resources/css/bootstrap.min.css" /> -->
+
+			<!-- time picker css and js -->
+			<script src="resources/js/bootstrap-timepicker.min.js"></script>
+			<link rel="stylesheet"
+				href="resources/css/bootstrap-timepicker.min.css" />
+
+			<!-- date picker css and js -->
+			<script
+				src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
+			<link rel="stylesheet"
+				href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
+
+			<!-- GoogleLocation JS and CSS -->
+			<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+			<link rel="stylesheet"
+				href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+
+			<script type="text/javascript">
+				var x = jQuery.noConflict();
+
+				function googleLoc() {
+					x(function() {
+						x("#tab1\\:fromaddress")
+								.autocomplete(
+										{
+											source : function(b, a) {
+												$("#tab1\\:fromcity").val("");
+												$("#tab1\\:frompin").val("");
+												$("#tab1\\:startPoinLat").val(
+														"");
+												$("#tab1\\:startPoinLng").val(
+														"");
+												x
+														.ajax({
+															url : "http://maps.googleapis.com/maps/api/geocode/json",
+															data : {
+																sensor : false,
+																address : b.term,
+																components : "country:IN"
+															},
+															success : function(
+																	f) {
+																var l = new Array();
+																for ( var e in f.results) {
+																	var h = "";
+																	var g = "";
+																	for ( var d in f.results[e]["address_components"]) {
+																		for ( var c in f.results[e]["address_components"][d]["types"]) {
+																			if (f.results[e]["address_components"][d]["types"][c] == "locality") {
+																				h = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																			if (f.results[e]["address_components"][d]["types"][c] == "postal_code") {
+																				g = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																		}
+																	}
+																	l
+																			.push({
+																				formatted_address : f.results[e]["formatted_address"],
+																				lat : f.results[e]["geometry"]["location"]["lat"],
+																				lng : f.results[e]["geometry"]["location"]["lng"],
+																				city : h,
+																				postal_code : g
+																			})
+																}
+																a($
+																		.map(
+																				l,
+																				function(
+																						i) {
+																					return {
+																						label : i.formatted_address,
+																						value : i.formatted_address,
+																						lat : i.lat,
+																						lng : i.lng,
+																						city : i.city,
+																						postal_code : i.postal_code
+																					}
+																				}))
+															}
+														})
+											},
+											minLength : 2,
+											select : function(a, b) {
+												$("#tab1\\:fromcity").val(
+														b.item.city);
+												$("#tab1\\:frompin").val(
+														b.item.postal_code);
+												$("#tab1\\:startPoinLat").val(
+														b.item.lat);
+												$("#tab1\\:startPoinLng").val(
+														b.item.lng)
+											}
+										});
+						x("#tab1\\:toaddress")
+								.autocomplete(
+										{
+											source : function(b, a) {
+												$("#tab1\\:tocity").val("");
+												$("#tab1\\:topin").val("");
+												$("#tab1\\:endPoinLat").val("");
+												$("#tab1\\:endPoinLng").val("");
+												x
+														.ajax({
+															url : "http://maps.googleapis.com/maps/api/geocode/json",
+															data : {
+																sensor : false,
+																address : b.term,
+																components : "country:IN"
+															},
+															success : function(
+																	f) {
+																var l = new Array();
+																for ( var e in f.results) {
+																	var h = "";
+																	var g = "";
+																	for ( var d in f.results[e]["address_components"]) {
+																		for ( var c in f.results[e]["address_components"][d]["types"]) {
+																			if (f.results[e]["address_components"][d]["types"][c] == "locality") {
+																				h = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																			if (f.results[e]["address_components"][d]["types"][c] == "postal_code") {
+																				g = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																		}
+																	}
+																	l
+																			.push({
+																				formatted_address : f.results[e]["formatted_address"],
+																				lat : f.results[e]["geometry"]["location"]["lat"],
+																				lng : f.results[e]["geometry"]["location"]["lng"],
+																				city : h,
+																				postal_code : g
+																			})
+																}
+																a($
+																		.map(
+																				l,
+																				function(
+																						i) {
+																					return {
+																						label : i.formatted_address,
+																						value : i.formatted_address,
+																						lat : i.lat,
+																						lng : i.lng,
+																						city : i.city,
+																						postal_code : i.postal_code
+																					}
+																				}))
+															}
+														})
+											},
+											minLength : 2,
+											select : function(a, b) {
+												$("#tab1\\:tocity").val(
+														b.item.city);
+												$("#tab1\\:topin").val(
+														b.item.postal_code);
+												$("#tab1\\:endPoinLat").val(
+														b.item.lat);
+												$("#tab1\\:endPoinLng").val(
+														b.item.lng)
+											}
+										})
+					})
+				};
+			</script>
+
+			<script type="text/javascript">
+				Date.prototype.format = function(b) {
+					var c = {
+						"M+" : this.getMonth() + 1,
+						"d+" : this.getDate(),
+						"h+" : this.getHours(),
+						"m+" : this.getMinutes(),
+						"s+" : this.getSeconds(),
+						"q+" : Math.floor((this.getMonth() + 3) / 3),
+						S : this.getMilliseconds()
+					};
+					if (/(y+)/.test(b)) {
+						b = b.replace(RegExp.$1, (this.getFullYear() + "")
+								.substr(4 - RegExp.$1.length))
+					}
+					for ( var a in c) {
+						if (new RegExp("(" + a + ")").test(b)) {
+							b = b
+									.replace(
+											RegExp.$1,
+											RegExp.$1.length == 1 ? c[a]
+													: ("00" + c[a])
+															.substr(("" + c[a]).length))
+						}
+					}
+					return b
+				};
+				jQuery(document).ready(function() {
+					updatePart();
+					googleLoc();
+
+				});
+				function updatePart() {
+					var date = new Date();
+					$("#tab1\\:dp1").datepicker({
+						changeMonth : false,
+						startDate : date,
+						hideIfNoPrevNext : true,
+						dateFormat : "dd-M-yy"
+					});
+					$("#tab1\\:dp2").datepicker({
+						dateFormat : "dd-M-yy"
+					});
+					$("#tab1\\:tp1").timepicker();
+					$("#tab1\\:tp2").timepicker();
+
+				}
+			</script>
+
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$(".rdBtn").change(function() {
+						if ($("#r1").is(":checked")) {
+							$("#tab1\\:tp2").attr('disabled', true);
+							$("#tab1\\:tp2").val('');
+						} else {
+
+							$("#tab1\\:tp2").attr('disabled', false);
+
+						}
+					});
+				});
+			</script>
+			<script type="text/javascript">
+				function validate() {
+
+					var pickup = $('#tab1\\:fromaddress').val();
+
+					var drop = $('#tab1\\:toaddress').val();
+
+					var oneway = $('#tab1\\:r1').val();
+
+					var twoway = $('#tab1\\:r2').val();
+
+					var timepic1 = $('#tab1\\:tp1').val();
+
+					if ($('#tab1\\:tp2').val() != undefined) {
+						var timepic2 = $('#tab1\\:tp2').val();
+					}
+
+					var startdate = $('#tab1\\:dp1').val();
+
+					var enddate = $('#tab1\\:dp2').val();
+
+					var rd1 = $('.rdBtn:checked').val();
+
+					if (pickup == "") {
+						alert("Please enter the PickUp Location");
+						$("#tab1\\:fromaddress").focus().css({
+							"border-color" : "red",
+						});
+						return false;
+					} else if (drop == "") {
+						alert("Please enter the DropOff Location.");
+						$("#tab1\\:toaddress").focus().css({
+							"border-color" : "red",
+						});
+						return false;
+					} else if (rd1 == undefined) {
+						alert("Please Select One way or Two way");
+
+						return false;
+					} else {
+						if (rd1 == 1) {
+							if (timepic1 == "") {
+								alert("Please enter Pickup Time1.");
+								$("#tab1\\:tp1").focus().css({
+									"border-color" : "red",
+								});
+								return false;
+							} else if (startdate == "") {
+								alert("Please Enter the StartDate.");
+								$("#tab1\\:dp1").focus().css({
+									"border-color" : "red",
+								});
+								return false;
+							} else if (enddate == "") {
+								alert("Please Enter the EndDate.");
+								$("#tab1\\:dp2").focus().css({
+									"border-color" : "red",
+								});
+								return false;
+							}
+							$("#tab1\\:hiddenid").val(rd1);
+						} else if (rd1 == 2) {
+							if ((timepic1 == "") || (timepic1 == undefined)) {
+								alert("Please enter Pickup Time1.");
+								$("#tab1\\:tp1").focus().css({
+									"border-color" : "red",
+								});
+								return false;
+							} else if ((timepic2 == "")
+									|| (timepic2 == undefined)) {
+								alert("Please enter Pickup Time2.");
+
+								if ($('#tab1\\:tp2').val() != undefined) {
+									$("#tab1\\:tp2").focus().css({
+										"border-color" : "red",
+									});
+								}
+								return false;
+							} else if (startdate == "") {
+								alert("Please enter StartDate.");
+								$("#tab1\\:dp1").focus().css({
+									"border-color" : "red",
+								});
+								return false;
+							} else if (enddate == "") {
+								alert("Please enter EndDate.");
+								$("#tab1\\:dp2").focus().css({
+									"border-color" : "red",
+								});
+								return false;
+							}
+							$("#tab1\\:hiddenid").val(rd1);
+						} else {
+							alert("Please Select One way or Two way");
+						}
+					}
+				}
+			</script>
+			<script type="text/javascript">
+				function getFunction() {
+					googleLoc();
+					//	$("#tab1\\:viewBtn").trigger('click');
+
+				}
+			</script>
+			<script type="text/javascript">
+				$(function() {
+					$("#tab1\\:dp1").datepicker({
+						dateFormat : "dd-M-yy"
+					});
+					$("#tab1\\:dp2").datepicker({
+						dateFormat : "dd-M-yy"
+					});
+					$("#tab1\\:tp1").timepicker();
+					$("#tab1\\:tp2").timepicker();
+
+				});
+			</script>
+
+			<h:head></h:head>
+			<h:body onload="getFunction();">
+				<ui:include src="../common/headerContent.xhtml"></ui:include>
+				<c:set
+					value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}"
+					property="url" var="url" />
+				<div class="content">
+
+					<div class="container">
+						<div class="row">
+							<div class="span2">
+								<div class="smv-leftnav">
+									<!-- Include leftPanel.xhtml -->
+									<ui:include src="../../pages/common/leftPanel.xhtml"></ui:include>
+								</div>
+							</div>
+
+							<!-- table section -->
+							<div class="span6 offset1">
+								<div class="page-header">
+									<h1>Daily Rides</h1>
+								</div>
+								<div>
+									<pm:content>
+										<div class="well changer">
+											<div id="myTabContent" class="tab-content">
+												<div class="tab-pane active in">
+
+													<h:form id="tab1" styleClass="form-horizontal">
+
+
+														<span class="span5"> <pm:content id="pannel">
+																<div class="control-group">
+																	<label class="control-label" for="Pickup"><b>PickUp
+																			Location</b> </label>
+																	<div class="controls">
+																		<h:inputText id="fromaddress"
+																			value="#{userAction.rideRegistered.fromAddress1}">
+																			<p:ajax event="blur"
+																				process="@this,fromaddress,toaddress"
+																				listener="#{userAction.callcalDistWindowSet}"
+																				update="ride_cost,ride_distance">
+																			</p:ajax>
+																		</h:inputText>
+																	</div>
+																</div>
+
+																<h:inputHidden id="fromcity"
+																	value="#{userAction.rideRegistered.fromAddressCity}" />
+																<h:inputHidden id="frompin"
+																	value="#{userAction.rideRegistered.fromAddressPin}" />
+																<h:inputHidden id="startPoinLat"
+																	value="#{userAction.rideRegistered.startPointLatitude}" />
+																<h:inputHidden id="startPoinLng"
+																	value="#{userAction.rideRegistered.startPointLongitude}" />
+
+																<div class="control-group">
+																	<label class="control-label" for="droplocation"><b>Drop
+																			Off Location</b></label>
+																	<div class="controls">
+																		<h:inputText id="toaddress"
+																			value="#{userAction.rideRegistered.toAddress1}">
+																			<p:ajax event="blur"
+																				process="@this,fromaddress,toaddress"
+																				listener="#{userAction.callcalDistWindowSet}"
+																				update="ride_cost,ride_distance">
+																			</p:ajax>
+																		</h:inputText>
+																	</div>
+																</div>
+																<h:inputHidden id="tocity"
+																	value="#{userAction.rideRegistered.toAddressCity}" />
+
+																<h:inputHidden id="topin"
+																	value="#{userAction.rideRegistered.toAddressPin}" />
+
+																<h:inputHidden id="endPoinLat"
+																	value="#{userAction.rideRegistered.endPointLatitude}" />
+
+																<h:inputHidden id="endPoinLng"
+																	value="#{userAction.rideRegistered.endPointLongitude}" />
+															
+																&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+																<c:if test="#{userAction.rideRegistered.userID !=null}">
+																	<c:if test="#{userAction.rideRegistered.tripType eq 2}">
+																		<input id="r1" type="radio" class="rdBtn"
+																			name="radioname" value="1">One Way</input>
+
+																	</c:if>
+																	<c:choose>
+																		<c:when
+																			test="#{userAction.rideRegistered.tripType eq 1}">
+																			<input id="r1" type="radio" class="rdBtn"
+																				checked="checked" name="radioname" value="1">One
+																				Way</input>
+
+																		</c:when>
+																		<c:otherwise>
+																			<input id="r2" type="radio" class="rdBtn"
+																				checked="checked" name="radioname" value="2">Two
+																				Way</input>
+
+																		</c:otherwise>
+																	</c:choose>
+																		
+																		&nbsp;&nbsp;
+																		<c:if
+																		test="#{userAction.rideRegistered.tripType eq 1}">
+																		<input id="r2" type="radio" class="rdBtn"
+																			name="radioname" value="2">TwoWay</input>
+
+																	</c:if>
+																</c:if>
+																<c:if test="#{userAction.rideRegistered.userID ==null}">
+
+																	<input id="r1" type="radio" class="rdBtn"
+																		name="radioname" value="1">One Way</input>&nbsp;&nbsp;
+																	<input id="r2" type="radio" class="rdBtn"
+																		name="radioname" value="2">Two Way</input>
+																</c:if>
+
+																<h:inputHidden id="hiddenid"
+																	value="#{userAction.rideRegistered.tripType}" />
+																<br></br>
+																<br></br>
+																<div class="control-group">
+																	<label class="control-label" for="inputPassword"><b>Pickup
+																			Time1 </b></label>
+																	<div class="controls">
+																		<h:inputText id="tp1"
+																			styleClass="bootstrap-datepicker"
+																			value="#{userAction.rideRegistered.pickup_time1}">
+																		</h:inputText>
+
+																	</div>
+																</div>
+																<div class="control-group">
+																	<label class="control-label" for="inputPassword"><b>Pickup
+																			Time2 </b></label>
+																	<div class="controls">
+																		<h:inputText id="tp2"
+																			value="#{userAction.rideRegistered.pickup_time2}" />
+																		<script type="text/javascript">
+																			if ($(
+																					"#r1")
+																					.is(
+																							":checked")) {
+																				$(
+																						"#tab1\\:tp2")
+																						.attr(
+																								'disabled',
+																								true);
+																			} else {
+																				$(
+																						"#tab1\\:tp2")
+																						.attr(
+																								'disabled',
+																								false);
+																			}
+																		</script>
+
+																	</div>
+
+																</div>
+																<div class="control-group">
+																	<label class="control-label" for="inputPassword"><b>Start
+																			Date </b></label>
+																	<div class="controls">
+																		<h:inputText id="dp1"
+																			value="#{userAction.rideRegistered.startDate1}" />
+																	</div>
+																</div>
+																<div class="control-group">
+																	<label class="control-label" for="inputPassword"><b>End
+																			Date </b></label>
+																	<div class="controls">
+																		<h:inputText id="dp2"
+																			value="#{userAction.rideRegistered.startDate2}" />
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="controls"
+																		style="display: block; float: left; margin-left: 40px">
+																		<label class="control-label" for="distance"><b>Ride
+																				Distance</b></label>
+
+																		<div class="controls">
+																			<h:outputText id="ride_distance"
+																				value="#{userAction.rideRegistered.rideDistance}">
+																			</h:outputText>
+																			km
+																		</div>
+																	</div>
+																	<div class="controls"
+																		style="float: left; display: inline; margin-left: 30px">
+																		<label class="control-label" for="ridecost"
+																			style="padding-right: 10px;"><b>Weekly
+																				Cost: </b></label>
+																		<div class="controls">
+																			INR.
+																			<h:outputText id="ride_cost"
+																				value="#{userAction.rideRegistered.rideCost}">
+																			</h:outputText>
+																			/- per week
+																		</div>
+																	</div>
+																</div>
+
+																<div class="well changer"
+																	style="height: 150px; display: none;">
+																	<div class="control-group">
+																		<label class="control-label" for="inputPassword">Time
+																			After</label>
+																		<div class="controls">
+																			<p:calendar id="after"
+																				value="#{userAction.rideRegistered.flexiTimeAfter}"
+																				pattern="HH:mm:ss" timeOnly="true"></p:calendar>
+																		</div>
+																	</div>
+
+																</div>
+																<br></br>
+																<div class="row">
+																	<div class="controls"
+																		style="display: block; float: left;">
+																		<c:if
+																			test="#{userAction.rideRegistered.userID ==null}">
+																			<h:commandButton onclick="return validate();"
+																				rendered="#{sessionScope.user_role == 'C' || (sessionScope.user_role == 'B' and userAction.ridePicker ==1)}"
+																				styleClass="btn btn-large btn-success"
+																				value="Register" id="submitBtn">
+																				<f:param value="takeRide" name="ride"></f:param>
+																				<p:ajax process="@form"
+																					listener="#{userAction.dailyRide}" update="@form"
+																					oncomplete="updatePart();googleLoc();" />
+																		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+																</h:commandButton>
+																		</c:if>
+
+																		<c:if
+																			test="#{userAction.rideRegistered.userID !=null}">
+																			<h:commandButton onclick="return validate();"
+																				styleClass="btn btn-large btn-success "
+																				value="Update" id="EditBtn">
+																				<p:ajax process="@form"
+																					listener="#{userAction.updateDailyRide}"
+																					oncomplete="googleLoc();" update="@form" onsuccess="window.location = '${url}/pages/rides/dailyride.xhtml'" />
+																			</h:commandButton>
+
+																		</c:if>
+																	</div>
+
+																	<div class="controls"
+																		style="float: left; display: inline;">
+																		<h:commandButton
+																			styleClass="btn btn-large btn-success" value="View"
+																			id="viewBtn">
+																			<p:ajax process="@form"
+																				listener="#{userAction.viewRideData}"
+																				onsuccess="window.location = '${url}/pages/rides/dailyride.xhtml'" />
+																		</h:commandButton>
+																	</div>
+																</div>
+																<br></br>
+
+																<c:forEach var="sucMessage"
+																	items="${userAction.successMessage}">
+																	<c:if test="${not empty sucMessage}">
+																		<div class="alert fade in alert-success"
+																			syle="display:none;">
+																			<button class="close" data-dismiss="alert"
+																				type="button">×</button>
+																			<span class="form-message">${sucMessage}</span>
+																		</div>
+																	</c:if>
+																</c:forEach>
+																<c:forEach var="errMessage"
+																	items="${userAction.errorMessage}">
+																	<c:if test="${not empty errMessage}">
+																		<div class="alert fade in alert-error"
+																			syle="display:none;">
+																			<button class="close" data-dismiss="alert"
+																				type="button">×</button>
+																			<span class="form-message">${errMessage}</span>
+																		</div>
+																	</c:if>
+																</c:forEach>
+																<!-- 	${userAction.clearScreenMessage()} -->
+															</pm:content>
+														</span>
+													</h:form>
+												</div>
+
+											</div>
+										</div>
+									</pm:content>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End: MAIN CONTENT -->
+
+				<ui:include src="../../pages/common/footer-content.xhtml"></ui:include>
+
+			</h:body>
+		</pm:view>
+	</pm:page>
+
+</f:view>
+
+</html>

@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2544,23 +2545,20 @@ public class UserAction extends HPBaseAction {
 		combineVehicleDataModel = new CombineVehicleDataModel(
 				combineVehicleCondition);
 	}
-	
-	public void reassignVehicle()
-	{
+
+	public void reassignVehicle() {
 		System.out.println("#####reassignVehicle()#########");
-		System.out.println(vehicleRegNoToDrop +"--"+ vehicleRegNoToTake);
+		System.out.println(vehicleRegNoToDrop + "--" + vehicleRegNoToTake);
 		clearScreenMessage();
-		System.out.println("rideIdToReassign :"+rideIdToReassign);
-		
+		System.out.println("rideIdToReassign :" + rideIdToReassign);
+
 		if (rideIdToReassign <= 0)
 			errorMessage.add("Please select ride to Reassign.");
-		if (errorMessage.size() == 0)
-		{
+		if (errorMessage.size() == 0) {
 			ListOfValuesManager
-			.getRideManagerPopupDataDirect(rideIdToDrop + "");
-	    } 
+					.getRideManagerPopupDataDirect(rideIdToDrop + "");
+		}
 	}
-
 
 	public void combineVehicle() {
 		clearScreenMessage();
@@ -2931,7 +2929,6 @@ public class UserAction extends HPBaseAction {
 		return "matchedTrip";
 	}
 
-	
 	public String matchRideForCompany() {
 
 		System.out
@@ -8406,132 +8403,408 @@ public class UserAction extends HPBaseAction {
 	public void recurringRideCron() {
 		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
 		dtos.addAll(ListOfValuesManager.fetchRecurringRideList());
+		int flag;
+
 		Date post2Date = new Date(System.currentTimeMillis() + 86400 * 1000 * 2);
 		for (RideSeekerDTO dto : dtos) {
-			Date tempDate = dto.getStartDate();
+			// This is for Destination to From address
 			Calendar cal1 = Calendar.getInstance();
-			cal1.setTime(tempDate);
 			Calendar cal2 = Calendar.getInstance();
+			Date tempDate = dto.getStartDate();
+			cal1.setTime(tempDate);
 			cal2.setTime(post2Date);
 			cal2.set(Calendar.HOUR_OF_DAY, cal1.get(Calendar.HOUR_OF_DAY));
 			cal2.set(Calendar.MINUTE, cal1.get(Calendar.MINUTE));
 			cal2.set(Calendar.SECOND, cal1.get(Calendar.SECOND));
+			RideManagementDTO dtoTemp = new RideManagementDTO();
 			post2Date = cal2.getTime();
+			DateFormat dateFormat = new SimpleDateFormat(
+					ApplicationUtil.datePattern3);
 			String frequency[] = dto.getFrequencyinweek().replace("[", "")
 					.replace("]", "").split(",");
+			System.out.println("Frequency in week:" + frequency);
+			System.out.println("Trip Type is:" + dto.getTripType());
+
 			// Testing if 2nd day present in trip frequency or not.
+
 			for (int i = 0; i < frequency.length; i++) {
 				if (ApplicationUtil.dateFormat18.format(post2Date)
 						.equalsIgnoreCase(frequency[i].trim())) {
-					RideManagementDTO dtoTemp = new RideManagementDTO();
-					/*
-					 * try { BeanUtils.copyProperties(dtoTemp, dto); } catch
-					 * (IllegalAccessException e) { } catch
-					 * (InvocationTargetException e) { }
-					 * catch(ConversionException e) { }
-					 */
-					dtoTemp.setUserID(dto.getUserID());
-					dtoTemp.setViaPoint(dto.getViaPoint());
-					dtoTemp.setViaPointLatitude(dto.getViaPointLatitude());
-					dtoTemp.setViaPointLongitude(dto.getViaPointLongitude());
-					dtoTemp.setFromAddress1(dto.getFromAddress1());
-					dtoTemp.setToAddress1(dto.getToAddress1());
+					if (dto.getTripType() == 1) {
+						flag = 1;
+						dtoTemp.setUserID(dto.getUserID());
+						dtoTemp.setViaPoint(dto.getViaPoint());
+						dtoTemp.setViaPointLatitude(dto.getViaPointLatitude());
+						dtoTemp.setViaPointLongitude(dto.getViaPointLongitude());
+						dtoTemp.setFromAddress1(dto.getFromAddress1());
+						dtoTemp.setToAddress1(dto.getToAddress1());
 
-					DateFormat dateFormat = new SimpleDateFormat(
-							ApplicationUtil.datePattern3);
-					dtoTemp.setStartdateValue(dateFormat.format(post2Date));
-					dtoTemp.setRideID(null);
-					dtoTemp.setStartDate(post2Date);
-					dtoTemp.setFlexiTimeAfter(post2Date);
-					dtoTemp.setFlexiTimeBefore(post2Date);
-					dtoTemp.setStatus(dto.getStatus());
-					dtoTemp.setCreated_dt(new Date());
-					dtoTemp.setFromAddressCity(dto.getToAddressCity());
-					dtoTemp.setFromAddressPin(dto.getFromAddressPin());
-					dtoTemp.setFromAddressCity(dto.getToAddressCity());
-					dtoTemp.setToAddressPin(dto.getToAddressPin());
-					dtoTemp.setCreatedBy(dto.getCreatedBy());
-					dtoTemp.setSharedTaxi(dto.isSharedTaxi());
-					dtoTemp.setCustom(dto.getCustom());
-					dtoTemp.setStartPointLatitude(dto.getStartPointLatitude());
-					dtoTemp.setStartPointLongitude(dto.getStartPointLongitude());
-					dtoTemp.setEndPointLatitude(dto.getEndPointLatitude());
-					dtoTemp.setEndPointLongitude(dto.getEndPointLongitude());
-					dtoTemp.setApproverID(dto.getApproverID());
-					dtoTemp.setRecurring("F");
-					UserPreferencesDTO userDto = ListOfValuesManager
-							.getUserPreferences(Integer.parseInt(dtoTemp
-									.getUserID()));
-					List x1;
-					try {
-						x1 = ApplicationUtil.calculateTimeWindowSettings(
-								dtoTemp.getFromAddress1(), "",
-								dtoTemp.getToAddress1(),
-								userDto.getMaxWaitTime(),
-								dtoTemp.getStartdateValue());
-						if (x1.size() > 0) {
-							dtoTemp.setStartdateValue(x1.get(1).toString());
-							dtoTemp.setStartDateEarly(x1.get(1).toString());
-							dtoTemp.setStartDateLate(x1.get(2).toString());
-							dtoTemp.setEndDateEarly(x1.get(3).toString());
-							dtoTemp.setEndDateLate(x1.get(4).toString());
-							float distance = Integer.parseInt(x1.get(5)
-									.toString()) / 1000;
-							dtoTemp.setRideDistance(distance);
-							dtoTemp.setRideCost((distance * 5) + "");
-						}
-					} catch (IOException e) {
-					} catch (JSONException e) {
-					}
-					if (!ListOfValuesManager.checkRideSeekerDuplicacy(dtoTemp)) {
-						Connection con = ListOfValuesManager
-								.getBroadConnection();
+						dtoTemp.setStartdateValue(dateFormat.format(post2Date));
+						dtoTemp.setRideID(null);
+						dtoTemp.setStartDate(post2Date);
+						dtoTemp.setFlexiTimeAfter(post2Date);
+						dtoTemp.setFlexiTimeBefore(post2Date);
+						dtoTemp.setStatus(dto.getStatus());
+						dtoTemp.setCreated_dt(new Date());
+						dtoTemp.setFromAddressCity(dto.getToAddressCity());
+						dtoTemp.setFromAddressPin(dto.getFromAddressPin());
+						dtoTemp.setFromAddressCity(dto.getToAddressCity());
+						dtoTemp.setToAddressPin(dto.getToAddressPin());
+						dtoTemp.setCreatedBy(dto.getCreatedBy());
+						dtoTemp.setSharedTaxi(dto.isSharedTaxi());
+						dtoTemp.setCustom(dto.getCustom());
+						dtoTemp.setStartPointLatitude(dto
+								.getStartPointLatitude());
+						dtoTemp.setStartPointLongitude(dto
+								.getStartPointLongitude());
+						dtoTemp.setEndPointLatitude(dto.getEndPointLatitude());
+						dtoTemp.setEndPointLongitude(dto.getEndPointLongitude());
+						dtoTemp.setApproverID(dto.getApproverID());
+						dtoTemp.setRecurring("N");
+						UserPreferencesDTO userDto = ListOfValuesManager
+								.getUserPreferences(Integer.parseInt(dtoTemp
+										.getUserID()));
+						List x1;
 						try {
-							dtoTemp = ListOfValuesManager.getRideSeekerEntery(
-									"findByDTO", dtoTemp, con);
+							x1 = ApplicationUtil.calculateTimeWindowSettings(
+									dtoTemp.getFromAddress1(), "",
+									dtoTemp.getToAddress1(),
+									userDto.getMaxWaitTime(),
+									dtoTemp.getStartdateValue());
+							System.out
+									.println("x1 is printing Inside the tripType 1:"
+											+ x1);
+							if (x1.size() > 0) {
+								dtoTemp.setStartdateValue(x1.get(1).toString());
+								dtoTemp.setStartDateEarly(x1.get(1).toString());
+								dtoTemp.setStartDateLate(x1.get(2).toString());
+								dtoTemp.setEndDateEarly(x1.get(3).toString());
+								dtoTemp.setEndDateLate(x1.get(4).toString());
+								float distance = Integer.parseInt(x1.get(5)
+										.toString()) / 1000;
+								dtoTemp.setRideDistance(distance);
+								dtoTemp.setRideCost((distance * 5) + "");
+							}
+						} catch (IOException e) {
+						} catch (JSONException e) {
+						}
+						if (!ListOfValuesManager
+								.checkRideSeekerDuplicacy(dtoTemp)) {
+							Connection con = ListOfValuesManager
+									.getBroadConnection();
+							try {
+								dtoTemp = ListOfValuesManager
+										.getRideSeekerEntery("findByDTO",
+												dtoTemp, con);
+								System.out.println("RideSeeker Entry:"
+										+ dtoTemp);
+
+								try {
+									frequencyDTO = new FrequencyDTO();
+									frequencyDTO.setStartDate(dateFormat
+											.format(post2Date));
+									frequencyDTO.setEndDate(dateFormat
+											.format(dtoTemp.getEndDate()));
+								} catch (NullPointerException e) {
+								}
+
+								frequencyDTO.setTime(post2Date);
+								List<String> freq = new ArrayList<String>();
+								freq.add("Once");
+								frequencyDTO.setFrequency(freq);
+								frequencyDTO.setRideSeekerId(dtoTemp
+										.getRideID());
+
+								frequencyDTO = ListOfValuesManager
+										.getFrequencyEntery("findByDTO",
+												frequencyDTO, con);
+								System.out.println("Frequency Dto:"
+										+ frequencyDTO);
+
+								if (dto.getSubSeekers().length() == 0)
+									dto.setSubSeekers(dtoTemp.getRideID());
+								else
+									dto.setSubSeekers(dto.getSubSeekers() + ","
+											+ dtoTemp.getRideID());
+								ListOfValuesManager.addSubSeekers(dto, con);
+
+							} catch (ConfigurationException e) {
+								LoggerSingleton.getInstance().error(
+										e.getStackTrace()[0].getClassName()
+												+ "->"
+												+ e.getStackTrace()[0]
+														.getMethodName()
+												+ "() : "
+												+ e.getStackTrace()[0]
+														.getLineNumber()
+												+ " :: " + e.getMessage());
+								rollbackTest = true;
+							} finally {
+								if (rollbackTest) {
+									try {
+										con.rollback();
+									} catch (SQLException e) {
+										LoggerSingleton
+												.getInstance()
+												.error(e.getStackTrace()[0]
+														.getClassName()
+														+ "->"
+														+ e.getStackTrace()[0]
+																.getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0]
+																.getLineNumber()
+														+ " :: "
+														+ e.getMessage());
+									}
+
+									ListOfValuesManager.releaseConnection(con);
+								} else {
+									try {
+										con.commit();
+									} catch (SQLException e) {
+										LoggerSingleton
+												.getInstance()
+												.error(e.getStackTrace()[0]
+														.getClassName()
+														+ "->"
+														+ e.getStackTrace()[0]
+																.getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0]
+																.getLineNumber()
+														+ " :: "
+														+ e.getMessage());
+									}
+
+									ListOfValuesManager.releaseConnection(con);
+								}
+							}
+						}
+
+					} else if (dto.getTripType() == 2) {
+						flag = 1;
+						dtoTemp = new RideManagementDTO();
+						dtoTemp.setUserID(dto.getUserID());
+						dtoTemp.setViaPoint(dto.getViaPoint());
+						dtoTemp.setViaPointLatitude(dto.getViaPointLatitude());
+						dtoTemp.setViaPointLongitude(dto.getViaPointLongitude());
+						dtoTemp.setFromAddress1(dto.getFromAddress1());
+						dtoTemp.setToAddress1(dto.getToAddress1());
+
+						dtoTemp.setStartdateValue(dateFormat.format(post2Date));
+						dtoTemp.setRideID(null);
+						dtoTemp.setStartDate(post2Date);
+						dtoTemp.setFlexiTimeAfter(post2Date);
+						dtoTemp.setFlexiTimeBefore(post2Date);
+						dtoTemp.setStatus(dto.getStatus());
+						dtoTemp.setCreated_dt(new Date());
+						dtoTemp.setFromAddressCity(dto.getToAddressCity());
+						dtoTemp.setFromAddressPin(dto.getFromAddressPin());
+						dtoTemp.setFromAddressCity(dto.getToAddressCity());
+						dtoTemp.setToAddressPin(dto.getToAddressPin());
+						dtoTemp.setCreatedBy(dto.getCreatedBy());
+						dtoTemp.setSharedTaxi(dto.isSharedTaxi());
+						dtoTemp.setCustom(dto.getCustom());
+						dtoTemp.setStartPointLatitude(dto
+								.getStartPointLatitude());
+						dtoTemp.setStartPointLongitude(dto
+								.getStartPointLongitude());
+						dtoTemp.setEndPointLatitude(dto.getEndPointLatitude());
+						dtoTemp.setEndPointLongitude(dto.getEndPointLongitude());
+						dtoTemp.setApproverID(dto.getApproverID());
+						dtoTemp.setRecurring("N");
+						UserPreferencesDTO userDto = ListOfValuesManager
+								.getUserPreferences(Integer.parseInt(dtoTemp
+										.getUserID()));
+						List x1;
+						try {
+							x1 = ApplicationUtil.calculateTimeWindowSettings(
+									dtoTemp.getFromAddress1(), "",
+									dtoTemp.getToAddress1(),
+									userDto.getMaxWaitTime(),
+									dtoTemp.getStartdateValue());
+							System.out
+									.println("This is for X1 for tripType 2 1st Time:"
+											+ x1);
+							if (x1.size() > 0) {
+								dtoTemp.setStartdateValue(x1.get(1).toString());
+								dtoTemp.setStartDateEarly(x1.get(1).toString());
+								dtoTemp.setStartDateLate(x1.get(2).toString());
+								dtoTemp.setEndDateEarly(x1.get(3).toString());
+								dtoTemp.setEndDateLate(x1.get(4).toString());
+								float distance = Integer.parseInt(x1.get(5)
+										.toString()) / 1000;
+								dtoTemp.setRideDistance(distance);
+								dtoTemp.setRideCost((distance * 5) + "");
+							}
+						} catch (IOException e) {
+						} catch (JSONException e) {
+						}
+						if (!ListOfValuesManager
+								.checkRideSeekerDuplicacy(dtoTemp)) {
+							Connection con = ListOfValuesManager
+									.getBroadConnection();
+							try {
+								dtoTemp = ListOfValuesManager
+										.getRideSeekerEntery("findByDTO",
+												dtoTemp, con);
+
+								try {
+									frequencyDTO = new FrequencyDTO();
+									frequencyDTO.setStartDate(dateFormat
+											.format(post2Date));
+									frequencyDTO.setEndDate(dateFormat
+											.format(dtoTemp.getEndDate()));
+								} catch (NullPointerException e) {
+								}
+
+								frequencyDTO.setTime(post2Date);
+								List<String> freq = new ArrayList<String>();
+								freq.add("Once");
+								frequencyDTO.setFrequency(freq);
+								frequencyDTO.setRideSeekerId(dtoTemp
+										.getRideID());
+
+								frequencyDTO = ListOfValuesManager
+										.getFrequencyEntery("findByDTO",
+												frequencyDTO, con);
+
+								if (dto.getSubSeekers().length() == 0)
+									dto.setSubSeekers(dtoTemp.getRideID());
+								else
+									dto.setSubSeekers(dto.getSubSeekers() + ","
+											+ dtoTemp.getRideID());
+								ListOfValuesManager.addSubSeekers(dto, con);
+
+							} catch (ConfigurationException e) {
+								LoggerSingleton.getInstance().error(
+										e.getStackTrace()[0].getClassName()
+												+ "->"
+												+ e.getStackTrace()[0]
+														.getMethodName()
+												+ "() : "
+												+ e.getStackTrace()[0]
+														.getLineNumber()
+												+ " :: " + e.getMessage());
+								rollbackTest = true;
+							}
+							flag = 2;
+
+							tempDate = dto.getStartDate1();
+							cal1.setTime(tempDate);
+							cal2.setTime(post2Date);
+							cal2.set(Calendar.HOUR_OF_DAY,
+									cal1.get(Calendar.HOUR_OF_DAY));
+							cal2.set(Calendar.MINUTE, cal1.get(Calendar.MINUTE));
+							cal2.set(Calendar.SECOND, cal1.get(Calendar.SECOND));
+							post2Date = cal2.getTime();
+							dtoTemp = new RideManagementDTO();
+							dtoTemp.setUserID(dto.getUserID());
+							dtoTemp.setViaPoint(dto.getViaPoint());
+							dtoTemp.setViaPointLatitude(dto
+									.getViaPointLatitude());
+							dtoTemp.setViaPointLongitude(dto
+									.getViaPointLongitude());
+							dtoTemp.setFromAddress1(dto.getToAddress1());
+							dtoTemp.setToAddress1(dto.getFromAddress1());
+							dtoTemp.setStartdateValue(dateFormat
+									.format(post2Date));
+							dtoTemp.setRideID(null);
+							dtoTemp.setStartDate(post2Date);
+							dtoTemp.setFlexiTimeAfter(post2Date);
+							dtoTemp.setFlexiTimeBefore(post2Date);
+							dtoTemp.setStatus(dto.getStatus());
+							dtoTemp.setCreated_dt(new Date());
+
+							dtoTemp.setFromAddressCity(dto.getToAddressCity());
+							dtoTemp.setFromAddressPin(dto.getToAddressPin());
+							dtoTemp.setFromAddressCity(dto.getToAddressCity());
+							dtoTemp.setToAddressPin(dto.getFromAddressPin());
+
+							dtoTemp.setCreatedBy(dto.getCreatedBy());
+							dtoTemp.setSharedTaxi(dto.isSharedTaxi());
+							dtoTemp.setCustom(dto.getCustom());
+							dtoTemp.setStartPointLatitude(dto
+									.getEndPointLatitude());
+							dtoTemp.setStartPointLongitude(dto
+									.getEndPointLongitude());
+							dtoTemp.setEndPointLatitude(dto
+									.getStartPointLatitude());
+							dtoTemp.setEndPointLongitude(dto
+									.getStartPointLongitude());
+							dtoTemp.setApproverID(dto.getApproverID());
+							dtoTemp.setRecurring("N");
+							UserPreferencesDTO userDto1 = ListOfValuesManager
+									.getUserPreferences(Integer
+											.parseInt(dtoTemp.getUserID()));
 
 							try {
-								frequencyDTO = new FrequencyDTO();
-								frequencyDTO.setStartDate(dateFormat
-										.format(post2Date));
-								frequencyDTO.setEndDate(dateFormat
-										.format(dtoTemp.getEndDate()));
-							} catch (NullPointerException e) {
+								x1 = ApplicationUtil
+										.calculateTimeWindowSettings1(
+												dtoTemp.getFromAddress1(), "",
+												dtoTemp.getToAddress1(),
+												userDto.getMaxWaitTime(),
+												dtoTemp.getStartdateValue());
+								System.out
+										.println("For second time X1 is Printing:");
+								if (x1.size() > 0) {
+									dtoTemp.setStartdateValue(x1.get(1)
+											.toString());
+									dtoTemp.setStartDateEarly(x1.get(1)
+											.toString());
+									dtoTemp.setStartDateLate(x1.get(2)
+											.toString());
+									dtoTemp.setEndDateEarly(x1.get(3)
+											.toString());
+									dtoTemp.setEndDateLate(x1.get(4).toString());
+									float distance = Integer.parseInt(x1.get(5)
+											.toString()) / 1000;
+									dtoTemp.setRideDistance(distance);
+									dtoTemp.setRideCost((distance * 5) + "");
+								}
+							} catch (IOException e) {
+							} catch (JSONException e) {
 							}
-
-							frequencyDTO.setTime(post2Date);
-							List<String> freq = new ArrayList<String>();
-							freq.add("Once");
-							frequencyDTO.setFrequency(freq);
-							frequencyDTO.setRideSeekerId(dtoTemp.getRideID());
-
-							frequencyDTO = ListOfValuesManager
-									.getFrequencyEntery("findByDTO",
-											frequencyDTO, con);
-
-							if (dto.getSubSeekers().length() == 0)
-								dto.setSubSeekers(dtoTemp.getRideID());
-							else
-								dto.setSubSeekers(dto.getSubSeekers() + ","
-										+ dtoTemp.getRideID());
-							ListOfValuesManager.addSubSeekers(dto, con);
-
-						} catch (ConfigurationException e) {
-							LoggerSingleton.getInstance().error(
-									e.getStackTrace()[0].getClassName()
-											+ "->"
-											+ e.getStackTrace()[0]
-													.getMethodName()
-											+ "() : "
-											+ e.getStackTrace()[0]
-													.getLineNumber() + " :: "
-											+ e.getMessage());
-							rollbackTest = true;
-						} finally {
-							if (rollbackTest) {
+							if (!ListOfValuesManager
+									.checkRideSeekerDuplicacy(dtoTemp)) {
+								Connection con1 = ListOfValuesManager
+										.getBroadConnection();
 								try {
-									con.rollback();
-								} catch (SQLException e) {
+									dtoTemp = ListOfValuesManager
+											.getRideSeekerEntery("findByDTO",
+													dtoTemp, con1);
+									System.out.println("Ride Seeker Entry:"
+											+ dtoTemp);
+
+									try {
+										frequencyDTO = new FrequencyDTO();
+										frequencyDTO.setStartDate(dateFormat
+												.format(post2Date));
+										frequencyDTO.setEndDate(dateFormat
+												.format(dtoTemp.getEndDate()));
+									} catch (NullPointerException e) {
+									}
+
+									frequencyDTO.setTime(post2Date);
+									List<String> freq = new ArrayList<String>();
+									freq.add("Once");
+									frequencyDTO.setFrequency(freq);
+									frequencyDTO.setRideSeekerId(dtoTemp
+											.getRideID());
+
+									frequencyDTO = ListOfValuesManager
+											.getFrequencyEntery("findByDTO",
+													frequencyDTO, con);
+
+									if (dto.getSubSeekers().length() == 0)
+										dto.setSubSeekers(dtoTemp.getRideID());
+									else
+										dto.setSubSeekers(dto.getSubSeekers()
+												+ "," + dtoTemp.getRideID());
+									ListOfValuesManager.addSubSeekers(dto, con);
+
+								} catch (ConfigurationException e) {
 									LoggerSingleton.getInstance().error(
 											e.getStackTrace()[0].getClassName()
 													+ "->"
@@ -8541,30 +8814,59 @@ public class UserAction extends HPBaseAction {
 													+ e.getStackTrace()[0]
 															.getLineNumber()
 													+ " :: " + e.getMessage());
+									rollbackTest = true;
+								} finally {
+									if (rollbackTest) {
+										try {
+											con.rollback();
+										} catch (SQLException e) {
+											LoggerSingleton
+													.getInstance()
+													.error(e.getStackTrace()[0]
+															.getClassName()
+															+ "->"
+															+ e.getStackTrace()[0]
+																	.getMethodName()
+															+ "() : "
+															+ e.getStackTrace()[0]
+																	.getLineNumber()
+															+ " :: "
+															+ e.getMessage());
+										}
+
+										ListOfValuesManager
+												.releaseConnection(con);
+									} else {
+										try {
+											con.commit();
+										} catch (SQLException e) {
+											LoggerSingleton
+													.getInstance()
+													.error(e.getStackTrace()[0]
+															.getClassName()
+															+ "->"
+															+ e.getStackTrace()[0]
+																	.getMethodName()
+															+ "() : "
+															+ e.getStackTrace()[0]
+																	.getLineNumber()
+															+ " :: "
+															+ e.getMessage());
+										}
+
+										ListOfValuesManager
+												.releaseConnection(con);
+									}
 								}
-								ListOfValuesManager.releaseConnection(con);
-							} else {
-								try {
-									con.commit();
-								} catch (SQLException e) {
-									LoggerSingleton.getInstance().error(
-											e.getStackTrace()[0].getClassName()
-													+ "->"
-													+ e.getStackTrace()[0]
-															.getMethodName()
-													+ "() : "
-													+ e.getStackTrace()[0]
-															.getLineNumber()
-													+ " :: " + e.getMessage());
-								}
-								ListOfValuesManager.releaseConnection(con);
 							}
 						}
+
 					}
-					break;
 				}
 			}
+
 		}
+
 	}
 
 	public void paymentTransaction() {
@@ -9657,4 +9959,1002 @@ public class UserAction extends HPBaseAction {
 		userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
 
 	}
+/*
+	 * This is<code>dailyRide</code> Method
+	 */
+
+	public String dailyRide() {
+		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+
+		String ride = null;
+
+		FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> requestMap = context.getExternalContext()
+				.getRequestParameterMap();
+		DateFormat dateFormat = new SimpleDateFormat(
+				ApplicationUtil.datePattern3);
+
+		Calendar cal = Calendar.getInstance();
+		Calendar cal1 = Calendar.getInstance();
+
+		ride = (String) requestMap.get("ride");
+		clearScreenMessage();
+		if (rideRegistered.getTripType() == 1) {
+			if (ride != null) {
+				rideManager = ride;
+			}
+			try {
+				if (errorMessage.size() > 0)
+					throw new ControllerException();
+				rideRegistered.setUserID(userRegistrationDTO.getId());
+
+				try {
+					// updated code for start date 1
+					String str1 = rideRegistered.getStartDate1();
+					str1 = str1 + " " + rideRegistered.getPickup_time1();
+					rideRegistered.setStartDate1(str1);
+
+					rideRegistered.setStartDate(new SimpleDateFormat(
+							ApplicationUtil.datePattern2).parse(str1));
+
+				} catch (ParseException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+					errorMessage.add("Please select proper start date.");
+					throw new ControllerException();
+				}
+				cal.setTime(rideRegistered.getStartDate());
+
+				rideRegistered.setStartdateValue(dateFormat.format(cal
+						.getTime()));
+				rideRegistered.setStartdateValue1("0000-00-00 00:00:00");
+				if (frequencyDTO.getFrequency() == null
+						|| frequencyDTO.getFrequency().size() == 0) {
+					List<String> value = new ArrayList<String>();
+					String putValue = "Mon, Tue, Wed, Thu, Fri";
+					value.add(putValue);
+					frequencyDTO.setFrequency(value);
+				}
+				if (rideManager.equals("takeRide")) {
+					if (ListOfValuesManager
+							.checkRideSeekerDuplicacy(rideRegistered)) {
+						errorMessage.add("Same Ride already exist.");
+						throw new ControllerException();
+						// return "takeRide";
+					} else {
+						rideRegistered.setRideID(null);
+						rideRegistered
+								.setCreatedBy(userRegistrationDTO.getId());
+
+						rideRegistered.setCreated_dt(ListOfValuesManager
+								.getCurrentTimeStampDate());
+
+						List windowCalculation;
+						try {
+							windowCalculation = ApplicationUtil
+									.calculateTimeWindowSettings(
+											rideRegistered.getFromAddress1(),
+											"", rideRegistered.getToAddress1(),
+											userPreferences.getMaxWaitTime(),
+											rideRegistered.getStartdateValue());
+							try {
+								rideRegistered.setEnddateValue(dateFormat
+										.format(new SimpleDateFormat(
+												ApplicationUtil.datePattern7)
+												.parse(rideRegistered
+														.getStartDate2())));
+							} catch (ParseException e) {
+
+								e.printStackTrace();
+							}
+
+							if (windowCalculation.size() > 0) {
+								rideRegistered
+										.setStartdateValue(windowCalculation
+												.get(1).toString());
+								rideRegistered
+										.setStartDateEarly(windowCalculation
+												.get(1).toString());
+								rideRegistered
+										.setStartDateLate(windowCalculation
+												.get(2).toString());
+								rideRegistered
+										.setEndDateEarly(windowCalculation.get(
+												3).toString());
+								rideRegistered.setEndDateLate(windowCalculation
+										.get(4).toString());
+								float distance = Integer
+										.parseInt(windowCalculation.get(5)
+												.toString()) / 1000;
+								rideRegistered.setRideDistance(distance);
+								if (rideRegistered.isSharedTaxi() == true) {
+									rideRegistered
+											.setRideCost(distance
+													* Float.parseFloat(Messages
+															.getValue(
+																	"ride.perkm.charge")
+															.trim()) + "");
+
+								} else {
+									distancepaycalc();
+								}
+							}
+						} catch (IOException e) {
+							errorMessage
+									.add("There is some problem in calculating time for ride.");
+							throw new ControllerException();
+						} catch (JSONException e) {
+							LoggerSingleton.getInstance().error(
+									e.getStackTrace()[0].getClassName()
+											+ "->"
+											+ e.getStackTrace()[0]
+													.getMethodName()
+											+ "() : "
+											+ e.getStackTrace()[0]
+													.getLineNumber() + " :: "
+											+ e.getMessage());
+							errorMessage
+									.add("There is some problem in calculating time for ride.");
+							throw new ControllerException();
+						}
+
+						if (rideRegistered.getCircleId() <= 0
+								&& allMemberCircleList != null
+								&& !allMemberCircleList.isEmpty()) {
+							rideRegistered.setCircleId(allMemberCircleList.get(
+									0).getCircleID());
+						}
+						rideRegistered = ListOfValuesManager
+								.getDailyRideSeekerEntery("findByDTO",
+										rideRegistered, con);
+						if (rideRegistered != null) {
+							successMessage
+									.add("One Way Ride Registred SuccessFully");
+						} else {
+							errorMessage
+									.add("One Way Is not Registered,Please Register");
+						}
+						frequencyDTO
+								.setRideSeekerId(rideRegistered.getRideID());
+					}
+				}
+
+				frequencyDTO.setTime(rideRegistered.getStartDate());
+				frequencyDTO.setStartDate(rideRegistered.getStartdateValue());
+				frequencyDTO.setEndDate(rideRegistered.getEnddateValue());
+
+				frequencyDTO = ListOfValuesManager.getFrequencyEntery(
+						"findByDTO", frequencyDTO, con);
+
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} catch (ControllerException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} finally {
+				if (rollbackTest) {
+					try {
+						con.rollback();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+				} else {
+					try {
+						con.commit();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+				}
+				rollbackTest = false;
+			}
+		} else if (rideRegistered.getTripType() == 2) {
+
+			ride = (String) requestMap.get("ride");
+			clearScreenMessage();
+
+			if (ride != null) {
+				rideManager = ride;
+			}
+			try {
+				if (errorMessage.size() > 0)
+					throw new ControllerException();
+				rideRegistered.setUserID(userRegistrationDTO.getId());
+
+				try {
+					String str1 = rideRegistered.getStartDate1();
+					String str2 = str1 + " " + rideRegistered.getPickup_time2();
+					str1 = str1 + " " + rideRegistered.getPickup_time1();
+
+					rideRegistered.setStartDate1(str1);
+
+					rideRegistered.setStartDate(new SimpleDateFormat(
+							ApplicationUtil.datePattern2).parse(str1));
+
+					rideRegistered.setStartDate3(new SimpleDateFormat(
+							ApplicationUtil.datePattern2).parse(str2));
+				} catch (ParseException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+					errorMessage.add("Please select proper start date.");
+					throw new ControllerException();
+				}
+				cal.setTime(rideRegistered.getStartDate());
+				cal1.setTime(rideRegistered.getStartDate3());
+
+				rideRegistered.setStartdateValue(dateFormat.format(cal
+						.getTime()));
+				rideRegistered.setStartdateValue1(dateFormat.format(cal1
+						.getTime()));
+
+				if (frequencyDTO.getFrequency() == null
+						|| frequencyDTO.getFrequency().size() == 0) {
+					List<String> value = new ArrayList<String>();
+					String putValue = "Mon, Tue, Wed, Thu, Fri";
+					value.add(putValue);
+					frequencyDTO.setFrequency(value);
+				}
+
+				if (rideManager.equals("takeRide")) {
+					if (ListOfValuesManager
+							.checkRideSeekerDuplicacy(rideRegistered)) {
+						errorMessage.add("Same Ride already exist.");
+						throw new ControllerException();
+						// return "takeRide";
+					} else {
+						rideRegistered.setRideID(null);
+						rideRegistered
+								.setCreatedBy(userRegistrationDTO.getId());
+
+						rideRegistered.setCreated_dt(ListOfValuesManager
+								.getCurrentTimeStampDate());
+
+						List windowCalculation;
+
+						try {
+							windowCalculation = ApplicationUtil
+									.calculateTimeWindowSettings(
+											rideRegistered.getFromAddress1(),
+											"", rideRegistered.getToAddress1(),
+											userPreferences.getMaxWaitTime(),
+											rideRegistered.getStartdateValue());
+
+							try {
+								rideRegistered.setEnddateValue(dateFormat
+										.format(new SimpleDateFormat(
+												ApplicationUtil.datePattern7)
+												.parse(rideRegistered
+														.getStartDate2())));
+							} catch (ParseException e) {
+
+								e.printStackTrace();
+							}
+							if (windowCalculation.size() > 0) {
+
+								rideRegistered
+										.setStartdateValue(windowCalculation
+												.get(1).toString());
+								rideRegistered
+										.setStartDateEarly(windowCalculation
+												.get(1).toString());
+
+								rideRegistered
+										.setStartDateLate(windowCalculation
+												.get(2).toString());
+								rideRegistered
+										.setEndDateEarly(windowCalculation.get(
+												3).toString());
+								rideRegistered.setEndDateLate(windowCalculation
+										.get(4).toString());
+								float distance = Integer
+										.parseInt(windowCalculation.get(5)
+												.toString()) / 1000;
+								rideRegistered.setRideDistance(distance);
+								if (rideRegistered.isSharedTaxi() == true) {
+
+									rideRegistered
+											.setRideCost(distance
+													* Float.parseFloat(Messages
+															.getValue(
+																	"ride.perkm.charge")
+															.trim()) + "");
+
+								} else {
+									distancepaycalc();
+								}
+							}
+						} catch (IOException e) {
+							errorMessage
+									.add("There is some problem in calculating time for ride.");
+							throw new ControllerException();
+						} catch (JSONException e) {
+							LoggerSingleton.getInstance().error(
+									e.getStackTrace()[0].getClassName()
+											+ "->"
+											+ e.getStackTrace()[0]
+													.getMethodName()
+											+ "() : "
+											+ e.getStackTrace()[0]
+													.getLineNumber() + " :: "
+											+ e.getMessage());
+							errorMessage
+									.add("There is some problem in calculating time for ride.");
+							throw new ControllerException();
+						}
+
+						if (rideRegistered.getCircleId() <= 0
+								&& allMemberCircleList != null
+								&& !allMemberCircleList.isEmpty()) {
+							rideRegistered.setCircleId(allMemberCircleList.get(
+									0).getCircleID());
+						}
+
+						rideRegistered = ListOfValuesManager
+								.getDailyRideSeekerEntery("findByDTO",
+										rideRegistered, con);
+						if (rideRegistered != null) {
+							successMessage
+									.add("Two Way Ride SuccessFully Inserted");
+						} else {
+							errorMessage
+									.add("Fail to Register the Twoway Ride");
+						}
+						frequencyDTO
+								.setRideSeekerId(rideRegistered.getRideID());
+					}
+				}
+
+				frequencyDTO.setTime(rideRegistered.getStartDate());
+				frequencyDTO.setStartDate(rideRegistered.getStartdateValue());
+				frequencyDTO.setEndDate(rideRegistered.getEnddateValue());
+
+				frequencyDTO = ListOfValuesManager.getFrequencyEntery(
+						"findByDTO", frequencyDTO, con);
+
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} catch (ControllerException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} finally {
+				if (rollbackTest) {
+					try {
+						con.rollback();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+				} else {
+					try {
+						con.commit();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+
+				}
+				rollbackTest = false;
+			}
+		}
+		// rideRegistered = new RideManagementDTO();
+		frequencyDTO = new FrequencyDTO();
+		getDailyRideData();
+		return "dailyRide1";
+
+	}
+
+	/*
+	 * This is for<code>getDailyRideData</code> Method to view the rides
+	 * details.
+	 */
+	private void getDailyRideData() {
+
+		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+
+		try {
+			RideManagementDTO rideDTO = new RideManagementDTO();
+			rideDTO = ListOfValuesManager.getDailyRideEntry(con,
+					userRegistrationDTO.getId());
+
+			if (rideDTO.getUserID() != null) {
+				rideRegistered.setStartPointLatitude(rideDTO
+						.getStartPointLatitude());
+				rideRegistered.setStartPointLongitude(rideDTO
+						.getStartPointLongitude());
+				rideRegistered.setEndPointLatitude(rideDTO
+						.getEndPointLatitude());
+				rideRegistered.setEndPointLongitude(rideDTO
+						.getEndPointLongitude());
+				rideRegistered.setViaPointLatitude(rideDTO
+						.getViaPointLatitude());
+				rideRegistered.setViaPointLongitude(rideDTO
+						.getViaPointLongitude());
+				rideRegistered.setFromAddressCity(rideDTO.getFromAddressCity());
+				rideRegistered.setFromAddressPin(rideDTO.getFromAddressPin());
+				rideRegistered.setToAddressCity(rideDTO.getToAddressCity());
+				rideRegistered.setToAddressPin(rideDTO.getToAddressPin());
+
+				rideRegistered.setUserID(rideDTO.getUserID());
+				rideRegistered.setFromAddress1(rideDTO.getFromAddress1());
+				rideRegistered.setToAddress1(rideDTO.getToAddress1());
+				rideRegistered.setTripType(rideDTO.getTripType());
+				rideRegistered.setCreatedBy(rideDTO.getCreatedBy());
+				rideRegistered.setRideCost(rideDTO.getRideCost());
+				rideRegistered.setRideDistance(rideDTO.getRideDistance());
+
+				// Splitting the date formats for StartDate1
+				DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+
+				Calendar cal = Calendar.getInstance();
+				Calendar cal1 = Calendar.getInstance();
+
+				String startDate = rideDTO.getStartdateValue().split(" ")[0];
+
+				try {
+
+					rideRegistered.setStartDate(new SimpleDateFormat(
+							"yyyy-MM-dd").parse(startDate));
+
+					cal.setTime(rideRegistered.getStartDate());
+					rideRegistered.setStartdateValue(dateFormat.format(cal
+							.getTime()));
+					rideRegistered.setStartDate1(rideRegistered
+							.getStartdateValue());
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+				String enddate = rideDTO.getEnddateValue().split(" ")[0];
+
+				String time = rideDTO.getEnddateValue().split(" ")[1];
+				try {
+
+					rideRegistered.setStartDate(new SimpleDateFormat(
+							"yyyy-MM-dd").parse(enddate));
+					cal.setTime(rideRegistered.getStartDate());
+					rideRegistered.setEnddateValue(dateFormat.format(cal
+							.getTime()));
+					rideRegistered.setStartDate2(rideRegistered
+							.getEnddateValue());
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				// Time Picker
+
+				String timepic1 = rideDTO.getStartdateValue().split(" ")[1];
+				String splittime_pic1[] = timepic1.split(":");
+				timepic1 = splittime_pic1[0] + ":" + splittime_pic1[1];
+
+				rideRegistered.setPickup_time1(timepic1);
+				if (rideDTO.getTripType() == 2) {
+					String statrDateVal1 = rideDTO.getStartdateValue1().split(
+							" ")[0];
+					String timepic2 = rideDTO.getStartdateValue1().split(" ")[1];
+					String splittime_pic2[] = timepic2.split(":");
+					timepic2 = splittime_pic2[0] + ":" + splittime_pic2[1];
+
+					rideRegistered.setPickup_time2(timepic2);
+
+					try {
+						rideRegistered.setStartDate(new SimpleDateFormat(
+								"yyyy-MM-dd").parse(statrDateVal1));
+					} catch (ParseException e) {
+
+						e.printStackTrace();
+					}
+
+					cal1.setTime(rideRegistered.getStartDate());
+					rideRegistered.setStartdateValue1(dateFormat.format(cal1
+							.getTime()));
+					rideRegistered.setStartDate1(rideRegistered
+							.getStartdateValue1());
+
+				}
+
+			} else {
+				errorMessage
+						.add("Sorry!! There are no Records.Please Register Ride");
+				// rideRegistered = null;
+			}
+
+		} catch (ConfigurationException e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	public String viewRideData() {
+		getDailyRideData();
+		return "dailyRide1";
+	}
+
+	/*
+	 * This is <code>updateDailyRide</code> Method for update the dailyrides
+	 * details
+	 */
+	public String updateDailyRide() {
+		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+		String ride = null;
+		int flag = 1;
+		FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> requestMap = context.getExternalContext()
+				.getRequestParameterMap();
+		DateFormat dateFormat = new SimpleDateFormat(
+				ApplicationUtil.datePattern3);
+
+		Calendar cal = Calendar.getInstance();
+		Calendar cal1 = Calendar.getInstance();
+
+		ride = (String) requestMap.get("ride");
+		clearScreenMessage();
+		if (rideRegistered.getTripType() == 1) {
+
+			if (ride != null) {
+				rideManager = ride;
+			}
+			try {
+				if (errorMessage.size() > 0)
+					throw new ControllerException();
+				rideRegistered.setUserID(userRegistrationDTO.getId());
+
+				try {
+					// updated code for start date 1
+					String str1 = rideRegistered.getStartDate1();
+					str1 = str1 + " " + rideRegistered.getPickup_time1();
+					rideRegistered.setStartDate1(str1);
+
+					rideRegistered.setStartDate(new SimpleDateFormat(
+							ApplicationUtil.datePattern2).parse(str1));
+
+				} catch (ParseException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+					/* errorMessage.add("Please select proper start date."); */
+					throw new ControllerException();
+				}
+				cal.setTime(rideRegistered.getStartDate());
+
+				rideRegistered.setStartdateValue(dateFormat.format(cal
+						.getTime()));
+				rideRegistered.setStartdateValue1("0000-00-00 00:00:00");
+
+				if (rideManager.equals("takeRide")) {
+
+					List windowCalculation;
+					try {
+						windowCalculation = ApplicationUtil
+								.calculateTimeWindowSettings(
+										rideRegistered.getFromAddress1(), "",
+										rideRegistered.getToAddress1(),
+										userPreferences.getMaxWaitTime(),
+										rideRegistered.getStartdateValue());
+						System.out.println("Inside the window location:"
+								+ windowCalculation);
+						try {
+							rideRegistered.setEnddateValue(dateFormat
+									.format(new SimpleDateFormat(
+											ApplicationUtil.datePattern7)
+											.parse(rideRegistered
+													.getStartDate2())));
+						} catch (ParseException e) {
+
+							e.printStackTrace();
+						}
+
+						if (windowCalculation.size() > 0) {
+							rideRegistered.setStartdateValue(windowCalculation
+									.get(1).toString());
+							rideRegistered.setStartDateEarly(windowCalculation
+									.get(1).toString());
+							rideRegistered.setStartDateLate(windowCalculation
+									.get(2).toString());
+							rideRegistered.setEndDateEarly(windowCalculation
+									.get(3).toString());
+							rideRegistered.setEndDateLate(windowCalculation
+									.get(4).toString());
+							float distance = Integer.parseInt(windowCalculation
+									.get(5).toString()) / 1000;
+							rideRegistered.setRideDistance(distance);
+							if (rideRegistered.isSharedTaxi() == true) {
+								/*
+								 * rideRegistered.setRideCost(distance
+								 * Float.parseFloat(Messages.getValue(
+								 * "ride.perkm.charge").trim()) + "");
+								 */
+							} else {
+								distancepaycalc();
+
+							}
+						}
+					} catch (IOException e) {
+						errorMessage
+								.add("There is some problem in calculating time for ride.");
+						throw new ControllerException();
+					} catch (JSONException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+						errorMessage
+								.add("There is some problem in calculating time for ride.");
+						throw new ControllerException();
+					}
+
+					if (rideRegistered.getCircleId() <= 0
+							&& allMemberCircleList != null
+							&& !allMemberCircleList.isEmpty()) {
+						rideRegistered.setCircleId(allMemberCircleList.get(0)
+								.getCircleID());
+					}
+					rideRegistered = ListOfValuesManager
+							.updateRideSeekerEntery("findByDTO",
+									rideRegistered, con);
+
+					if (rideRegistered != null) {
+						successMessage.add("OneWay Ride Updated SuccessFully");
+					} else {
+						errorMessage.add("OneWay Ride Fail to Update");
+					}
+				}
+
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} catch (ControllerException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} finally {
+				if (rollbackTest) {
+					try {
+						con.rollback();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+				} else {
+					try {
+						con.commit();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+				}
+				rollbackTest = false;
+			}
+		} else if (rideRegistered.getTripType() == 2) {
+			ride = (String) requestMap.get("ride");
+			clearScreenMessage();
+
+			if (ride != null) {
+				rideManager = ride;
+			}
+			try {
+
+				rideRegistered.setUserID(userRegistrationDTO.getId());
+
+				try {
+					String str1 = rideRegistered.getStartDate1();
+					String str2 = str1 + " " + rideRegistered.getPickup_time2();
+					str1 = str1 + " " + rideRegistered.getPickup_time1();
+					rideRegistered.setStartDate1(str1);
+
+					rideRegistered.setStartDate(new SimpleDateFormat(
+							ApplicationUtil.datePattern2).parse(str1));
+
+					rideRegistered.setStartDate3(new SimpleDateFormat(
+							ApplicationUtil.datePattern2).parse(str2));
+				} catch (ParseException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+					/* errorMessage.add("Please select proper start date."); */
+					throw new ControllerException();
+				}
+				cal.setTime(rideRegistered.getStartDate());
+				cal1.setTime(rideRegistered.getStartDate3());
+
+				rideRegistered.setStartdateValue(dateFormat.format(cal
+						.getTime()));
+				rideRegistered.setStartdateValue1(dateFormat.format(cal1
+						.getTime()));
+
+				rideRegistered.setRideID(null);
+				rideRegistered.setCreatedBy(userRegistrationDTO.getId());
+				System.out.println("created by in trip 2 :"
+						+ userRegistrationDTO.getId());
+				rideRegistered.setCreated_dt(ListOfValuesManager
+						.getCurrentTimeStampDate());
+
+				List windowCalculation;
+
+				try {
+					windowCalculation = ApplicationUtil
+							.calculateTimeWindowSettings(
+									rideRegistered.getFromAddress1(), "",
+									rideRegistered.getToAddress1(),
+									userPreferences.getMaxWaitTime(),
+									rideRegistered.getStartdateValue());
+
+					try {
+						rideRegistered
+								.setEnddateValue(dateFormat
+										.format(new SimpleDateFormat(
+												ApplicationUtil.datePattern7)
+												.parse(rideRegistered
+														.getStartDate2())));
+					} catch (ParseException e) {
+
+						e.printStackTrace();
+					}
+					if (windowCalculation.size() > 0) {
+
+						rideRegistered.setStartdateValue(windowCalculation.get(
+								1).toString());
+						rideRegistered.setStartDateEarly(windowCalculation.get(
+								1).toString());
+						// rideRegistered.setEnddateValue(windowCalculation1.get(1).toString());
+						rideRegistered.setStartDateLate(windowCalculation
+								.get(2).toString());
+						rideRegistered.setEndDateEarly(windowCalculation.get(3)
+								.toString());
+						rideRegistered.setEndDateLate(windowCalculation.get(4)
+								.toString());
+						float distance = Integer.parseInt(windowCalculation
+								.get(5).toString()) / 1000;
+						rideRegistered.setRideDistance(distance);
+						System.out.println("Ride Distance:"
+								+ rideRegistered.getRideDistance());
+						if (rideRegistered.isSharedTaxi() == true) {
+
+						} else {
+							distancepaycalc();
+
+						}
+					}
+				} catch (IOException e) {
+					errorMessage
+							.add("There is some problem in calculating time for ride.");
+					throw new ControllerException();
+				} catch (JSONException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+					errorMessage
+							.add("There is some problem in calculating time for ride.");
+					throw new ControllerException();
+				}
+
+				if (rideRegistered.getCircleId() <= 0
+						&& allMemberCircleList != null
+						&& !allMemberCircleList.isEmpty()) {
+					rideRegistered.setCircleId(allMemberCircleList.get(0)
+							.getCircleID());
+				}
+
+				rideRegistered = ListOfValuesManager.updateRideSeekerEntery(
+						"findByDTO", rideRegistered, con);
+
+				if (rideRegistered != null) {
+					successMessage.add("TwoWay Ride Updated SuccessFully");
+				} else {
+					errorMessage.add("TwoWay Ride Fail to Update");
+				}
+
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} catch (ControllerException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				rollbackTest = true;
+			} finally {
+				if (rollbackTest) {
+					try {
+						con.rollback();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+				} else {
+					try {
+						con.commit();
+					} catch (SQLException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					}
+					ListOfValuesManager.releaseConnection(con);
+
+				}
+				rollbackTest = false;
+			}
+		}
+		rideRegistered = new RideManagementDTO();
+		getDailyRideData();
+		return "dailyRide1";
+
+	}
+
+	/*
+	 * In this method <code>distancepaycalc</code> calculating the ride distance
+	 * and ride cost .
+	 */
+	public void distancepaycalc() {
+
+		float price = 0;
+		String a;
+		DecimalFormat format = new DecimalFormat("#.##");
+		if ((0 < distance) && (distance <= 15)) {
+			price = 1000;
+			price = Math.round(price);
+			a = format.format(price);
+			rideRegistered.setRideCost(a);
+		} else if ((15 < distance) && (distance <= 20)) {
+			price = 1125;
+			price = Math.round(price);
+			a = format.format(price);
+			rideRegistered.setRideCost(a);
+		} else if ((20 < distance) && (distance <= 25)) {
+			price = 1250;
+			price = Math.round(price);
+			a = format.format(price);
+			rideRegistered.setRideCost(a);
+		} else if (distance > 25) {
+			price = distance * 5 * 2 * 5;
+			price = Math.round(price);
+			a = format.format(price);
+			rideRegistered.setRideCost(a);
+		} else {
+			rideRegistered.setRideCost(String.valueOf(price));
+			System.out.println("Inside displaycal method Ride distance:"
+					+ rideRegistered.getRideCost());
+		}
+	}
+
+	float distance;
+
+	/*
+	 * Here <code>callcalDistWindowSet</code>Method calculating the window
+	 * distance settings.
+	 */
+	public void callcalDistWindowSet(AjaxBehaviorEvent event)
+			throws AbortProcessingException {
+		String fromaddress;
+		String toaddress;
+		DecimalFormat format = new DecimalFormat("#.##");
+		float windowCalculation;
+		try {
+			windowCalculation = ApplicationUtil
+					.calculateDistanceWindowSettings(
+							rideRegistered.getFromAddress1(),
+							rideRegistered.getToAddress1());
+			System.out.println("windowCalculation: " + windowCalculation);
+
+			if (windowCalculation > 0) {
+				distance = windowCalculation / 1000;
+				System.out.println("format.format(distance)"
+						+ format.format(distance));
+				distance = Float.parseFloat(format.format(distance));
+				rideRegistered.setRideDistance(distance);
+
+			}
+		} catch (IOException e) {
+			errorMessage
+					.add("There is some problem in calculating time for ride.");
+		} catch (JSONException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+			errorMessage
+					.add("There is some problem in calculating time for ride.");
+		}
+		distancepaycalc();
+
+	}
 }
+
+

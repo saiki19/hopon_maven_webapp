@@ -56,8 +56,36 @@ public class RideSeekerDTO {
 	private boolean isNightRide;
 	private String recurring;
 	private String subSeekers;
-	public String fullDay;
+	public String fullDay;private int tripType;
+	private String startdateValue1;
+	private Date startDate1;
+
+	public Date getStartDate1() {
+		return startDate1;
+	}
+
+	public void setStartDate1(Date startDate1) {
+		this.startDate1 = startDate1;
+	}
+
+	public String getStartdateValue1() {
+		return startdateValue1;
+	}
+
+	public void setStartdateValue1(String startdateValue1) {
+		this.startdateValue1 = startdateValue1;
+	}
+
+	public int getTripType() {
+		return tripType;
+	}
+
+	public void setTripType(int tripType) {
+		this.tripType = tripType;
+	}
+
 	private int circleId;
+	
 	
 	public String getViaPoint() {
 		return viaPoint;

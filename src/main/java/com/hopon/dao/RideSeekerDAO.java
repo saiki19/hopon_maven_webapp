@@ -20,100 +20,398 @@ import com.hopon.utils.Validator;
 import com.mysql.jdbc.Statement;
 
 public class RideSeekerDAO {
-	public RideManagementDTO registerRideSeeker(Connection con ,RideManagementDTO rideSeekerDTO )throws SQLException{
+		public RideManagementDTO registerRideSeeker(Connection con,
+			RideManagementDTO rideSeekerDTO) {
 
 		StringBuilder query = new StringBuilder();
-		query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point," +
-				"ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity," +
-				"ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, " +
-				"start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, " +
-		"start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
+		query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point,"
+				+ "ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,"
+				+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, "
+				+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, "
+				+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
 
-		PreparedStatement pstmt = con.prepareStatement(query.toString() ,Statement.RETURN_GENERATED_KEYS);
-		pstmt.setString(1, rideSeekerDTO.getRideID());
-		pstmt.setString(2, rideSeekerDTO.getUserID());
-		pstmt.setString(3, rideSeekerDTO.getFromAddress1());
-		if(rideSeekerDTO.getViaPoint()==null || rideSeekerDTO.getViaPoint().equals("")) {
-			rideSeekerDTO.setViaPoint(rideSeekerDTO.getFromAddress1());
-		}
-		pstmt.setString(4, rideSeekerDTO.getViaPoint());
-		pstmt.setString(5, rideSeekerDTO.getToAddress1());
-		pstmt.setString(6, rideSeekerDTO.getRideCost());
-		pstmt.setString(7, rideSeekerDTO.getStartdateValue());
-		//pstmt.setString(8, rideSeekerDTO.getEnddateValue());
-		if(rideSeekerDTO.getStatus() != null && rideSeekerDTO.getStatus() != "") {
-			pstmt.setString(8, rideSeekerDTO.getStatus());
-		} else {
-			pstmt.setString(8, "A");
-		}
-		pstmt.setString(9, rideSeekerDTO.getVehicleID());
+		System.out.println("Ride Seeker DAO:" + query);
+		PreparedStatement pstmt;
+		try {
+			pstmt = con.prepareStatement(query.toString(),
+					Statement.RETURN_GENERATED_KEYS);
 
-		if(rideSeekerDTO.isAutomatchInCircle()==true){
-			pstmt.setString(10, "1");
-		}
-		else{
-			pstmt.setString(10, "0");
-		}
-		if( rideSeekerDTO.getFlexiTimeBefore()!=null){
-			pstmt.setString(11, rideSeekerDTO.getFlexiTimeBefore().toString());
-		}
-		if( rideSeekerDTO.getFlexiTimeAfter()!=null){
-			pstmt.setString(12, rideSeekerDTO.getFlexiTimeAfter().toString());
-		}
-		pstmt.setString(13, rideSeekerDTO.getFromAddressCity());
-		pstmt.setString(14, rideSeekerDTO.getToAddressCity());
-		pstmt.setString(15, rideSeekerDTO.getFromAddressPin());
-		pstmt.setString(16, rideSeekerDTO.getToAddressPin());
-		pstmt.setString(17, rideSeekerDTO.getCreatedBy());
-		if(rideSeekerDTO.getCreated_dt()!=null){
-			pstmt.setString(18, rideSeekerDTO.getCreated_dt().toString());
-		}
-		pstmt.setString(19, rideSeekerDTO.getStartdateValue());
-		if(rideSeekerDTO.isSharedTaxi()) {
-			pstmt.setString(20, "1");
-		} else {
-			pstmt.setString(20, "0");
-		}
-		pstmt.setString(21, rideSeekerDTO.getCustom());
+			pstmt.setString(1, rideSeekerDTO.getRideID());
+			pstmt.setString(2, rideSeekerDTO.getUserID());
+			pstmt.setString(3, rideSeekerDTO.getFromAddress1());
+			if (rideSeekerDTO.getViaPoint() == null
+					|| rideSeekerDTO.getViaPoint().equals("")) {
+				rideSeekerDTO.setViaPoint(rideSeekerDTO.getFromAddress1());
+			}
+			pstmt.setString(4, rideSeekerDTO.getViaPoint());
+			pstmt.setString(5, rideSeekerDTO.getToAddress1());
+			pstmt.setString(6, rideSeekerDTO.getRideCost());
+			pstmt.setString(7, rideSeekerDTO.getStartdateValue());
+			pstmt.setString(8, rideSeekerDTO.getEnddateValue());
+			if (rideSeekerDTO.getStatus() != null
+					&& rideSeekerDTO.getStatus() != "") {
+				pstmt.setString(8, rideSeekerDTO.getStatus());
+			} else {
+				pstmt.setString(8, "A");
+			}
+			pstmt.setString(9, rideSeekerDTO.getVehicleID());
 
-		pstmt.setFloat(22, rideSeekerDTO.getStartPointLatitude());
-		pstmt.setFloat(23, rideSeekerDTO.getStartPointLongitude());
-		if(rideSeekerDTO.getViaPointLatitude() == 0) {
-			rideSeekerDTO.setViaPointLatitude(rideSeekerDTO.getStartPointLatitude());
+			if (rideSeekerDTO.isAutomatchInCircle() == true) {
+				pstmt.setString(10, "1");
+			} else {
+				pstmt.setString(10, "0");
+			}
+			if (rideSeekerDTO.getFlexiTimeBefore() != null) {
+				pstmt.setString(11, rideSeekerDTO.getFlexiTimeBefore()
+						.toString());
+			}
+			if (rideSeekerDTO.getFlexiTimeAfter() != null) {
+				pstmt.setString(12, rideSeekerDTO.getFlexiTimeAfter()
+						.toString());
+			}
+			pstmt.setString(13, rideSeekerDTO.getFromAddressCity());
+			pstmt.setString(14, rideSeekerDTO.getToAddressCity());
+			pstmt.setString(15, rideSeekerDTO.getFromAddressPin());
+			pstmt.setString(16, rideSeekerDTO.getToAddressPin());
+			pstmt.setString(17, rideSeekerDTO.getCreatedBy());
+			if (rideSeekerDTO.getCreated_dt() != null) {
+				pstmt.setString(18, rideSeekerDTO.getCreated_dt().toString());
+			}
+			pstmt.setString(19, rideSeekerDTO.getStartdateValue());
+			if (rideSeekerDTO.isSharedTaxi()) {
+				pstmt.setString(20, "1");
+			} else {
+				pstmt.setString(20, "0");
+			}
+			pstmt.setString(21, rideSeekerDTO.getCustom());
+
+			pstmt.setFloat(22, rideSeekerDTO.getStartPointLatitude());
+			pstmt.setFloat(23, rideSeekerDTO.getStartPointLongitude());
+			if (rideSeekerDTO.getViaPointLatitude() == 0) {
+				rideSeekerDTO.setViaPointLatitude(rideSeekerDTO
+						.getStartPointLatitude());
+			}
+			if (rideSeekerDTO.getViaPointLongitude() == 0) {
+				rideSeekerDTO.setViaPointLongitude(rideSeekerDTO
+						.getStartPointLongitude());
+			}
+			pstmt.setFloat(24, rideSeekerDTO.getViaPointLatitude());
+			pstmt.setFloat(25, rideSeekerDTO.getViaPointLongitude());
+			pstmt.setFloat(26, rideSeekerDTO.getEndPointLatitude());
+			pstmt.setFloat(27, rideSeekerDTO.getEndPointLongitude());
+
+			pstmt.setFloat(28, rideSeekerDTO.getRideDistance());
+			pstmt.setString(29, rideSeekerDTO.getStartDateLate());
+			pstmt.setString(30, rideSeekerDTO.getEndDateEarly());
+			pstmt.setString(31, rideSeekerDTO.getEndDateLate());
+			pstmt.setString(32, "N");
+			pstmt.setInt(33, rideSeekerDTO.getApproverID());
+			if (Validator.isEmpty(rideSeekerDTO.getRecurring()))
+				rideSeekerDTO.setRecurring("N");
+			pstmt.setString(34, rideSeekerDTO.getRecurring());
+			if (Validator.isEmpty(rideSeekerDTO.getFullDay()))
+				rideSeekerDTO.setFullDay("N");
+			pstmt.setString(35, rideSeekerDTO.getFullDay());
+			pstmt.setInt(36, rideSeekerDTO.getCircleId());
+			int i = pstmt.executeUpdate();
+			System.out.println("Excute update:" + i);
+			// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
+			ResultSet tableKeys = pstmt.getGeneratedKeys();
+			tableKeys.next();
+			int autoGeneratedID = tableKeys.getInt(1);
+
+			tableKeys.close();
+			pstmt.close();
+
+			rideSeekerDTO.setRideID(String.valueOf(autoGeneratedID));
+		} catch (SQLException e) {
+
+			e.printStackTrace();
 		}
-		if(rideSeekerDTO.getViaPointLongitude() == 0) {
-			rideSeekerDTO.setViaPointLongitude(rideSeekerDTO.getStartPointLongitude());
-		}
-		pstmt.setFloat(24, rideSeekerDTO.getViaPointLatitude());
-		pstmt.setFloat(25, rideSeekerDTO.getViaPointLongitude());
-		pstmt.setFloat(26, rideSeekerDTO.getEndPointLatitude());
-		pstmt.setFloat(27, rideSeekerDTO.getEndPointLongitude());
-
-		pstmt.setFloat(28, rideSeekerDTO.getRideDistance());
-		pstmt.setString(29, rideSeekerDTO.getStartDateLate());
-		pstmt.setString(30, rideSeekerDTO.getEndDateEarly());
-		pstmt.setString(31, rideSeekerDTO.getEndDateLate());
-		pstmt.setString(32, "N");
-		pstmt.setInt(33, rideSeekerDTO.getApproverID());
-		if(Validator.isEmpty(rideSeekerDTO.getRecurring())) rideSeekerDTO.setRecurring("N");
-		pstmt.setString(34, rideSeekerDTO.getRecurring());
-		if(Validator.isEmpty(rideSeekerDTO.getFullDay())) rideSeekerDTO.setFullDay("N");
-		pstmt.setString(35, rideSeekerDTO.getFullDay());
-		pstmt.setInt(36, rideSeekerDTO.getCircleId());
-		pstmt.executeUpdate();
-		//rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
-		ResultSet tableKeys = pstmt.getGeneratedKeys();
-		tableKeys.next();
-		int autoGeneratedID = tableKeys.getInt(1);
-		tableKeys.close();
-		pstmt.close();
-
-		rideSeekerDTO.setRideID(String.valueOf(autoGeneratedID));
-
-		//rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
+		// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
 
 		return rideSeekerDTO;
 	}
+
+	public RideManagementDTO registerDailyRideSeeker(Connection con,
+			RideManagementDTO rideSeekerDTO) {
+		StringBuilder query = new StringBuilder();
+		query.append("INSERT INTO ride_seeker_details (user_id, start_point, via_point, destination_point,"
+				+ "start_tw_early,FromCity,"
+				+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time,start_time2,start_point_lat, "
+				+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, "
+				+ "start_tw_late, end_tw_early, end_tw_late,trip_type,end_time,isSharedTaxi,recurring,daily_rides,circle_id,ride_cost,ride_distance) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
+		PreparedStatement pstmt;
+		try {
+			pstmt = con.prepareStatement(query.toString(),
+					Statement.RETURN_GENERATED_KEYS);
+
+			pstmt.setString(1, rideSeekerDTO.getUserID());
+			pstmt.setString(2, rideSeekerDTO.getFromAddress1());
+			if (rideSeekerDTO.getViaPoint() == null
+					|| rideSeekerDTO.getViaPoint().equals("")) {
+				rideSeekerDTO.setViaPoint(rideSeekerDTO.getToAddress1());
+			}
+			pstmt.setString(3, rideSeekerDTO.getViaPoint());
+			pstmt.setString(4, rideSeekerDTO.getToAddress1());
+			pstmt.setString(5, rideSeekerDTO.getStartdateValue());
+			pstmt.setString(6, rideSeekerDTO.getToAddressCity());
+			pstmt.setString(7, rideSeekerDTO.getFromAddressCity());
+			pstmt.setString(8, rideSeekerDTO.getToAddressPin());
+			pstmt.setString(9, rideSeekerDTO.getFromAddressPin());
+			pstmt.setString(10, rideSeekerDTO.getCreatedBy());
+
+			if (rideSeekerDTO.getCreated_dt() != null) {
+				pstmt.setString(11, rideSeekerDTO.getCreated_dt().toString());
+
+			}
+			pstmt.setString(12, rideSeekerDTO.getStartdateValue());
+			pstmt.setString(13, rideSeekerDTO.getStartdateValue1());
+
+			pstmt.setFloat(14, rideSeekerDTO.getEndPointLatitude());
+			pstmt.setFloat(15, rideSeekerDTO.getEndPointLongitude());
+			if (rideSeekerDTO.getViaPointLatitude() == 0) {
+				rideSeekerDTO.setViaPointLatitude(rideSeekerDTO
+						.getEndPointLatitude());
+			}
+			if (rideSeekerDTO.getViaPointLongitude() == 0) {
+				rideSeekerDTO.setViaPointLongitude(rideSeekerDTO
+						.getEndPointLongitude());
+			}
+			pstmt.setFloat(16, rideSeekerDTO.getViaPointLatitude());
+			pstmt.setFloat(17, rideSeekerDTO.getViaPointLongitude());
+			pstmt.setFloat(18, rideSeekerDTO.getStartPointLatitude());
+			pstmt.setFloat(19, rideSeekerDTO.getStartPointLongitude());
+
+			pstmt.setString(20, rideSeekerDTO.getStartDateLate());
+			pstmt.setString(21, rideSeekerDTO.getEndDateEarly());
+			pstmt.setString(22, rideSeekerDTO.getEndDateLate());
+			pstmt.setString(25, "0");
+			pstmt.setString(26, "Y");
+			pstmt.setString(27, "Y");
+			pstmt.setInt(28, rideSeekerDTO.getCircleId());
+			pstmt.setString(29, rideSeekerDTO.getRideCost());
+			pstmt.setFloat(30, rideSeekerDTO.getRideDistance());
+
+			if ((rideSeekerDTO.getTripType() != 1)
+					&& (rideSeekerDTO.getTripType() != 2)) {
+
+				rideSeekerDTO.setTripType(0);
+
+			}
+			pstmt.setInt(23, rideSeekerDTO.getTripType());
+			pstmt.setString(24, rideSeekerDTO.getEnddateValue());
+			int i = pstmt.executeUpdate();
+			System.out.println("executeupdate:" + i);
+
+			ResultSet tableKeys = pstmt.getGeneratedKeys();
+			tableKeys.next();
+			int autoGeneratedID = tableKeys.getInt(1);
+			tableKeys.close();
+			pstmt.close();
+
+			rideSeekerDTO.setRideID(String.valueOf(autoGeneratedID));
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
+
+		return rideSeekerDTO;
+	}
+
+	public RideManagementDTO viewDailyRideData(Connection conn, String userId) {
+
+		StringBuilder query = new StringBuilder();
+		RideManagementDTO dto = new RideManagementDTO();
+		query.append("SELECT start_point,destination_point,start_time,start_time2,end_time,trip_type,user_id,"
+				+ "via_point,start_point_lat,start_point_long,end_point_lat,end_point_long,via_point_lat,"
+				+ "via_point_long,start_tw_early,start_tw_late,end_tw_early,end_tw_late,created_dt,"
+				+ "created_by,FromCity,ToCity,FromPin,ToPin,isSharedTaxi,recurring,circle_id,ride_cost,ride_distance FROM ride_seeker_details WHERE user_id=? AND daily_rides='Y'");
+		System.out.println("====== view query======:" + query);
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(query.toString());
+			pstmt.setString(1, userId);
+			ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
+
+			if (rs.next()) {
+				dto.setUserID(rs.getString(7));
+				dto.setViaPoint(rs.getString(8));
+				dto.setStartPointLatitude(rs.getFloat(9));
+				dto.setStartPointLongitude(rs.getFloat(10));
+				dto.setEndPointLatitude(rs.getFloat(11));
+				dto.setEndPointLongitude(rs.getFloat(12));
+				dto.setViaPointLatitude(rs.getFloat(13));
+				dto.setViaPointLongitude(rs.getFloat(14));
+
+				dto.setStartDateEarly(rs.getString(15));
+				dto.setStartDateLate(rs.getString(16));
+				dto.setEndDateEarly(rs.getString(17));
+				dto.setEndDateLate(rs.getString(18));
+
+				String str = rs.getString(19);
+
+				try {
+					dto.setCreated_dt(new SimpleDateFormat(
+							ApplicationUtil.datePattern5).parse(str));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+
+				dto.setCreatedBy(rs.getString(20));
+
+				dto.setFromAddressCity(rs.getString(21));
+				dto.setToAddressCity(rs.getString(22));
+				dto.setFromAddressPin(rs.getString(23));
+				dto.setToAddressPin(rs.getString(24));
+				dto.setSharedTaxi(rs.getBoolean(25));
+				dto.setRecurring(rs.getString(26));
+				dto.setCircleId(rs.getInt(27));
+				dto.setRideCost(rs.getString(28));
+				dto.setRideDistance(rs.getFloat(29));
+
+				dto.setFromAddress1(rs.getString(1));
+
+				dto.setToAddress1(rs.getString(2));
+
+				dto.setTripType(rs.getInt(6));
+
+				SimpleDateFormat formatter = new SimpleDateFormat(
+						"yyyy-MM-dd HH:mm:ss.S");
+				SimpleDateFormat formatter1 = new SimpleDateFormat(
+						ApplicationUtil.datePattern3);
+
+				try {
+
+					Date date = formatter.parse(rs.getString(3));
+
+					dto.setStartdateValue(formatter1.format(date));
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (rs.getString(4) != null) {
+						System.out.println("Start Date value for view :"+rs.getString(4));
+						Date date = formatter.parse(rs.getString(4));
+						dto.setStartdateValue1(formatter1.format(date));
+						System.out.println("start date value1 is:"+dto.getStartdateValue1());
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				try {
+
+					Date date = formatter.parse(rs.getString(5));
+
+					dto.setEnddateValue(formatter1.format(date));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			rs.close();
+			pstmt.close();
+			return dto;
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return dto;
+	}
+
+	public boolean updateDailyRideData(Connection con,
+			RideManagementDTO rideSeekerDTO) {
+		StringBuilder query = new StringBuilder();
+		query.append("UPDATE ride_seeker_details SET start_point=?, via_point=?, destination_point=?,"
+				+ "start_tw_early=?,FromCity=?,"
+				+ "ToCity=?,FromPin=?,ToPin=?,created_by=?, start_time=?,start_time2=?,start_point_lat=?, "
+				+ "start_point_long=?, via_point_lat=?, via_point_long=?, end_point_lat=?, end_point_long=?, "
+				+ "start_tw_late=?, end_tw_early=?, end_tw_late=?,trip_type=?,end_time=?,isSharedTaxi=?,recurring=?,daily_rides=?,circle_id=?,ride_cost=?,ride_distance=? WHERE user_id=? AND daily_rides='Y'");
+
+		PreparedStatement pstmt;
+		System.out.println("Inside the Update Method Class Entry:"
+				+ rideSeekerDTO);
+		try {
+			pstmt = con.prepareStatement(query.toString(),
+					Statement.RETURN_GENERATED_KEYS);
+
+			// pstmt.setString(, rideSeekerDTO.getUserID());
+			pstmt.setString(1, rideSeekerDTO.getFromAddress1());
+			if (rideSeekerDTO.getViaPoint() == null
+					|| rideSeekerDTO.getViaPoint().equals("")) {
+				rideSeekerDTO.setViaPoint(rideSeekerDTO.getToAddress1());
+			}
+			pstmt.setString(2, rideSeekerDTO.getViaPoint());
+			pstmt.setString(3, rideSeekerDTO.getToAddress1());
+			pstmt.setString(4, rideSeekerDTO.getStartdateValue());
+			pstmt.setString(5, rideSeekerDTO.getToAddressCity());
+			pstmt.setString(6, rideSeekerDTO.getFromAddressCity());
+			pstmt.setString(7, rideSeekerDTO.getToAddressPin());
+			pstmt.setString(8, rideSeekerDTO.getFromAddressPin());
+			pstmt.setString(9, rideSeekerDTO.getCreatedBy());
+			/*
+			 * if (rideSeekerDTO.getCreated_dt() != null) { pstmt.setString(10,
+			 * rideSeekerDTO.getCreated_dt().toString());
+			 * 
+			 * }
+			 */
+			pstmt.setString(10, rideSeekerDTO.getStartdateValue());
+			pstmt.setString(11, rideSeekerDTO.getStartdateValue1());
+
+			pstmt.setFloat(12, rideSeekerDTO.getEndPointLatitude());
+			pstmt.setFloat(13, rideSeekerDTO.getEndPointLongitude());
+
+			if (rideSeekerDTO.getViaPointLatitude() == 0) {
+				rideSeekerDTO.setViaPointLatitude(rideSeekerDTO
+						.getEndPointLatitude());
+			}
+			if (rideSeekerDTO.getViaPointLongitude() == 0) {
+				rideSeekerDTO.setViaPointLongitude(rideSeekerDTO
+						.getEndPointLongitude());
+			}
+			pstmt.setFloat(14, rideSeekerDTO.getViaPointLatitude());
+			pstmt.setFloat(15, rideSeekerDTO.getViaPointLongitude());
+
+			pstmt.setFloat(16, rideSeekerDTO.getStartPointLatitude());
+			pstmt.setFloat(17, rideSeekerDTO.getStartPointLongitude());
+
+			pstmt.setString(18, rideSeekerDTO.getStartDateLate());
+			pstmt.setString(19, rideSeekerDTO.getEndDateEarly());
+			pstmt.setString(20, rideSeekerDTO.getEndDateLate());
+			pstmt.setString(23, "0");
+			pstmt.setString(24, "Y");
+			pstmt.setString(25, "Y");
+			pstmt.setInt(26, rideSeekerDTO.getCircleId());
+			pstmt.setString(27, rideSeekerDTO.getRideCost());
+			pstmt.setFloat(28, rideSeekerDTO.getRideDistance());
+			pstmt.setString(29, rideSeekerDTO.getUserID());
+
+			if ((rideSeekerDTO.getTripType() != 1)
+					&& (rideSeekerDTO.getTripType() != 2)) {
+
+				rideSeekerDTO.setTripType(0);
+
+			}
+			pstmt.setInt(21, rideSeekerDTO.getTripType());
+			pstmt.setString(22, rideSeekerDTO.getEnddateValue());
+			int i = pstmt.executeUpdate();
+			if (i != 0) {
+				return true;
+			}
+			System.out.println("executeupdate:" + i);
+
+			pstmt.close();
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
+		return false;
+
+	}
+
 	public List<RideSeekerDTO> findAllRideSeeker(Connection con , String userID )throws SQLException{
 
 		List<RideSeekerDTO>  rideSeekerList = new ArrayList<RideSeekerDTO>();

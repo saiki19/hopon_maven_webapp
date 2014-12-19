@@ -186,6 +186,14 @@ public interface Trip {
 
 	public void fetchAllPreviousDayRides(Connection paramConnection)
 			throws ConfigurationException;
-	
+	RideManagementDTO loadDailyRideSeeker(Connection con, String category,
+			RideManagementDTO rideSeekerDTO) throws ConfigurationException;
+
+	RideManagementDTO getDailyRideData(Connection con, String userId)
+			throws ConfigurationException;
+
+	RideManagementDTO updateRideSeeker(Connection con, String category,
+			RideManagementDTO rideSeekerDTO) throws ConfigurationException;
+
 }
 

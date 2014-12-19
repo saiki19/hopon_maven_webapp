@@ -28,6 +28,8 @@
 		<pm:content rendered="#{sessionScope.user_role != 'T'}">
 			<li><a href="${url}/pages/rides/master_gr-new-ride.xhtml"><i class="icon-edit"></i> New Ride</a></li>
 		</pm:content>
+			<li><a href="${url}/pages/rides/dailyride.xhtml"><i
+					class="icon-edit"></i>Daily Rides</a></li>
 		<li><a href="${url}/pages/rides/master-gr-pending-trips.xhtml"><i class="icon-share"></i> Pending Rides</a></li>
 		<li><a href="${url}/pages/rides/master-gr-completedride.xhtml"><i class="icon-check"></i> Completed Rides</a></li>
 		<pm:content rendered="#{userAction.allCircleForLoginUserList != null and sessionScope.user_role == 'T'}">

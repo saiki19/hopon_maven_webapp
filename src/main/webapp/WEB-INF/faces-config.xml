@@ -267,7 +267,7 @@
 			<to-view-id>/pages/settings/editcompany.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
-		
+
 		<!-- This is for ContactUs Form Bean -->
 	</navigation-rule>
 	<navigation-rule>
@@ -279,6 +279,14 @@
 		</navigation-case>
 	</navigation-rule>
 
+	<navigation-rule>
+		<from-view-id>/pages/dailyride.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>dailyRide1</from-outcome>
+			<to-view-id>/pages/dailyride.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
 	<application>
 		<locale-config>
 			<default-locale>en</default-locale>

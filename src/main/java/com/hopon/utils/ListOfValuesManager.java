@@ -3564,4 +3564,97 @@ public class ListOfValuesManager {
 		return dto;
 	}
 	
+		public static RideManagementDTO getDailyRideEntry(Connection con,
+			String userId) throws ConfigurationException {
+		con = getLocalConnection();
+		RideManagementDTO dtos = new RideManagementDTO();
+		try {
+			dtos = getTripService().getDailyRideData(con, userId);
+			System.out.println("dtos is:" + dtos);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return dtos;
+	}
+
+	public static RideManagementDTO updateRideSeekerEntery(String category,
+			RideManagementDTO rideSeekerDTO, Connection con)
+			throws ConfigurationException {
+		System.out.println("This is inside the List Of values Manager");
+		if (con == null) {
+			con = getLocalConnection();
+			try {
+				rideSeekerDTO = getTripService().updateRideSeeker(con,
+						category, rideSeekerDTO);
+				System.out.println("RideSeekerDTO of listof values:"
+						+ rideSeekerDTO);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			} finally {
+				ListOfValuesManager.releaseConnection(con);
+			}
+		} else {
+			try {
+				rideSeekerDTO = getTripService().updateRideSeeker(con,
+						category, rideSeekerDTO);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+
+			}
+		}
+		return rideSeekerDTO;
+	}
+
+	public static RideManagementDTO getDailyRideSeekerEntery(String category,
+			RideManagementDTO rideSeekerDTO, Connection con)
+			throws ConfigurationException {
+		if (con == null) {
+			con = getLocalConnection();
+			try {
+				rideSeekerDTO = getTripService().loadDailyRideSeeker(con,
+						category, rideSeekerDTO);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			} finally {
+				ListOfValuesManager.releaseConnection(con);
+			}
+		} else {
+			try {
+				rideSeekerDTO = getTripService().loadDailyRideSeeker(con,
+						category, rideSeekerDTO);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+
+			}
+		}
+		return rideSeekerDTO;
+	}
+
+	
 }

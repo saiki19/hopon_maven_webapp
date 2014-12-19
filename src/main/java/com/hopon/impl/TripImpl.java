@@ -294,26 +294,16 @@ public class TripImpl implements Trip {
 		RideSeekerDAO rideSeekerDAO = DAOProvider.getRideSeekerDAO();
 		System.out.println("In TripImplementation class object:"
 				+ rideSeekerDAO);
-		try {
-			if (category.equals("all")) {
+		if (category.equals("all")) {
 
-				rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
-						rideSeekerDTO);
-				System.out
-						.println("---In tripImplement get the data from DAO Method-------"
-								+ rideSeekerDAO);
-			} else if (category.equals("findByDTO")) {
-				rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
-						rideSeekerDTO);
-			}
-		} catch (SQLException e) {
-			LoggerSingleton.getInstance().error(
-					e.getStackTrace()[0].getClassName() + "->"
-							+ e.getStackTrace()[0].getMethodName() + "() : "
-							+ e.getStackTrace()[0].getLineNumber() + " :: "
-							+ "Problem in db operation. " + e.getMessage());
-			throw new ConfigurationException(
-					"Exception in retriving providers", e);
+			rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
+					rideSeekerDTO);
+			System.out
+					.println("---In tripImplement get the data from DAO Method-------"
+							+ rideSeekerDAO);
+		} else if (category.equals("findByDTO")) {
+			rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
+					rideSeekerDTO);
 		}
 		return rideSeekerDTO;
 	}
@@ -3194,4 +3184,62 @@ public class TripImpl implements Trip {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public RideManagementDTO getDailyRideData(Connection con, String userId)
+			throws ConfigurationException {
+
+		RideSeekerDAO rideSeekerDAO = DAOProvider.getRideSeekerDAO();
+		RideManagementDTO dailyList = new RideManagementDTO();
+		dailyList = rideSeekerDAO.viewDailyRideData(con, userId);
+		return dailyList;
+	}
+
+	
+	@Override
+	public RideManagementDTO updateRideSeeker(Connection con,
+			String category, RideManagementDTO rideSeekerDTO)
+			throws ConfigurationException {
+		RideSeekerDAO seekerDAO = DAOProvider.getRideSeekerDAO();
+	boolean flag1=false;
+   flag1=seekerDAO.updateDailyRideData(con, rideSeekerDTO);
+   System.out.println("Trip Imple for Update:"+flag1);
+
+	if(flag1){
+			return rideSeekerDTO;		
+	}else{
+		return null;
+	}
+	}
+	
+	
+
+	@Override
+	public RideManagementDTO loadDailyRideSeeker(Connection con,String category, RideManagementDTO rideSeekerDTO)
+			throws ConfigurationException {
+		RideSeekerDAO rideSeekerDAO = DAOProvider.getRideSeekerDAO();
+		System.out.println("In TripImplementation class object:"
+				+ rideSeekerDAO);
+		try {
+			if (category.equals("all")) {
+
+				rideSeekerDTO = rideSeekerDAO.registerDailyRideSeeker(con, 
+						rideSeekerDTO);
+			
+			} else if (category.equals("findByDTO")) {
+				rideSeekerDTO = rideSeekerDAO.registerDailyRideSeeker(con,
+						rideSeekerDTO);
+			}
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return rideSeekerDTO;
+	}
+	
+	
 }
