@@ -3240,6 +3240,47 @@ public class TripImpl implements Trip {
 		}
 		return rideSeekerDTO;
 	}
+	@Override
+	public List<CircleDTO> loadTaxiCircleByName(Connection con, String circleName,
+			String userId) throws ConfigurationException {
+		List<CircleDTO> circleList = null;
+		CircleDAO circleDAO = DAOProvider.getCircleDAO();
+		try {
+			circleList = circleDAO.findAllRegisteredTaxiCircleByName(con,
+					circleName, userId);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return circleList;
+	}
+	
+	//NonTaxiCircleByName method
+	@Override
+	public List<CircleDTO> loadNonTaxiCircleByName(Connection con, String circleName,
+			String userId) throws ConfigurationException {
+		List<CircleDTO> circleList = null;
+		CircleDAO circleDAO = DAOProvider.getCircleDAO();
+		try {
+			circleList = circleDAO.findAllRegisteredNonTaxiCircleByName(con,
+					circleName, userId);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return circleList;
+	}
+
 	
 	
 }

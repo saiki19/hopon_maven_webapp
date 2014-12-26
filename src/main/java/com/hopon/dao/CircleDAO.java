@@ -491,4 +491,104 @@ public class CircleDAO {
 	    pstmt.close();
 	    return dto;
   }
+  /*
+ * FindAllRegisteredTaxiCircleByName Method
+ * 
+ */
+	public List<CircleDTO> findAllRegisteredTaxiCircleByName(Connection con,
+			String circleName, String userId) throws SQLException {
+		System.out.println("Circle Name:" + circleName + "User Id:" + userId);
+		StringBuilder query = new StringBuilder();
+		// query.append(" SELECT  Circle_Id,  Name, Description,Date_of_creation,CircleOwner_Member_Id_P,AutoEnroll_YN,Affiliations FROM circles where Name like'%"+circleName+"%'");
+
+		query.append("select c1.Circle_Id,  c1.Name ,c1.Description,c1.Date_of_creation,c1.CircleOwner_Member_Id_P, c1.AutoEnroll_YN,c1.Affiliations, c2.Status, u.first_name, c1.circle_type FROM circles c1 left outer join circle_members c2 ON c1.Circle_Id = c2.CircleId AND c2.MemberId = '"
+				+ userId
+				+ "' INNER JOIN users u ON c1.CircleOwner_Member_Id_P = u.id WHERE c1.circle_type='T' AND c1.Name like '%"
+				+ circleName + "%'");
+
+		List<CircleDTO> circleDTO = new ArrayList<CircleDTO>();
+		PreparedStatement pstmt = con.prepareStatement(query.toString());
+		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
+		while (rs.next()) {
+			CircleDTO dto = new CircleDTO();
+			dto.setCircleID(Integer.valueOf(rs.getString(1)));
+			dto.setName(rs.getString(2));
+			dto.setDescription(rs.getString(3));
+			SimpleDateFormat formatter = new SimpleDateFormat(
+					ApplicationUtil.datePattern1);
+			SimpleDateFormat formatter1 = new SimpleDateFormat(
+					ApplicationUtil.datePattern7);
+			try {
+				Date date = formatter.parse(rs.getString(4));
+				dto.setDate_of_creation(formatter1.format(date));
+			} catch (ParseException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ "Date is : " + rs.getString(4) + "."
+								+ e.getMessage());
+			}
+			dto.setCircleOwner_Member_Id_P(Integer.valueOf(rs.getString(5)));
+			dto.setAutoEnroll_YN(Integer.valueOf(rs.getString(6)));
+			dto.setAffiliations(rs.getString(7));
+			dto.setStatus(rs.getString(8));
+			dto.setOwnerName(rs.getString(9));
+			dto.setCircleType(rs.getString(10));
+			circleDTO.add(dto);
+		}
+		rs.close();
+		pstmt.close();
+		return circleDTO;
+	}
+	
+	public List<CircleDTO> findAllRegisteredNonTaxiCircleByName(Connection con,
+			String circleName, String userId) throws SQLException {
+		System.out.println("Circle Name:" + circleName + "User Id:" + userId);
+		StringBuilder query = new StringBuilder();
+		// query.append(" SELECT  Circle_Id,  Name, Description,Date_of_creation,CircleOwner_Member_Id_P,AutoEnroll_YN,Affiliations FROM circles where Name like'%"+circleName+"%'");
+
+		query.append("select c1.Circle_Id,  c1.Name ,c1.Description,c1.Date_of_creation,c1.CircleOwner_Member_Id_P, c1.AutoEnroll_YN,c1.Affiliations, c2.Status, u.first_name, c1.circle_type FROM circles c1 left outer join circle_members c2 ON c1.Circle_Id = c2.CircleId AND c2.MemberId = '"
+				+ userId
+				+ "' INNER JOIN users u ON c1.CircleOwner_Member_Id_P = u.id WHERE c1.circle_type!='T' AND c1.Name like '%"
+				+ circleName + "%'");
+
+		List<CircleDTO> circleDTO = new ArrayList<CircleDTO>();
+		PreparedStatement pstmt = con.prepareStatement(query.toString());
+		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
+		while (rs.next()) {
+			CircleDTO dto = new CircleDTO();
+			dto.setCircleID(Integer.valueOf(rs.getString(1)));
+			dto.setName(rs.getString(2));
+			dto.setDescription(rs.getString(3));
+			SimpleDateFormat formatter = new SimpleDateFormat(
+					ApplicationUtil.datePattern1);
+			SimpleDateFormat formatter1 = new SimpleDateFormat(
+					ApplicationUtil.datePattern7);
+			try {
+				Date date = formatter.parse(rs.getString(4));
+				dto.setDate_of_creation(formatter1.format(date));
+			} catch (ParseException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ "Date is : " + rs.getString(4) + "."
+								+ e.getMessage());
+			}
+			dto.setCircleOwner_Member_Id_P(Integer.valueOf(rs.getString(5)));
+			dto.setAutoEnroll_YN(Integer.valueOf(rs.getString(6)));
+			dto.setAffiliations(rs.getString(7));
+			dto.setStatus(rs.getString(8));
+			dto.setOwnerName(rs.getString(9));
+			dto.setCircleType(rs.getString(10));
+			circleDTO.add(dto);
+		}
+		rs.close();
+		pstmt.close();
+		return circleDTO;
+	}
+
 }

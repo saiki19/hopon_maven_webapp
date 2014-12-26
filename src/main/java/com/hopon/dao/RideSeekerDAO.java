@@ -20,7 +20,7 @@ import com.hopon.utils.Validator;
 import com.mysql.jdbc.Statement;
 
 public class RideSeekerDAO {
-		public RideManagementDTO registerRideSeeker(Connection con,
+	public RideManagementDTO registerRideSeeker(Connection con,
 			RideManagementDTO rideSeekerDTO) {
 
 		StringBuilder query = new StringBuilder();
@@ -28,7 +28,7 @@ public class RideSeekerDAO {
 				+ "ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,"
 				+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, "
 				+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, "
-				+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
+				+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id,trip_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
 
 		System.out.println("Ride Seeker DAO:" + query);
 		PreparedStatement pstmt;
@@ -113,6 +113,7 @@ public class RideSeekerDAO {
 				rideSeekerDTO.setFullDay("N");
 			pstmt.setString(35, rideSeekerDTO.getFullDay());
 			pstmt.setInt(36, rideSeekerDTO.getCircleId());
+			pstmt.setInt(37, rideSeekerDTO.getTripType());
 			int i = pstmt.executeUpdate();
 			System.out.println("Excute update:" + i);
 			// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
@@ -228,7 +229,7 @@ public class RideSeekerDAO {
 				+ "via_point,start_point_lat,start_point_long,end_point_lat,end_point_long,via_point_lat,"
 				+ "via_point_long,start_tw_early,start_tw_late,end_tw_early,end_tw_late,created_dt,"
 				+ "created_by,FromCity,ToCity,FromPin,ToPin,isSharedTaxi,recurring,circle_id,ride_cost,ride_distance FROM ride_seeker_details WHERE user_id=? AND daily_rides='Y'");
-		System.out.println("====== view query======:" + query);
+	
 		PreparedStatement pstmt;
 		try {
 			pstmt = conn.prepareStatement(query.toString());
@@ -293,10 +294,9 @@ public class RideSeekerDAO {
 				}
 				try {
 					if (rs.getString(4) != null) {
-						System.out.println("Start Date value for view :"+rs.getString(4));
+						System.out.println("startdate value is :"+rs.getString(4));
 						Date date = formatter.parse(rs.getString(4));
 						dto.setStartdateValue1(formatter1.format(date));
-						System.out.println("start date value1 is:"+dto.getStartdateValue1());
 					}
 				} catch (ParseException e) {
 					e.printStackTrace();

@@ -15,7 +15,7 @@
 			<body>
 				<ui:include src="../pages/common/headerContent.xhtml"></ui:include>
 				<!-- Start: MAIN CONTENT -->
-
+				<c:set value="#{request.contextPath}" property="url" var="url" />
 
 
 				<div class="content">
@@ -30,6 +30,12 @@
 								<!-- login section -->
 								<div class="well">
 									<br />
+									<pm:content rendered="#{sessionScope.user_role != null}">
+
+										<script>
+											window.location = "${url}/pages/settings/master-gr-my-msg.xhtml"
+										</script>
+									</pm:content>
 
 									<pm:content>
 										<h:form id="tab" styleClass="form-horizontal"

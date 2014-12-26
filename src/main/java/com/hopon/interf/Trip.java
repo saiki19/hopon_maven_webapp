@@ -194,6 +194,12 @@ public interface Trip {
 
 	RideManagementDTO updateRideSeeker(Connection con, String category,
 			RideManagementDTO rideSeekerDTO) throws ConfigurationException;
+			// TaxiCircleByName and NonTaxiCircleByName 
+	List<CircleDTO> loadTaxiCircleByName(Connection con, String circleName,
+			String userId) throws ConfigurationException;
+
+	List<CircleDTO> loadNonTaxiCircleByName(Connection con, String circleName,
+			String userId) throws ConfigurationException;
 
 }
 

@@ -281,6 +281,9 @@ public class UserAction extends HPBaseAction {
 				.getMobile_no())) {
 			errorMessage
 					.add("Mobile Number is already registered. Please enter another mobile number.");
+					autoTaxiCircleValue = null;
+				autoNonTaxiCircleValue = null;
+				return "clear";
 		}
 
 		String emailTest = ListOfValuesManager
@@ -289,14 +292,20 @@ public class UserAction extends HPBaseAction {
 		if (emailTest.equalsIgnoreCase("P")) {
 			errorMessage.add("Email ID is pending for approval.");
 			forregistrationOnly = new UserRegistrationDTO();
+			autoTaxiCircleValue = null;
+			autoNonTaxiCircleValue = null;
 			return "clear";
 		} else if (emailTest.equalsIgnoreCase("I")) {
 			errorMessage.add("Email ID de activated. Please contact admin.");
 			forregistrationOnly = new UserRegistrationDTO();
+			autoTaxiCircleValue = null;
+			autoNonTaxiCircleValue = null;
 			return "clear";
 		} else if (emailTest.equalsIgnoreCase("A")) {
 			errorMessage.add("Email ID already registered.");
 			forregistrationOnly = new UserRegistrationDTO();
+			autoTaxiCircleValue = null;
+			autoNonTaxiCircleValue = null;
 			return "clear";
 		} else if (emailTest.equalsIgnoreCase("N") && errorMessage.size() == 0) {
 
@@ -469,7 +478,7 @@ public class UserAction extends HPBaseAction {
 		// validateUser();
 		// return "userRegister";
 
-		return "userPending";
+		return "userRegister";
 	}
 
 	public void sendMessage() {
@@ -4454,6 +4463,27 @@ public class UserAction extends HPBaseAction {
 		circleDTO = new CircleDTO();
 	}
 
+	//This for TaxiCircleByName in Master-my-circle.html
+	public void findTaxiCircleByName() {
+		allCircleListByName = ListOfValuesManager.getTaxiCircleByName(
+				circleDTO.getName(), userRegistrationDTO.getId());
+		System.out.println("Select Taxicircle by name:" + allCircleListByName);
+
+		forregistrationOnly.setMyCircle(circleDTO.getName());
+		circleDTO = new CircleDTO();
+	}
+
+	//This for NonTaxiCircleByName in Master-my-circle.html
+	public void findNonTaxiCircleByName() {
+		allCircleListByName = ListOfValuesManager.getNonTaxiCircleByName(
+				circleDTO.getName(), userRegistrationDTO.getId());
+		System.out.println("Select Taxicircle by name:" + allCircleListByName);
+
+		forregistrationOnly.setMyCircle(circleDTO.getName());
+		circleDTO = new CircleDTO();
+	}
+
+	
 	public String findListofCompanyForLoginUser() {
 		listofCompanyForLoginUser = ListOfValuesManager
 				.getListofCompanyForLoginUser(userRegistrationDTO.getId());
@@ -8401,9 +8431,9 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public void recurringRideCron() {
+
 		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
 		dtos.addAll(ListOfValuesManager.fetchRecurringRideList());
-		int flag;
 
 		Date post2Date = new Date(System.currentTimeMillis() + 86400 * 1000 * 2);
 		for (RideSeekerDTO dto : dtos) {
@@ -8431,14 +8461,14 @@ public class UserAction extends HPBaseAction {
 				if (ApplicationUtil.dateFormat18.format(post2Date)
 						.equalsIgnoreCase(frequency[i].trim())) {
 					if (dto.getTripType() == 1) {
-						flag = 1;
+
 						dtoTemp.setUserID(dto.getUserID());
 						dtoTemp.setViaPoint(dto.getViaPoint());
 						dtoTemp.setViaPointLatitude(dto.getViaPointLatitude());
 						dtoTemp.setViaPointLongitude(dto.getViaPointLongitude());
 						dtoTemp.setFromAddress1(dto.getFromAddress1());
 						dtoTemp.setToAddress1(dto.getToAddress1());
-
+						dtoTemp.setTripType(dto.getTripType());
 						dtoTemp.setStartdateValue(dateFormat.format(post2Date));
 						dtoTemp.setRideID(null);
 						dtoTemp.setStartDate(post2Date);
@@ -8471,9 +8501,7 @@ public class UserAction extends HPBaseAction {
 									dtoTemp.getToAddress1(),
 									userDto.getMaxWaitTime(),
 									dtoTemp.getStartdateValue());
-							System.out
-									.println("x1 is printing Inside the tripType 1:"
-											+ x1);
+
 							if (x1.size() > 0) {
 								dtoTemp.setStartdateValue(x1.get(1).toString());
 								dtoTemp.setStartDateEarly(x1.get(1).toString());
@@ -8483,7 +8511,11 @@ public class UserAction extends HPBaseAction {
 								float distance = Integer.parseInt(x1.get(5)
 										.toString()) / 1000;
 								dtoTemp.setRideDistance(distance);
-								dtoTemp.setRideCost((distance * 5) + "");
+								if (dto.getTripType() == 0) {
+									dtoTemp.setRideCost((distance * 5) + "");
+								} else {
+									distancepaycalc(dtoTemp);
+								}
 							}
 						} catch (IOException e) {
 						} catch (JSONException e) {
@@ -8496,9 +8528,6 @@ public class UserAction extends HPBaseAction {
 								dtoTemp = ListOfValuesManager
 										.getRideSeekerEntery("findByDTO",
 												dtoTemp, con);
-								System.out.println("RideSeeker Entry:"
-										+ dtoTemp);
-
 								try {
 									frequencyDTO = new FrequencyDTO();
 									frequencyDTO.setStartDate(dateFormat
@@ -8583,7 +8612,7 @@ public class UserAction extends HPBaseAction {
 						}
 
 					} else if (dto.getTripType() == 2) {
-						flag = 1;
+
 						dtoTemp = new RideManagementDTO();
 						dtoTemp.setUserID(dto.getUserID());
 						dtoTemp.setViaPoint(dto.getViaPoint());
@@ -8592,6 +8621,7 @@ public class UserAction extends HPBaseAction {
 						dtoTemp.setFromAddress1(dto.getFromAddress1());
 						dtoTemp.setToAddress1(dto.getToAddress1());
 
+						dtoTemp.setTripType(dto.getTripType());
 						dtoTemp.setStartdateValue(dateFormat.format(post2Date));
 						dtoTemp.setRideID(null);
 						dtoTemp.setStartDate(post2Date);
@@ -8636,19 +8666,188 @@ public class UserAction extends HPBaseAction {
 								float distance = Integer.parseInt(x1.get(5)
 										.toString()) / 1000;
 								dtoTemp.setRideDistance(distance);
-								dtoTemp.setRideCost((distance * 5) + "");
+								if (dto.getTripType() == 0) {
+									dtoTemp.setRideCost((distance * 5) + "");
+								} else {
+									distancepaycalc(dtoTemp);
+								}
+								// dtoTemp.setRideCost((distance * 5) + "");
 							}
 						} catch (IOException e) {
 						} catch (JSONException e) {
 						}
 						if (!ListOfValuesManager
 								.checkRideSeekerDuplicacy(dtoTemp)) {
-							Connection con = ListOfValuesManager
+							Connection con1 = ListOfValuesManager
 									.getBroadConnection();
 							try {
 								dtoTemp = ListOfValuesManager
 										.getRideSeekerEntery("findByDTO",
-												dtoTemp, con);
+												dtoTemp, con1);
+								try {
+									frequencyDTO = new FrequencyDTO();
+									frequencyDTO.setStartDate(dateFormat
+											.format(post2Date));
+									frequencyDTO.setEndDate(dateFormat
+											.format(dtoTemp.getEndDate()));
+								} catch (NullPointerException e) {
+								}
+
+								frequencyDTO.setTime(post2Date);
+								List<String> freq = new ArrayList<String>();
+								freq.add("Once");
+								frequencyDTO.setFrequency(freq);
+								frequencyDTO.setRideSeekerId(dtoTemp
+										.getRideID());
+
+								frequencyDTO = ListOfValuesManager
+										.getFrequencyEntery("findByDTO",
+												frequencyDTO, con1);
+
+								if (dto.getSubSeekers().length() == 0)
+									dto.setSubSeekers(dtoTemp.getRideID());
+								else
+									dto.setSubSeekers(dto.getSubSeekers() + ","
+											+ dtoTemp.getRideID());
+								ListOfValuesManager.addSubSeekers(dto, con1);
+
+							} catch (ConfigurationException e) {
+								LoggerSingleton.getInstance().error(
+										e.getStackTrace()[0].getClassName()
+												+ "->"
+												+ e.getStackTrace()[0]
+														.getMethodName()
+												+ "() : "
+												+ e.getStackTrace()[0]
+														.getLineNumber()
+												+ " :: " + e.getMessage());
+								rollbackTest = true;
+							} finally {
+								if (rollbackTest) {
+									try {
+										con1.rollback();
+									} catch (SQLException e) {
+										LoggerSingleton
+												.getInstance()
+												.error(e.getStackTrace()[0]
+														.getClassName()
+														+ "->"
+														+ e.getStackTrace()[0]
+																.getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0]
+																.getLineNumber()
+														+ " :: "
+														+ e.getMessage());
+									}
+
+									ListOfValuesManager.releaseConnection(con1);
+								} else {
+									try {
+										con1.commit();
+									} catch (SQLException e) {
+										LoggerSingleton
+												.getInstance()
+												.error(e.getStackTrace()[0]
+														.getClassName()
+														+ "->"
+														+ e.getStackTrace()[0]
+																.getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0]
+																.getLineNumber()
+														+ " :: "
+														+ e.getMessage());
+									}
+
+									ListOfValuesManager.releaseConnection(con1);
+								}
+							}
+						}
+						// flag = 2;
+
+						tempDate = dto.getStartDate1();
+						cal1.setTime(tempDate);
+						cal2.setTime(post2Date);
+						cal2.set(Calendar.HOUR_OF_DAY,
+								cal1.get(Calendar.HOUR_OF_DAY));
+						cal2.set(Calendar.MINUTE, cal1.get(Calendar.MINUTE));
+						cal2.set(Calendar.SECOND, cal1.get(Calendar.SECOND));
+						post2Date = cal2.getTime();
+						dtoTemp = new RideManagementDTO();
+						dtoTemp.setUserID(dto.getUserID());
+						dtoTemp.setViaPoint(dto.getViaPoint());
+						dtoTemp.setViaPointLatitude(dto.getViaPointLatitude());
+						dtoTemp.setViaPointLongitude(dto.getViaPointLongitude());
+						dtoTemp.setFromAddress1(dto.getToAddress1());
+						dtoTemp.setToAddress1(dto.getFromAddress1());
+						dtoTemp.setTripType(dto.getTripType());
+						dtoTemp.setStartdateValue(dateFormat.format(post2Date));
+						dtoTemp.setRideID(null);
+						dtoTemp.setStartDate(post2Date);
+						dtoTemp.setFlexiTimeAfter(post2Date);
+						dtoTemp.setFlexiTimeBefore(post2Date);
+						dtoTemp.setStatus(dto.getStatus());
+						dtoTemp.setCreated_dt(new Date());
+
+						dtoTemp.setFromAddressCity(dto.getToAddressCity());
+						dtoTemp.setFromAddressPin(dto.getToAddressPin());
+						dtoTemp.setFromAddressCity(dto.getToAddressCity());
+						dtoTemp.setToAddressPin(dto.getFromAddressPin());
+
+						dtoTemp.setCreatedBy(dto.getCreatedBy());
+						dtoTemp.setSharedTaxi(dto.isSharedTaxi());
+						dtoTemp.setCustom(dto.getCustom());
+						dtoTemp.setStartPointLatitude(dto.getEndPointLatitude());
+						dtoTemp.setStartPointLongitude(dto
+								.getEndPointLongitude());
+						dtoTemp.setEndPointLatitude(dto.getStartPointLatitude());
+						dtoTemp.setEndPointLongitude(dto
+								.getStartPointLongitude());
+						dtoTemp.setApproverID(dto.getApproverID());
+						dtoTemp.setRecurring("N");
+						UserPreferencesDTO userDto1 = ListOfValuesManager
+								.getUserPreferences(Integer.parseInt(dtoTemp
+										.getUserID()));
+
+						try {
+							x1 = ApplicationUtil.calculateTimeWindowSettings1(
+									dtoTemp.getFromAddress1(), "",
+									dtoTemp.getToAddress1(),
+									userDto.getMaxWaitTime(),
+									dtoTemp.getStartdateValue());
+							System.out
+									.println("For second time X1 is Printing:");
+							if (x1.size() > 0) {
+								dtoTemp.setStartdateValue(x1.get(1).toString());
+								dtoTemp.setStartDateEarly(x1.get(1).toString());
+								dtoTemp.setStartDateLate(x1.get(2).toString());
+								dtoTemp.setEndDateEarly(x1.get(3).toString());
+								dtoTemp.setEndDateLate(x1.get(4).toString());
+								float distance = Integer.parseInt(x1.get(5)
+										.toString()) / 1000;
+								dtoTemp.setRideDistance(distance);
+								if (dto.getTripType() == 0) {
+									dtoTemp.setRideCost((distance * 5) + "");
+								} else {
+									System.out.println("Distance is getting:");
+									distancepaycalc(dtoTemp);
+								}
+								// dtoTemp.setRideCost((distance * 5) + "");
+							}
+						} catch (IOException e) {
+						} catch (JSONException e) {
+						}
+						if (!ListOfValuesManager
+								.checkRideSeekerDuplicacy(dtoTemp)) {
+							Connection con2 = ListOfValuesManager
+									.getBroadConnection();
+							try {
+								dtoTemp = ListOfValuesManager
+										.getRideSeekerEntery("findByDTO",
+												dtoTemp, con2);
+								System.out.println("Ride Seeker Entry:"
+										+ dtoTemp);
 
 								try {
 									frequencyDTO = new FrequencyDTO();
@@ -8668,14 +8867,14 @@ public class UserAction extends HPBaseAction {
 
 								frequencyDTO = ListOfValuesManager
 										.getFrequencyEntery("findByDTO",
-												frequencyDTO, con);
+												frequencyDTO, con2);
 
 								if (dto.getSubSeekers().length() == 0)
 									dto.setSubSeekers(dtoTemp.getRideID());
 								else
 									dto.setSubSeekers(dto.getSubSeekers() + ","
 											+ dtoTemp.getRideID());
-								ListOfValuesManager.addSubSeekers(dto, con);
+								ListOfValuesManager.addSubSeekers(dto, con2);
 
 							} catch (ConfigurationException e) {
 								LoggerSingleton.getInstance().error(
@@ -8688,183 +8887,52 @@ public class UserAction extends HPBaseAction {
 														.getLineNumber()
 												+ " :: " + e.getMessage());
 								rollbackTest = true;
-							}
-							flag = 2;
-
-							tempDate = dto.getStartDate1();
-							cal1.setTime(tempDate);
-							cal2.setTime(post2Date);
-							cal2.set(Calendar.HOUR_OF_DAY,
-									cal1.get(Calendar.HOUR_OF_DAY));
-							cal2.set(Calendar.MINUTE, cal1.get(Calendar.MINUTE));
-							cal2.set(Calendar.SECOND, cal1.get(Calendar.SECOND));
-							post2Date = cal2.getTime();
-							dtoTemp = new RideManagementDTO();
-							dtoTemp.setUserID(dto.getUserID());
-							dtoTemp.setViaPoint(dto.getViaPoint());
-							dtoTemp.setViaPointLatitude(dto
-									.getViaPointLatitude());
-							dtoTemp.setViaPointLongitude(dto
-									.getViaPointLongitude());
-							dtoTemp.setFromAddress1(dto.getToAddress1());
-							dtoTemp.setToAddress1(dto.getFromAddress1());
-							dtoTemp.setStartdateValue(dateFormat
-									.format(post2Date));
-							dtoTemp.setRideID(null);
-							dtoTemp.setStartDate(post2Date);
-							dtoTemp.setFlexiTimeAfter(post2Date);
-							dtoTemp.setFlexiTimeBefore(post2Date);
-							dtoTemp.setStatus(dto.getStatus());
-							dtoTemp.setCreated_dt(new Date());
-
-							dtoTemp.setFromAddressCity(dto.getToAddressCity());
-							dtoTemp.setFromAddressPin(dto.getToAddressPin());
-							dtoTemp.setFromAddressCity(dto.getToAddressCity());
-							dtoTemp.setToAddressPin(dto.getFromAddressPin());
-
-							dtoTemp.setCreatedBy(dto.getCreatedBy());
-							dtoTemp.setSharedTaxi(dto.isSharedTaxi());
-							dtoTemp.setCustom(dto.getCustom());
-							dtoTemp.setStartPointLatitude(dto
-									.getEndPointLatitude());
-							dtoTemp.setStartPointLongitude(dto
-									.getEndPointLongitude());
-							dtoTemp.setEndPointLatitude(dto
-									.getStartPointLatitude());
-							dtoTemp.setEndPointLongitude(dto
-									.getStartPointLongitude());
-							dtoTemp.setApproverID(dto.getApproverID());
-							dtoTemp.setRecurring("N");
-							UserPreferencesDTO userDto1 = ListOfValuesManager
-									.getUserPreferences(Integer
-											.parseInt(dtoTemp.getUserID()));
-
-							try {
-								x1 = ApplicationUtil
-										.calculateTimeWindowSettings1(
-												dtoTemp.getFromAddress1(), "",
-												dtoTemp.getToAddress1(),
-												userDto.getMaxWaitTime(),
-												dtoTemp.getStartdateValue());
-								System.out
-										.println("For second time X1 is Printing:");
-								if (x1.size() > 0) {
-									dtoTemp.setStartdateValue(x1.get(1)
-											.toString());
-									dtoTemp.setStartDateEarly(x1.get(1)
-											.toString());
-									dtoTemp.setStartDateLate(x1.get(2)
-											.toString());
-									dtoTemp.setEndDateEarly(x1.get(3)
-											.toString());
-									dtoTemp.setEndDateLate(x1.get(4).toString());
-									float distance = Integer.parseInt(x1.get(5)
-											.toString()) / 1000;
-									dtoTemp.setRideDistance(distance);
-									dtoTemp.setRideCost((distance * 5) + "");
-								}
-							} catch (IOException e) {
-							} catch (JSONException e) {
-							}
-							if (!ListOfValuesManager
-									.checkRideSeekerDuplicacy(dtoTemp)) {
-								Connection con1 = ListOfValuesManager
-										.getBroadConnection();
-								try {
-									dtoTemp = ListOfValuesManager
-											.getRideSeekerEntery("findByDTO",
-													dtoTemp, con1);
-									System.out.println("Ride Seeker Entry:"
-											+ dtoTemp);
-
+							} finally {
+								if (rollbackTest) {
 									try {
-										frequencyDTO = new FrequencyDTO();
-										frequencyDTO.setStartDate(dateFormat
-												.format(post2Date));
-										frequencyDTO.setEndDate(dateFormat
-												.format(dtoTemp.getEndDate()));
-									} catch (NullPointerException e) {
+										con2.rollback();
+									} catch (SQLException e) {
+										LoggerSingleton
+												.getInstance()
+												.error(e.getStackTrace()[0]
+														.getClassName()
+														+ "->"
+														+ e.getStackTrace()[0]
+																.getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0]
+																.getLineNumber()
+														+ " :: "
+														+ e.getMessage());
 									}
 
-									frequencyDTO.setTime(post2Date);
-									List<String> freq = new ArrayList<String>();
-									freq.add("Once");
-									frequencyDTO.setFrequency(freq);
-									frequencyDTO.setRideSeekerId(dtoTemp
-											.getRideID());
-
-									frequencyDTO = ListOfValuesManager
-											.getFrequencyEntery("findByDTO",
-													frequencyDTO, con);
-
-									if (dto.getSubSeekers().length() == 0)
-										dto.setSubSeekers(dtoTemp.getRideID());
-									else
-										dto.setSubSeekers(dto.getSubSeekers()
-												+ "," + dtoTemp.getRideID());
-									ListOfValuesManager.addSubSeekers(dto, con);
-
-								} catch (ConfigurationException e) {
-									LoggerSingleton.getInstance().error(
-											e.getStackTrace()[0].getClassName()
-													+ "->"
-													+ e.getStackTrace()[0]
-															.getMethodName()
-													+ "() : "
-													+ e.getStackTrace()[0]
-															.getLineNumber()
-													+ " :: " + e.getMessage());
-									rollbackTest = true;
-								} finally {
-									if (rollbackTest) {
-										try {
-											con.rollback();
-										} catch (SQLException e) {
-											LoggerSingleton
-													.getInstance()
-													.error(e.getStackTrace()[0]
-															.getClassName()
-															+ "->"
-															+ e.getStackTrace()[0]
-																	.getMethodName()
-															+ "() : "
-															+ e.getStackTrace()[0]
-																	.getLineNumber()
-															+ " :: "
-															+ e.getMessage());
-										}
-
-										ListOfValuesManager
-												.releaseConnection(con);
-									} else {
-										try {
-											con.commit();
-										} catch (SQLException e) {
-											LoggerSingleton
-													.getInstance()
-													.error(e.getStackTrace()[0]
-															.getClassName()
-															+ "->"
-															+ e.getStackTrace()[0]
-																	.getMethodName()
-															+ "() : "
-															+ e.getStackTrace()[0]
-																	.getLineNumber()
-															+ " :: "
-															+ e.getMessage());
-										}
-
-										ListOfValuesManager
-												.releaseConnection(con);
+									ListOfValuesManager.releaseConnection(con2);
+								} else {
+									try {
+										con2.commit();
+									} catch (SQLException e) {
+										LoggerSingleton
+												.getInstance()
+												.error(e.getStackTrace()[0]
+														.getClassName()
+														+ "->"
+														+ e.getStackTrace()[0]
+																.getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0]
+																.getLineNumber()
+														+ " :: "
+														+ e.getMessage());
 									}
+
+									ListOfValuesManager.releaseConnection(con2);
 								}
 							}
 						}
-
 					}
+
 				}
 			}
-
 		}
 
 	}
@@ -9959,13 +10027,14 @@ public class UserAction extends HPBaseAction {
 		userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
 
 	}
-/*
-	 * This is<code>dailyRide</code> Method
+	
+	/*
+	 * Here <code>dailyRide</code> Method For Insertig Oneway and Twoway
 	 */
 
 	public String dailyRide() {
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
-
+		System.out.println("DailRide inserting");
 		String ride = null;
 
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -9989,7 +10058,7 @@ public class UserAction extends HPBaseAction {
 				rideRegistered.setUserID(userRegistrationDTO.getId());
 
 				try {
-					// updated code for start date 1
+					// Appending the Date and Time
 					String str1 = rideRegistered.getStartDate1();
 					str1 = str1 + " " + rideRegistered.getPickup_time1();
 					rideRegistered.setStartDate1(str1);
@@ -10080,7 +10149,7 @@ public class UserAction extends HPBaseAction {
 															.trim()) + "");
 
 								} else {
-									distancepaycalc();
+									distancepaycalc(rideRegistered);
 								}
 							}
 						} catch (IOException e) {
@@ -10129,6 +10198,66 @@ public class UserAction extends HPBaseAction {
 
 				frequencyDTO = ListOfValuesManager.getFrequencyEntery(
 						"findByDTO", frequencyDTO, con);
+
+				/*
+				 * This is for Subject Match Messages
+				 */
+				UserRegistrationDTO userDtoRide = new UserRegistrationDTO();
+				userDtoRide = ListOfValuesManager.getUserById(Integer
+						.parseInt(rideRegistered.getUserID()));
+				System.out.println("first name:" + userDtoRide.getFirst_name());
+				String startDate = rideRegistered.getStartDate1().split(" ")[0];
+				rideRegistered.setStartdateValue(startDate);
+				String endDate = rideRegistered.getStartDate2().split(" ")[0];
+				rideRegistered.setEnddateValue(endDate);
+				userMessageDTO.setEmailSubject(Messages
+						.getValue("dailyRide.Create"));
+
+				userMessageDTO.setMessage(Messages.getValue(
+						"dailyRide.seeker.oneway",
+						new Object[] { userDtoRide.getFirst_name(),
+								rideRegistered.getRideID(),
+								rideRegistered.getFromAddress1(),
+								rideRegistered.getToAddress1(),
+								rideRegistered.getTripType(),
+								rideRegistered.getPickup_time1(),
+								rideRegistered.getStartdateValue(),
+								rideRegistered.getEnddateValue() }));
+				userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+						.getUserID()));
+				userMessageDTO.setMessageChannel("E");
+				userMessageDTO = ListOfValuesManager
+						.getInsertedMessage(userMessageDTO);
+
+				/*
+				 * This is for SMS Match To MessageBoard
+				 */
+				userMessageDTO = new MessageBoardDTO();
+				userMessageDTO
+						.setMessage(Messages.getValue(
+								"dailyRideSms.seeker.oneway",
+								new Object[] {
+										userDtoRide.getFirst_name(),
+										rideRegistered.getRideID(),
+										(rideRegistered.getFromAddress1()
+												.length() > 25) ? rideRegistered
+												.getFromAddress1().substring(0,
+														25) : rideRegistered
+												.getFromAddress1(),
+										(rideRegistered.getToAddress1()
+												.length() > 25) ? rideRegistered
+												.getToAddress1().substring(0,
+														25) : rideRegistered
+												.getToAddress1(),
+										rideRegistered.getPickup_time1(),
+										rideRegistered.getStartdateValue(),
+										rideRegistered.getEnddateValue() }));
+
+				userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+						.getUserID()));
+				userMessageDTO.setMessageChannel("S");
+				userMessageDTO = ListOfValuesManager
+						.getInsertedMessage(userMessageDTO);
 
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
@@ -10228,7 +10357,6 @@ public class UserAction extends HPBaseAction {
 				if (rideManager.equals("takeRide")) {
 					if (ListOfValuesManager
 							.checkRideSeekerDuplicacy(rideRegistered)) {
-						errorMessage.add("Same Ride already exist.");
 						throw new ControllerException();
 						// return "takeRide";
 					} else {
@@ -10290,12 +10418,10 @@ public class UserAction extends HPBaseAction {
 															.trim()) + "");
 
 								} else {
-									distancepaycalc();
+									distancepaycalc(rideRegistered);
 								}
 							}
 						} catch (IOException e) {
-							errorMessage
-									.add("There is some problem in calculating time for ride.");
 							throw new ControllerException();
 						} catch (JSONException e) {
 							LoggerSingleton.getInstance().error(
@@ -10307,8 +10433,6 @@ public class UserAction extends HPBaseAction {
 											+ e.getStackTrace()[0]
 													.getLineNumber() + " :: "
 											+ e.getMessage());
-							errorMessage
-									.add("There is some problem in calculating time for ride.");
 							throw new ControllerException();
 						}
 
@@ -10324,7 +10448,7 @@ public class UserAction extends HPBaseAction {
 										rideRegistered, con);
 						if (rideRegistered != null) {
 							successMessage
-									.add("Two Way Ride SuccessFully Inserted");
+									.add("Two Way Ride SuccessFully Registred");
 						} else {
 							errorMessage
 									.add("Fail to Register the Twoway Ride");
@@ -10340,6 +10464,67 @@ public class UserAction extends HPBaseAction {
 
 				frequencyDTO = ListOfValuesManager.getFrequencyEntery(
 						"findByDTO", frequencyDTO, con);
+
+				/*
+				 * This is Creating the Message for Details of the Rider.
+				 */
+				UserRegistrationDTO userDtoRide = new UserRegistrationDTO();
+				userDtoRide = ListOfValuesManager.getUserById(Integer
+						.parseInt(rideRegistered.getUserID()));
+				userMessageDTO = new MessageBoardDTO();
+				String startDate = rideRegistered.getStartDate1().split(" ")[0];
+				rideRegistered.setStartdateValue(startDate);
+				String endDate = rideRegistered.getStartDate2().split(" ")[0];
+				rideRegistered.setEnddateValue(endDate);
+				userMessageDTO.setEmailSubject(Messages
+						.getValue("dailyRide.Create"));
+				userMessageDTO.setMessage(Messages.getValue(
+						"dailyRide.seeker.twoway",
+						new Object[] { userDtoRide.getFirst_name(),
+								rideRegistered.getRideID(),
+								rideRegistered.getFromAddress1(),
+								rideRegistered.getToAddress1(),
+								rideRegistered.getTripType(),
+								rideRegistered.getPickup_time1(),
+								rideRegistered.getPickup_time2(),
+								rideRegistered.getStartdateValue(),
+								rideRegistered.getEnddateValue() }));
+				userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+						.getUserID()));
+				userMessageDTO.setMessageChannel("E");
+				userMessageDTO = ListOfValuesManager
+						.getInsertedMessage(userMessageDTO);
+
+				/*
+				 * Creating Messages for SMS Match To MessageBoard
+				 */
+				userMessageDTO = new MessageBoardDTO();
+				userMessageDTO
+						.setMessage(Messages.getValue(
+								"dailyRideSms.seeker.twoway",
+								new Object[] {
+										userDtoRide.getFirst_name(),
+										rideRegistered.getRideID(),
+										(rideRegistered.getFromAddress1()
+												.length() > 25) ? rideRegistered
+												.getFromAddress1().substring(0,
+														25) : rideRegistered
+												.getFromAddress1(),
+										(rideRegistered.getToAddress1()
+												.length() > 25) ? rideRegistered
+												.getToAddress1().substring(0,
+														25) : rideRegistered
+												.getToAddress1(),
+										rideRegistered.getPickup_time1(),
+										rideRegistered.getPickup_time2(),
+										rideRegistered.getStartdateValue(),
+										rideRegistered.getEnddateValue() }));
+
+				userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+						.getUserID()));
+				userMessageDTO.setMessageChannel("S");
+				userMessageDTO = ListOfValuesManager
+						.getInsertedMessage(userMessageDTO);
 
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
@@ -10390,7 +10575,7 @@ public class UserAction extends HPBaseAction {
 		// rideRegistered = new RideManagementDTO();
 		frequencyDTO = new FrequencyDTO();
 		getDailyRideData();
-		return "dailyRide1";
+		return "dailyRide";
 
 	}
 
@@ -10403,10 +10588,12 @@ public class UserAction extends HPBaseAction {
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 
 		try {
+
+			System.out.println("UserReg Id:" + userRegistrationDTO.getId()
+					+ "setUserID:" + rideRegistered.getUserID());
 			RideManagementDTO rideDTO = new RideManagementDTO();
 			rideDTO = ListOfValuesManager.getDailyRideEntry(con,
 					userRegistrationDTO.getId());
-
 			if (rideDTO.getUserID() != null) {
 				rideRegistered.setStartPointLatitude(rideDTO
 						.getStartPointLatitude());
@@ -10472,7 +10659,7 @@ public class UserAction extends HPBaseAction {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				// Time Picker
+				// Time Picker Spliting.
 
 				String timepic1 = rideDTO.getStartdateValue().split(" ")[1];
 				String splittime_pic1[] = timepic1.split(":");
@@ -10485,9 +10672,7 @@ public class UserAction extends HPBaseAction {
 					String timepic2 = rideDTO.getStartdateValue1().split(" ")[1];
 					String splittime_pic2[] = timepic2.split(":");
 					timepic2 = splittime_pic2[0] + ":" + splittime_pic2[1];
-
 					rideRegistered.setPickup_time2(timepic2);
-
 					try {
 						rideRegistered.setStartDate(new SimpleDateFormat(
 								"yyyy-MM-dd").parse(statrDateVal1));
@@ -10503,22 +10688,22 @@ public class UserAction extends HPBaseAction {
 							.getStartdateValue1());
 
 				}
-
 			} else {
 				errorMessage
 						.add("Sorry!! There are no Records.Please Register Ride");
-				// rideRegistered = null;
+
 			}
 
 		} catch (ConfigurationException e) {
 
 			e.printStackTrace();
 		}
+
 	}
 
 	public String viewRideData() {
 		getDailyRideData();
-		return "dailyRide1";
+		return "dailyRide";
 	}
 
 	/*
@@ -10566,7 +10751,7 @@ public class UserAction extends HPBaseAction {
 									+ "() : "
 									+ e.getStackTrace()[0].getLineNumber()
 									+ " :: " + e.getMessage());
-					/* errorMessage.add("Please select proper start date."); */
+
 					throw new ControllerException();
 				}
 				cal.setTime(rideRegistered.getStartDate());
@@ -10585,8 +10770,6 @@ public class UserAction extends HPBaseAction {
 										rideRegistered.getToAddress1(),
 										userPreferences.getMaxWaitTime(),
 										rideRegistered.getStartdateValue());
-						System.out.println("Inside the window location:"
-								+ windowCalculation);
 						try {
 							rideRegistered.setEnddateValue(dateFormat
 									.format(new SimpleDateFormat(
@@ -10613,13 +10796,14 @@ public class UserAction extends HPBaseAction {
 									.get(5).toString()) / 1000;
 							rideRegistered.setRideDistance(distance);
 							if (rideRegistered.isSharedTaxi() == true) {
-								/*
-								 * rideRegistered.setRideCost(distance
-								 * Float.parseFloat(Messages.getValue(
-								 * "ride.perkm.charge").trim()) + "");
-								 */
+
+								rideRegistered.setRideCost(distance
+										* Float.parseFloat(Messages.getValue(
+												"ride.perkm.charge").trim())
+										+ "");
+
 							} else {
-								distancepaycalc();
+								distancepaycalc(rideRegistered);
 
 							}
 						}
@@ -10653,9 +10837,91 @@ public class UserAction extends HPBaseAction {
 						successMessage.add("OneWay Ride Updated SuccessFully");
 					} else {
 						errorMessage.add("OneWay Ride Fail to Update");
-					}
-				}
 
+					}
+					// frequencyDTO.setRideSeekerId(rideRegistered.getRideID());
+					/*
+					 * }
+					 * 
+					 * frequencyDTO.setTime(rideRegistered.getStartDate());
+					 * frequencyDTO
+					 * .setStartDate(rideRegistered.getStartdateValue());
+					 * frequencyDTO
+					 * .setEndDate(rideRegistered.getEnddateValue());
+					 * 
+					 * frequencyDTO = ListOfValuesManager.getFrequencyEntery(
+					 * "findByDTO", frequencyDTO, con);
+					 */
+					/*
+					 * This is for Subject Match Messages
+					 */
+
+					userMessageDTO = new MessageBoardDTO();
+					UserRegistrationDTO userDtoRide = new UserRegistrationDTO();
+					userDtoRide = ListOfValuesManager.getUserById(Integer
+							.parseInt(rideRegistered.getUserID()));
+					String startDate = rideRegistered.getStartDate1()
+							.split(" ")[0];
+					rideRegistered.setStartdateValue(startDate);
+					String endDate = rideRegistered.getStartDate2().split(" ")[0];
+					rideRegistered.setEnddateValue(endDate);
+					userMessageDTO.setEmailSubject(Messages
+							.getValue("dailyRide.Create.update"));
+
+					userMessageDTO.setMessage(Messages.getValue(
+							"dailyRide.seeker.oneway.update",
+							new Object[] { userDtoRide.getFirst_name(),
+									rideRegistered.getRideID(),
+									rideRegistered.getFromAddress1(),
+									rideRegistered.getToAddress1(),
+									rideRegistered.getTripType(),
+									rideRegistered.getPickup_time1(),
+									rideRegistered.getStartdateValue(),
+									rideRegistered.getEnddateValue() }));
+					userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+							.getUserID()));
+					userMessageDTO.setMessageChannel("E");
+					userMessageDTO = ListOfValuesManager
+							.getInsertedMessage(userMessageDTO);
+
+					/*
+					 * This is for SMS Match To MessageBoard
+					 */
+					userMessageDTO = new MessageBoardDTO();
+					userMessageDTO
+							.setMessage(Messages
+									.getValue(
+											"dailyRideSms.seeker.oneway.update",
+											new Object[] {
+													userDtoRide.getFirst_name(),
+													rideRegistered.getRideID(),
+													(rideRegistered
+															.getFromAddress1()
+															.length() > 25) ? rideRegistered
+															.getFromAddress1()
+															.substring(0, 25)
+															: rideRegistered
+																	.getFromAddress1(),
+													(rideRegistered
+															.getToAddress1()
+															.length() > 25) ? rideRegistered
+															.getToAddress1()
+															.substring(0, 25)
+															: rideRegistered
+																	.getToAddress1(),
+													rideRegistered
+															.getPickup_time1(),
+													rideRegistered
+															.getStartdateValue(),
+													rideRegistered
+															.getEnddateValue() }));
+
+					userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+							.getUserID()));
+					userMessageDTO.setMessageChannel("S");
+					userMessageDTO = ListOfValuesManager
+							.getInsertedMessage(userMessageDTO);
+				}
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -10742,8 +11008,6 @@ public class UserAction extends HPBaseAction {
 
 				rideRegistered.setRideID(null);
 				rideRegistered.setCreatedBy(userRegistrationDTO.getId());
-				System.out.println("created by in trip 2 :"
-						+ userRegistrationDTO.getId());
 				rideRegistered.setCreated_dt(ListOfValuesManager
 						.getCurrentTimeStampDate());
 
@@ -10784,12 +11048,14 @@ public class UserAction extends HPBaseAction {
 						float distance = Integer.parseInt(windowCalculation
 								.get(5).toString()) / 1000;
 						rideRegistered.setRideDistance(distance);
-						System.out.println("Ride Distance:"
-								+ rideRegistered.getRideDistance());
 						if (rideRegistered.isSharedTaxi() == true) {
 
+							rideRegistered.setRideCost(distance
+									* Float.parseFloat(Messages.getValue(
+											"ride.perkm.charge").trim()) + "");
+
 						} else {
-							distancepaycalc();
+							distancepaycalc(rideRegistered);
 
 						}
 					}
@@ -10824,6 +11090,76 @@ public class UserAction extends HPBaseAction {
 				} else {
 					errorMessage.add("TwoWay Ride Fail to Update");
 				}
+
+				/*
+				 * Below Code While Update Creating the Messages To DailyRider
+				 */
+				userMessageDTO = new MessageBoardDTO();
+				UserRegistrationDTO userDtoRide = new UserRegistrationDTO();
+				userDtoRide = ListOfValuesManager.getUserById(Integer
+						.parseInt(rideRegistered.getUserID()));
+				String startDate = rideRegistered.getStartDate1().split(" ")[0];
+				rideRegistered.setStartdateValue(startDate);
+				String endDate = rideRegistered.getStartDate2().split(" ")[0];
+				rideRegistered.setEnddateValue(endDate);
+				userMessageDTO.setEmailSubject(Messages
+						.getValue("dailyRide.Create.update"));
+
+				userMessageDTO.setMessage(Messages.getValue(
+						"dailyRide.seeker.twoway.update",
+						new Object[] { userDtoRide.getFirst_name(),
+								rideRegistered.getRideID(),
+								rideRegistered.getFromAddress1(),
+								rideRegistered.getToAddress1(),
+								rideRegistered.getTripType(),
+								rideRegistered.getPickup_time1(),
+								rideRegistered.getPickup_time2(),
+								rideRegistered.getStartdateValue(),
+								rideRegistered.getEnddateValue() }));
+				userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+						.getUserID()));
+				userMessageDTO.setMessageChannel("E");
+				userMessageDTO = ListOfValuesManager
+						.getInsertedMessage(userMessageDTO);
+
+				/*
+				 * While Updating Creating the Messages SMS Match To
+				 * MessageBoard
+				 */
+				userMessageDTO = new MessageBoardDTO();
+				userMessageDTO
+						.setMessage(Messages
+								.getValue(
+										"dailyRideSms.seeker.twoway.update",
+										new Object[] {
+												userDtoRide.getFirst_name(),
+												rideRegistered.getRideID(),
+												(rideRegistered
+														.getFromAddress1()
+														.length() > 25) ? rideRegistered
+														.getFromAddress1()
+														.substring(0, 25)
+														: rideRegistered
+																.getFromAddress1(),
+												(rideRegistered.getToAddress1()
+														.length() > 25) ? rideRegistered
+														.getToAddress1()
+														.substring(0, 25)
+														: rideRegistered
+																.getToAddress1(),
+												rideRegistered
+														.getPickup_time1(),
+												rideRegistered
+														.getPickup_time2(),
+												rideRegistered
+														.getStartdateValue(),
+												rideRegistered
+														.getEnddateValue() }));
+				userMessageDTO.setToMember(Integer.parseInt(rideRegistered
+						.getUserID()));
+				userMessageDTO.setMessageChannel("S");
+				userMessageDTO = ListOfValuesManager
+						.getInsertedMessage(userMessageDTO);
 
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
@@ -10873,15 +11209,14 @@ public class UserAction extends HPBaseAction {
 		}
 		rideRegistered = new RideManagementDTO();
 		getDailyRideData();
-		return "dailyRide1";
+		return "dailyRide";
 
 	}
 
 	/*
-	 * In this method <code>distancepaycalc</code> calculating the ride distance
-	 * and ride cost .
+	 * In this method <code>distancepaycalc</code> calculating the ride cost .
 	 */
-	public void distancepaycalc() {
+	public void distancepaycalc(RideManagementDTO rideRegistered) {
 
 		float price = 0;
 		String a;
@@ -10906,10 +11241,10 @@ public class UserAction extends HPBaseAction {
 			price = Math.round(price);
 			a = format.format(price);
 			rideRegistered.setRideCost(a);
+
 		} else {
 			rideRegistered.setRideCost(String.valueOf(price));
-			System.out.println("Inside displaycal method Ride distance:"
-					+ rideRegistered.getRideCost());
+
 		}
 	}
 
@@ -10930,12 +11265,9 @@ public class UserAction extends HPBaseAction {
 					.calculateDistanceWindowSettings(
 							rideRegistered.getFromAddress1(),
 							rideRegistered.getToAddress1());
-			System.out.println("windowCalculation: " + windowCalculation);
 
 			if (windowCalculation > 0) {
 				distance = windowCalculation / 1000;
-				System.out.println("format.format(distance)"
-						+ format.format(distance));
 				distance = Float.parseFloat(format.format(distance));
 				rideRegistered.setRideDistance(distance);
 
@@ -10952,9 +11284,7 @@ public class UserAction extends HPBaseAction {
 			errorMessage
 					.add("There is some problem in calculating time for ride.");
 		}
-		distancepaycalc();
+		distancepaycalc(rideRegistered);
 
 	}
 }
-
-

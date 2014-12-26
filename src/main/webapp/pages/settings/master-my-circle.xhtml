@@ -108,17 +108,42 @@ function scroll(){
          	</pm:content>
                   
                   <!-- section for search -->
-                  <h3 class="muted">Enrol/Join other circles </h3>
-			<pm:content>
-			<h:form class="form-inline">
-			<div class="controls">
-			    <h:inputText value="#{userAction.circleDTO.name}"/>&nbsp;
-				<h:commandButton styleClass="btn btn-info" value="Search">
-					<p:ajax process="@form" update="@form,:searchResult" listener="#{userAction.findCircleByName}" oncomplete="modalUpdate();updateDataTable();scroll();"/>
-				</h:commandButton>
-			</div>
-			</h:form>
-			</pm:content>
+				 <pm:content
+											rendered="#{sessionScope.user_role == 'C' || sessionScope.user_role == 'P' || sessionScope.user_role == 'B'}">
+												<h3 class="muted">Enrol/Join other circles</h3>
+												<pm:content>
+													<h:form class="form-inline">
+														<div class="controls">
+															<h:inputText value="#{userAction.circleDTO.name}" />
+															&nbsp;
+															<h:commandButton styleClass="btn btn-info" value="Search">
+																<p:ajax process="@form" update="@form,:searchResult"
+																	listener="#{userAction.findNonTaxiCircleByName}"
+																	oncomplete="modalUpdate();updateDataTable();scroll();" />
+															</h:commandButton>
+														</div>
+													</h:form>
+												</pm:content>
+												</pm:content>
+												<pm:content
+											rendered="#{sessionScope.user_role == 'T'}">
+												<h3 class="muted">Enrol/Join other circles</h3>
+												<pm:content>
+													<h:form class="form-inline">
+														<div class="controls">
+															<h:inputText value="#{userAction.circleDTO.name}" />
+															&nbsp;
+															<h:commandButton styleClass="btn btn-info" value="Search">
+																<p:ajax process="@form" update="@form,:searchResult"
+																	listener="#{userAction.findTaxiCircleByName}"
+																	oncomplete="modalUpdate();updateDataTable();scroll();" />
+															</h:commandButton>
+														</div>
+													</h:form>
+												</pm:content>
+												</pm:content>
+
+
                   
 			<div id="ui-table-2">
 			<pm:content>

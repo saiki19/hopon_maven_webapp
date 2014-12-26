@@ -3655,6 +3655,45 @@ public class ListOfValuesManager {
 		}
 		return rideSeekerDTO;
 	}
+//TaxiCircleByName
+	public static List<CircleDTO> getTaxiCircleByName(String circleName,
+			String userId) {
+		List<CircleDTO> circleList = new ArrayList<CircleDTO>();
+		Connection con = getLocalConnection();
+		try {
+			circleList = getTripService().loadTaxiCircleByName(con, circleName,
+					userId);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return circleList;
+	}
+
+	//NonTaxiCircleByName
+	public static List<CircleDTO> getNonTaxiCircleByName(String circleName,
+			String userId) {
+		List<CircleDTO> circleList = new ArrayList<CircleDTO>();
+		Connection con = getLocalConnection();
+		try {
+			circleList = getTripService().loadNonTaxiCircleByName(con, circleName,
+					userId);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return circleList;
+	}
 
 	
 }

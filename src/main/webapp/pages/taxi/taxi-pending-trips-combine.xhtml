@@ -270,8 +270,6 @@ function validateDropTake(f,d,b)
 				<h:inputHidden value="#{userAction.rideIdToDrop}" id="rideIdToDrop"/>
 				<h:inputHidden value="#{userAction.rideIdToTake}" id="rideIdToTake"/>
 			     <h:inputHidden value="#{userAction.rideIdToReassign}" id="rideIdToReassign"/>
-             	<h:outputText value="#{userAction.rideIdToReassign}" id="rideIdToReassign1"/>
-			    <h:outputText value="#{userAction.rideIdToTake}" id="rideIdToTake1"/>
 			<h:commandLink styleClass="btn btn-success" value="Combine Vehicles" rendered="#{not empty userAction.combineVehicleCondition}" onclick="return validateCombine();">
             <p:ajax process="@form" listener="#{userAction.combineVehicle}" update="@form,:form1,:messagePanel" oncomplete="updateDataTable1();updateToolTip();"/>
             </h:commandLink>&nbps;

@@ -96,9 +96,9 @@ function scroll(){
 		<p:autoComplete id="taxi_circle" panelStyle="width:295px;" style="width:290px;" completeMethod="#{userAction.userAutoTaxiCircle}" var="p" itemLabel="#{p.name}" itemValue="#{p.circleID} "></p:autoComplete>&nbsp;
 		<h:inputHidden value="#{userAction.affiliateCircleId}" id="affiliateCircleId" />
 		<h:commandLink styleClass="btn btn-info ui-corner-all" value="Add" >
-			<p:ajax process="@this,taxi_circle,mycircles,affiliateCircleId" oncomplete="$('input[id*=\'taxi_circle_input\']').val(''); updateMember();" 
+			<p:ajax process="@this,taxi_circle,mycircles,affiliateCircleId" oncomplete="$('input[id*=\'taxi_circle_input\']').val(''); updateMember(); scroll();" 
 			listener="#{userAction.makeCircleAffiliated}" update="member,pendingMember,:messagePanel" 
-			onstart="$('input[id$=\'\\:affiliateCircleId\']').val($('input[id$=\'\\:taxi_circle_hinput\']').val().trim());" oncomplete="scroll();"></p:ajax>
+			onstart="$('input[id$=\'\\:affiliateCircleId\']').val($('input[id$=\'\\:taxi_circle_hinput\']').val().trim());"></p:ajax>
 		</h:commandLink>
 	</div>
 	<div class="span10">

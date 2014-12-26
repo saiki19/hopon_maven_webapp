@@ -222,14 +222,16 @@
 
 				});
 				function updatePart() {
-					var date = new Date();
+
 					$("#tab1\\:dp1").datepicker({
-						changeMonth : false,
-						startDate : date,
-						hideIfNoPrevNext : true,
+
+						minDate : new Date(),
+						minDate : "+2D",
 						dateFormat : "dd-M-yy"
 					});
 					$("#tab1\\:dp2").datepicker({
+						minDate : new Date(),
+						minDate : "+2D",
 						dateFormat : "dd-M-yy"
 					});
 					$("#tab1\\:tp1").timepicker();
@@ -350,14 +352,7 @@
 					}
 				}
 			</script>
-			<script type="text/javascript">
-				function getFunction() {
-					googleLoc();
-					//	$("#tab1\\:viewBtn").trigger('click');
-
-				}
-			</script>
-			<script type="text/javascript">
+			<!-- 	<script type="text/javascript">
 				$(function() {
 					$("#tab1\\:dp1").datepicker({
 						dateFormat : "dd-M-yy"
@@ -369,10 +364,10 @@
 					$("#tab1\\:tp2").timepicker();
 
 				});
-			</script>
-
+			</script> -->
+			${userAction.viewRideData()} 
 			<h:head></h:head>
-			<h:body onload="getFunction();">
+			<h:body>
 				<ui:include src="../common/headerContent.xhtml"></ui:include>
 				<c:set
 					value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}"
@@ -416,6 +411,7 @@
 																			</p:ajax>
 																		</h:inputText>
 																	</div>
+
 																</div>
 
 																<h:inputHidden id="fromcity"
@@ -474,8 +470,7 @@
 																				Way</input>
 
 																		</c:otherwise>
-																	</c:choose>
-																		
+																	</c:choose>	
 																		&nbsp;&nbsp;
 																		<c:if
 																		test="#{userAction.rideRegistered.tripType eq 1}">
@@ -537,7 +532,8 @@
 																</div>
 																<div class="control-group">
 																	<label class="control-label" for="inputPassword"><b>Start
-																			Date </b></label>
+																			Date </b><span class="glyphicon glyphicon-calendar">
+																	</span> </label>
 																	<div class="controls">
 																		<h:inputText id="dp1"
 																			value="#{userAction.rideRegistered.startDate1}" />
@@ -617,22 +613,14 @@
 																				value="Update" id="EditBtn">
 																				<p:ajax process="@form"
 																					listener="#{userAction.updateDailyRide}"
-																					oncomplete="googleLoc();" update="@form" onsuccess="window.location = '${url}/pages/rides/dailyride.xhtml'" />
+																					oncomplete="googleLoc();" update="@form"
+																					onsuccess="window.location = '${url}/pages/rides/dailyride.xhtml'" />
 																			</h:commandButton>
 
 																		</c:if>
 																	</div>
+																	
 
-																	<div class="controls"
-																		style="float: left; display: inline;">
-																		<h:commandButton
-																			styleClass="btn btn-large btn-success" value="View"
-																			id="viewBtn">
-																			<p:ajax process="@form"
-																				listener="#{userAction.viewRideData}"
-																				onsuccess="window.location = '${url}/pages/rides/dailyride.xhtml'" />
-																		</h:commandButton>
-																	</div>
 																</div>
 																<br></br>
 
@@ -658,7 +646,7 @@
 																		</div>
 																	</c:if>
 																</c:forEach>
-																<!-- 	${userAction.clearScreenMessage()} -->
+															<!-- 	${userAction.clearScreenMessage()}  -->
 															</pm:content>
 														</span>
 													</h:form>

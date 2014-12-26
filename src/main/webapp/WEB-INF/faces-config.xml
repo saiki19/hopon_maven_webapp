@@ -287,6 +287,16 @@
 			<redirect />
 		</navigation-case>
 	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/pages/signup.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>registerUser</from-outcome>
+			<to-view-id>/pages/signin.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+	</navigation-rule>
+
 	<application>
 		<locale-config>
 			<default-locale>en</default-locale>
