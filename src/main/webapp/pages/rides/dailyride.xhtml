@@ -312,6 +312,7 @@
 								$("#tab1\\:dp2").focus().css({
 									"border-color" : "red",
 								});
+								aven
 								return false;
 							}
 							$("#tab1\\:hiddenid").val(rd1);
@@ -352,20 +353,8 @@
 					}
 				}
 			</script>
-			<!-- 	<script type="text/javascript">
-				$(function() {
-					$("#tab1\\:dp1").datepicker({
-						dateFormat : "dd-M-yy"
-					});
-					$("#tab1\\:dp2").datepicker({
-						dateFormat : "dd-M-yy"
-					});
-					$("#tab1\\:tp1").timepicker();
-					$("#tab1\\:tp2").timepicker();
-
-				});
-			</script> -->
-			${userAction.viewRideData()} 
+			
+		${userAction.viewRideData()}
 			<h:head></h:head>
 			<h:body>
 				<ui:include src="../common/headerContent.xhtml"></ui:include>
@@ -448,45 +437,36 @@
 
 																<h:inputHidden id="endPoinLng"
 																	value="#{userAction.rideRegistered.endPointLongitude}" />
-															
+																
+																
 																&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-																<c:if test="#{userAction.rideRegistered.userID !=null}">
-																	<c:if test="#{userAction.rideRegistered.tripType eq 2}">
-																		<input id="r1" type="radio" class="rdBtn"
-																			name="radioname" value="1">One Way</input>
-
-																	</c:if>
-																	<c:choose>
-																		<c:when
-																			test="#{userAction.rideRegistered.tripType eq 1}">
-																			<input id="r1" type="radio" class="rdBtn"
-																				checked="checked" name="radioname" value="1">One
-																				Way</input>
-
-																		</c:when>
-																		<c:otherwise>
-																			<input id="r2" type="radio" class="rdBtn"
-																				checked="checked" name="radioname" value="2">Two
-																				Way</input>
-
-																		</c:otherwise>
-																	</c:choose>	
-																		&nbsp;&nbsp;
-																		<c:if
-																		test="#{userAction.rideRegistered.tripType eq 1}">
-																		<input id="r2" type="radio" class="rdBtn"
-																			name="radioname" value="2">TwoWay</input>
-
-																	</c:if>
-																</c:if>
-																<c:if test="#{userAction.rideRegistered.userID ==null}">
-
+																
+																	<!-- <c:choose> -->
+																<pm:content
+																	rendered="#{userAction.rideRegistered.tripType == 2}">
 																	<input id="r1" type="radio" class="rdBtn"
-																		name="radioname" value="1">One Way</input>&nbsp;&nbsp;
-																	<input id="r2" type="radio" class="rdBtn"
-																		name="radioname" value="2">Two Way</input>
-																</c:if>
-
+																		name="radioname" value="1">One Way</input>
+																	<input id="r1" type="radio" class="rdBtn"
+																		checked="checked" name="radioname" value="2">TwoWay</input>
+																</pm:content>
+																
+																<pm:content
+																	rendered="#{userAction.rideRegistered.tripType == 1}">
+																	<input id="r1" checked="checked" type="radio"
+																		class="rdBtn" name="radioname" value="1">One
+																		Way</input>
+																	<input id="r1" type="radio" class="rdBtn"
+																		name="radioname" value="2">TwoWay</input>
+																</pm:content>
+																
+																<pm:content
+																	rendered="#{userAction.rideRegistered.userID == null}">
+																	<input id="r1" type="radio" class="rdBtn"
+																		name="radioname" value="1">One Way</input>
+																	<input id="r1" type="radio" class="rdBtn"
+																		name="radioname" value="2">TwoWay</input>
+																</pm:content>
+																
 																<h:inputHidden id="hiddenid"
 																	value="#{userAction.rideRegistered.tripType}" />
 																<br></br>
@@ -592,8 +572,8 @@
 																<div class="row">
 																	<div class="controls"
 																		style="display: block; float: left;">
-																		<c:if
-																			test="#{userAction.rideRegistered.userID ==null}">
+																		<pm:content
+																			rendered="#{userAction.rideRegistered.userID ==null}">
 																			<h:commandButton onclick="return validate();"
 																				rendered="#{sessionScope.user_role == 'C' || (sessionScope.user_role == 'B' and userAction.ridePicker ==1)}"
 																				styleClass="btn btn-large btn-success"
@@ -604,10 +584,10 @@
 																					oncomplete="updatePart();googleLoc();" />
 																		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 																</h:commandButton>
-																		</c:if>
+																		</pm:content>
 
-																		<c:if
-																			test="#{userAction.rideRegistered.userID !=null}">
+																		<pm:content
+																			rendered="#{userAction.rideRegistered.userID !=null}">
 																			<h:commandButton onclick="return validate();"
 																				styleClass="btn btn-large btn-success "
 																				value="Update" id="EditBtn">
@@ -617,9 +597,9 @@
 																					onsuccess="window.location = '${url}/pages/rides/dailyride.xhtml'" />
 																			</h:commandButton>
 
-																		</c:if>
+																		</pm:content>
 																	</div>
-																	
+
 
 																</div>
 																<br></br>
@@ -646,7 +626,7 @@
 																		</div>
 																	</c:if>
 																</c:forEach>
-															<!-- 	${userAction.clearScreenMessage()}  -->
+																<!-- 	${userAction.clearScreenMessage()}  -->
 															</pm:content>
 														</span>
 													</h:form>

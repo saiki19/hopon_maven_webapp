@@ -149,26 +149,80 @@ public class HPBaseAction {
 	protected List<PaymentDTO> duePaymentList = new ArrayList<PaymentDTO>();
 	public boolean userCirclePaymentPending = false;
 	protected List<PaymentPlanDTO> userPaymentPlanList = new ArrayList<PaymentPlanDTO>();
-	/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
-	  protected String circleType;
-	  
-	  public String getCircleType() {
+	/*
+	 * <!-- Code Changed by Kirty for selection Ride option with different User
+	 * Id-->
+	 */
+	protected String circleType;
+
+	public String getCircleType() {
 		return circleType;
 	}
 
 	public void setCircleType(String circleType) {
 		this.circleType = circleType;
 	}
-	/*<!--  Code Changed by Kirty for selection Ride option with different User Id-->	*/
+
+	/*
+	 * <!-- Code Changed by Kirty for selection Ride option with different User
+	 * Id-->
+	 */
 
 	protected List<SelectItem> allCompany;
 	protected List<SelectItem> companySector;
 	protected List<SelectItem> allCircleOption;
+
+	protected long transferAmount;
+	protected List<PaymentTxnsDTO> paymentTxnList = new ArrayList();
+	protected List<PaymentRequestDTO> paymentRequestList = new ArrayList();
+	protected String paymentSearchFrom;
+	protected String paymentSearchTo;
+
 	public String vehicleRegNoToDrop;
 	public String vehicleRegNoToTake;
 	protected int rideIdToReassign;
 
-		public int getRideIdToReassign() {
+	public long getTransferAmount() {
+		return transferAmount;
+	}
+
+	public void setTransferAmount(long transferAmount) {
+		this.transferAmount = transferAmount;
+	}
+
+	public List<PaymentTxnsDTO> getPaymentTxnList() {
+		return paymentTxnList;
+	}
+
+	public void setPaymentTxnList(List<PaymentTxnsDTO> paymentTxnList) {
+		this.paymentTxnList = paymentTxnList;
+	}
+
+	public List<PaymentRequestDTO> getPaymentRequestList() {
+		return paymentRequestList;
+	}
+
+	public void setPaymentRequestList(List<PaymentRequestDTO> paymentRequestList) {
+		this.paymentRequestList = paymentRequestList;
+	}
+
+	public String getPaymentSearchFrom() {
+		return paymentSearchFrom;
+	}
+
+	public void setPaymentSearchFrom(String paymentSearchFrom) {
+		this.paymentSearchFrom = paymentSearchFrom;
+	}
+
+	public String getPaymentSearchTo() {
+		return paymentSearchTo;
+	}
+
+	public void setPaymentSearchTo(String paymentSearchTo) {
+		this.paymentSearchTo = paymentSearchTo;
+	}
+
+	public int getRideIdToReassign() {
 		return rideIdToReassign;
 	}
 
@@ -176,7 +230,7 @@ public class HPBaseAction {
 		this.rideIdToReassign = rideIdToReassign;
 	}
 
-		public String getVehicleRegNoToDrop() {
+	public String getVehicleRegNoToDrop() {
 		return vehicleRegNoToDrop;
 	}
 
@@ -191,6 +245,7 @@ public class HPBaseAction {
 	public void setVehicleRegNoToTake(String vehicleRegNoToTake) {
 		this.vehicleRegNoToTake = vehicleRegNoToTake;
 	}
+
 	// Start ContactUsDTO class
 	protected ContactusDTO contactusDTO = new ContactusDTO();
 
@@ -1050,7 +1105,6 @@ public class HPBaseAction {
 		this.verifyuser = verifyuser;
 	}
 
-	
 	public ApproverRideDTO getApproverRideDTO() {
 		return approverRideDTO;
 	}
@@ -1058,9 +1112,9 @@ public class HPBaseAction {
 	public void setApproverRideDTO(ApproverRideDTO approverRideDTO) {
 		this.approverRideDTO = approverRideDTO;
 	}
-	
+
 	protected VerifyUser verifyuser = new VerifyUser();
-	
+
 	protected ApproverRideDTO approverRideDTO = new ApproverRideDTO();
 
 }

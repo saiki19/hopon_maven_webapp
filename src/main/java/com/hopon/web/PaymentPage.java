@@ -1,12 +1,12 @@
-/*package com.hopon.web;
+package com.hopon.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,17 +18,18 @@ import javax.servlet.http.HttpSession;
 import com.hopon.dto.PaymentDTO;
 import com.hopon.utils.ListOfValuesManager;
 import com.hopon.utils.Validator;
+import com.paytm.merchant.CheckSumServiceHelper;
 
-*//**
+/**
  * Servlet implementation class PaymentPage
- *//*
+ */
 @WebServlet("/payment.do")
 public class PaymentPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	*//**
+	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 *//*
+	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
@@ -46,12 +47,10 @@ public class PaymentPage extends HttpServlet {
 				amountDue += dto.getAmount();
 			}
 			
-
-		      if (amountDue > 0) {
-		        com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper.getCheckSumServiceHelper();
-		        
-		        ResourceBundle bundle = ResourceBundle.getBundle("resource.paytm");
-		        	
+			if(amountDue > 0) {
+				CheckSumServiceHelper checkSumServiceHelper = CheckSumServiceHelper.getCheckSumServiceHelper();
+				
+				ResourceBundle bundle = ResourceBundle.getBundle("resource.paytm");
 				
 				TreeMap<String,String> parameters = new TreeMap<String,String>();
 				String merchantKey = bundle.getString("paytm.merchantKey"); //Key provided by Paytm
@@ -94,4 +93,3 @@ public class PaymentPage extends HttpServlet {
 	}
 
 }
-*/

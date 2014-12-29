@@ -18,6 +18,7 @@ import com.hopon.utils.QueryExecuter;
 
 public class MessageBoardDAO {
 	public MessageBoardDTO insertMessage(Connection con, MessageBoardDTO dto) throws SQLException {
+		System.out.println("Inserting the Messages into MessageBoardDTO");
 		List<String> msgStatus = new ArrayList<String>();
 		if(dto.getMessageChannel() != null && !dto.getMessageChannel().equals("")) {
 			if(dto.getMessageChannel().equalsIgnoreCase("A")) {
@@ -33,6 +34,7 @@ public class MessageBoardDAO {
 			StringBuilder query = new StringBuilder();
 			query.append("INSERT into messageboard (Submittedby, Message, MessageChannel, MessageStatus, To_Member, CircleId, MessageType, CreatedbyDT, CreatedBy, UpdatedDT, UpdatedBy, Pool_Request_id, emailSubject, ride_id, attachements) value (?,?,?,?,?,?,?,'" +ApplicationUtil.currentTimeStamp()+"',?, '" +ApplicationUtil.currentTimeStamp()+"',?,?,?,?,?)");
 			PreparedStatement pstmt = con.prepareStatement(query.toString(),Statement.RETURN_GENERATED_KEYS);
+			System.out.println("Query Is Printing:"+query);
 			pstmt.setInt(1, dto.getSubmittedBy());
 			pstmt.setString(2, dto.getMessage());
 			//A- all, S-SMS, E-Email, M-message board

@@ -46,6 +46,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 import org.apache.commons.io.IOUtils;
+import org.omg.CORBA.UserException;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.json.JSONException;
@@ -186,9 +187,11 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public List<CircleDTO> autoNonTaxiCircle(String prefix) {
+		System.out.println("PreFix is Printing:" + prefix);
 		List<CircleDTO> circle = new ArrayList<CircleDTO>();
 		Iterator<CircleDTO> circleTemp = ListOfValuesManager
 				.getallRegisteredNonTaxiCircleListed(prefix).iterator();
+
 		while (circleTemp.hasNext()) {
 			CircleDTO dto = (CircleDTO) circleTemp.next();
 			if (dto.getName() != null) {
@@ -211,6 +214,35 @@ public class UserAction extends HPBaseAction {
 		return circle;
 	}
 
+	public void findCircleByName() {
+		allCircleListByName = ListOfValuesManager.getCircleByName(
+				circleDTO.getName(), userRegistrationDTO.getId());
+		System.out.println("Select circle by name:" + allCircleListByName);
+
+		forregistrationOnly.setMyCircle(circleDTO.getName());
+		circleDTO = new CircleDTO();
+	}
+
+	// This for TaxiCircleByName in Master-my-circle.html
+	public void findTaxiCircleByName() {
+		allCircleListByName = ListOfValuesManager.getTaxiCircleByName(
+				circleDTO.getName(), userRegistrationDTO.getId());
+		System.out.println("Select Taxicircle by name:" + allCircleListByName);
+
+		forregistrationOnly.setMyCircle(circleDTO.getName());
+		circleDTO = new CircleDTO();
+	}
+
+	// This for NonTaxiCircleByName in Master-my-circle.html
+	public void findNonTaxiCircleByName() {
+		allCircleListByName = ListOfValuesManager.getNonTaxiCircleByName(
+				circleDTO.getName(), userRegistrationDTO.getId());
+		System.out.println("Select Taxicircle by name:" + allCircleListByName);
+
+		forregistrationOnly.setMyCircle(circleDTO.getName());
+		circleDTO = new CircleDTO();
+	}
+
 	public List<String> autoNonTaxiCircleStr(String prefix) {
 		List<String> circle = new ArrayList<String>();
 		Iterator<CircleDTO> circleTemp = ListOfValuesManager
@@ -229,16 +261,13 @@ public class UserAction extends HPBaseAction {
 	public void gatherAffiliatedCircle(int circleId) {
 		allCircleAffiliationsDTO.clear();
 		allPendingCircleAffiliationsDTO.clear();
-		System.out.println("circleId ==" + circleId);
+
 		allCircleAffiliationsDTO = ListOfValuesManager
 				.getAllAffiliatedCircle("" + circleId);
 		for (CircleAffiliationsDTO circleAffiliationsDTO : allCircleAffiliationsDTO) {
 			fieldValue = circleAffiliationsDTO.getAffilicatedCircleId();
-			System.out.println("fieldValue=====>" + fieldValue);
+
 		}
-		System.out
-				.println("================fieldValue============================="
-						+ fieldValue);
 		allPendingCircleAffiliationsDTO = ListOfValuesManager
 				.getAllPendingCircle("" + circleId);
 
@@ -269,7 +298,6 @@ public class UserAction extends HPBaseAction {
 	public String registerUser() {
 
 		clearScreenMessage();
-
 		forregistrationOnly.setMobile_no(forregistrationOnly.getMobile_no()
 				.replaceFirst("^[0|+]*", ""));
 
@@ -277,13 +305,14 @@ public class UserAction extends HPBaseAction {
 				|| forregistrationOnly.getMobile_no().length() != 10) {
 			errorMessage.add("Mobile Number is not proper.");
 		}
+
 		if (ListOfValuesManager.testUniqueMobileNumber(forregistrationOnly
 				.getMobile_no())) {
 			errorMessage
-					.add("Mobile Number is already registered. Please enter another mobile number.");
-					autoTaxiCircleValue = null;
-				autoNonTaxiCircleValue = null;
-				return "clear";
+					.add("Mobile Number is alrady registered. Please enter another mobile number.");
+			autoTaxiCircleValue = null;
+			autoNonTaxiCircleValue = null;
+			return "clear";
 		}
 
 		String emailTest = ListOfValuesManager
@@ -362,6 +391,7 @@ public class UserAction extends HPBaseAction {
 
 				autoNonTaxiCircleValue = autoNonTaxiCircleValue.trim();
 				autoTaxiCircleValue = autoTaxiCircleValue.trim();
+
 				if (forregistrationOnly.getTravel().equalsIgnoreCase("T")
 						&& Validator.isNumberZeroNotAlloed(autoTaxiCircleValue)) {
 					userRegisterCircle = Integer.parseInt(autoTaxiCircleValue);
@@ -477,8 +507,16 @@ public class UserAction extends HPBaseAction {
 		// Uncomment when you want direct login.
 		// validateUser();
 		// return "userRegister";
+		/*
+		 * public String contactUs() { Connection con = (Connection)
+		 * ListOfValuesManager.getBroadConnection(); boolean flag =
+		 * ListOfValuesManager.getContactInfo(con, contactusDTO); if (flag ==
+		 * true) { contactusDTO = new ContactusDTO();
+		 * 
+		 * } else { System.out.println("Failure"); } return "contactUs"; }
+		 */
 
-		return "userRegister";
+		return "registerUser";
 	}
 
 	public void sendMessage() {
@@ -838,8 +876,7 @@ public class UserAction extends HPBaseAction {
 
 		rideManagementList = ListOfValuesManager
 				.getRideManagementList(userRegistrationDTO.getId());
-		System.out
-				.println("ridemanagement in UserAction:" + rideManagementList);
+
 		List<RideManagementDTO> listNew = new ArrayList<RideManagementDTO>();
 		for (RideManagementDTO dto : rideManagementList) {
 			if (!dto.getStatus().equalsIgnoreCase("T")
@@ -1008,11 +1045,14 @@ public class UserAction extends HPBaseAction {
 
 			Calendar cal = Calendar.getInstance();
 			Calendar cal1 = Calendar.getInstance();
+			System.out.println("start date in userAction:"
+					+ rideRegistered.getStartDate1());
 
 			try {
 				rideRegistered.setStartDate(new SimpleDateFormat(
 						ApplicationUtil.datePattern4).parse(rideRegistered
 						.getStartDate1()));
+
 			} catch (ParseException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -1142,25 +1182,16 @@ public class UserAction extends HPBaseAction {
 									.get(5).toString()) / 1000;
 							rideRegistered.setRideDistance(distance);
 							if (rideRegistered.isSharedTaxi() == true) {
-								System.out
-										.println("Printing five rupees For Distance :"
-												+ distance);
+
 								rideRegistered.setRideCost(distance
 										* Float.parseFloat(Messages.getValue(
 												"ride.perkm.charge").trim())
 										+ "");
-								System.out.println("This is for 5rupees: "
-										+ Messages
-												.getValue("ride.perkm.charge"));
 							} else {
 								rideRegistered.setRideCost(distance
 										* Float.parseFloat(Messages.getValue(
 												"ride.perkm.sharecharge")
 												.trim()) + "");
-								System.out
-										.println("This is default ammount 12rupee for carpool:"
-												+ Messages
-														.getValue("ride.perkm.sharecharge"));
 							}
 						}
 					} catch (IOException e) {
@@ -1611,6 +1642,11 @@ public class UserAction extends HPBaseAction {
 		return "clear";
 	}
 
+	public String clearDailyride() {
+		rideRegistered = new RideManagementDTO();
+		return "clear";
+	}
+
 	public String clearCompanyData() {
 		companyRegisterDTO = new CompanyRegisterDTO();
 		return "clear";
@@ -1945,6 +1981,7 @@ public class UserAction extends HPBaseAction {
 	public String copyRideSeeker() {
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 		String rideSeeker = null;
+		int flag = 2;
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> requestMap = context.getExternalContext()
 				.getRequestParameterMap(); // In java class, you can get back
@@ -2002,14 +2039,6 @@ public class UserAction extends HPBaseAction {
 				frequencyDTO.setFrequency(list);
 				frequencyDTO.setRideSeekerId(rideRegistered.getRideID());
 				rideRegistered.setCreatedBy(rideRegistered.getCreatedBy());
-				/*
-				 * for(int i = 0;i< vehicleMasterDTOList.size();i++) {
-				 * if(vehicleMasterDTOList
-				 * .get(i).getReg_NO().equalsIgnoreCase(rideRegistered
-				 * .getVehicleID()) ){
-				 * rideRegistered.setVehicleID(vehicleMasterDTOList
-				 * .get(i).getVehicleID()); break; } }
-				 */
 
 				frequencyDTO = ListOfValuesManager.getFrequencyEntery(
 						"findByDTO", frequencyDTO, con);
@@ -2555,24 +2584,8 @@ public class UserAction extends HPBaseAction {
 				combineVehicleCondition);
 	}
 
-	public void reassignVehicle() {
-		System.out.println("#####reassignVehicle()#########");
-		System.out.println(vehicleRegNoToDrop + "--" + vehicleRegNoToTake);
-		clearScreenMessage();
-		System.out.println("rideIdToReassign :" + rideIdToReassign);
-
-		if (rideIdToReassign <= 0)
-			errorMessage.add("Please select ride to Reassign.");
-		if (errorMessage.size() == 0) {
-			ListOfValuesManager
-					.getRideManagerPopupDataDirect(rideIdToDrop + "");
-		}
-	}
-
 	public void combineVehicle() {
 		clearScreenMessage();
-		System.out.println("rideIdToDrop");
-		System.out.println("rideIdToTake");
 		if (rideIdToDrop <= 0)
 			errorMessage.add("Please select ride to drop.");
 		if (rideIdToTake <= 0)
@@ -2940,11 +2953,6 @@ public class UserAction extends HPBaseAction {
 
 	public String matchRideForCompany() {
 
-		System.out
-				.println("##############  Inside matchRideForCompany()   ##############");
-		System.out.println("manageRideFormDTO.getAffiliatedCircleId() ===>"
-				+ manageRideFormDTO.getAffiliatedCircleId());
-
 		if (manageRideFormDTO.getRideDate() != null
 				&& !manageRideFormDTO.getRideDate().equals("")) {
 			SimpleDateFormat df1 = new SimpleDateFormat(
@@ -3200,39 +3208,7 @@ public class UserAction extends HPBaseAction {
 				dto.setStatus("2");
 			}
 		}
-		/*
-		 * if(declineByOwner!=null){ String[] parts =
-		 * circleOwnerManagerDTO.getCombineUserAndCircleID().split(",");
-		 * if(!Validator.isNumberZeroNotAlloed(parts[0]))
-		 * errorMessage.add("Please select Circle first."); if(parts.length < 3
-		 * || parts[1] == null || !Validator.isNumberZeroNotAlloed(parts[1]))
-		 * errorMessage.add("Please select Circle Member.");
-		 * if(parts[0].equals(parts[2])) errorMessage.add(
-		 * "You are unauthorised to remove circle owner from circle.");
-		 * if(errorMessage.size() == 0) { String part1 = parts[0]; String part2
-		 * = parts[1]; dto.setUserid(part1); dto.setCircleid(part2);
-		 * dto.setStatus("2"); } }
-		 * 
-		 * if(confirm != null){
-		 * if(!Validator.isNumberZeroNotAlloed(circleOwnerManagerDTO
-		 * .getCircleID())) errorMessage.add("Please select Circle first.");
-		 * if(!
-		 * Validator.isNumberZeroNotAlloed(circleOwnerManagerDTO.getUserid()))
-		 * errorMessage.add("Please select Circle Member.");
-		 * dto.setUserid(circleOwnerManagerDTO.getUserid());
-		 * dto.setCircleid(circleOwnerManagerDTO.getCircleID());
-		 * dto.setStatus("1"); }
-		 * 
-		 * if(decline != null){
-		 * if(!Validator.isNumberZeroNotAlloed(circleOwnerManagerDTO
-		 * .getCircleID())) errorMessage.add("Please select Circle first.");
-		 * if(!
-		 * Validator.isNumberZeroNotAlloed(circleOwnerManagerDTO.getUserid()))
-		 * errorMessage.add("Please select Circle Member.");
-		 * dto.setUserid(circleOwnerManagerDTO.getUserid());
-		 * dto.setCircleid(circleOwnerManagerDTO.getCircleID());
-		 * dto.setStatus("2"); }
-		 */
+
 		if (errorMessage.size() == 0) {
 			Connection con = (Connection) ListOfValuesManager
 					.getBroadConnection();
@@ -3240,17 +3216,7 @@ public class UserAction extends HPBaseAction {
 				CircleOwnerDTO circleOwnerDTO = new CircleOwnerDTO();
 				circleOwnerDTO.setCircleID(String.valueOf(dto.getCircleid()));
 				circleOwnerDTO.setUserID(dto.getUserid());
-				/*
-				 * if(declineByOwner != null ) { circleOwnerDTO =
-				 * ListOfValuesManager.updateRegisterCircleOwner(circleOwnerDTO,
-				 * userRegistrationDTO.getId(), con); dto =
-				 * ListOfValuesManager.getConfirmOrDeclineUser(dto,
-				 * userRegistrationDTO.getId(), con); }
-				 * 
-				 * if(confirm!= null || decline != null) dto =
-				 * ListOfValuesManager.getConfirmOrDeclineUser(dto,
-				 * userRegistrationDTO.getId(), con);
-				 */
+
 				if (confirmByUser != null || declineByUser != null
 						|| requestByUser != null || requestByAdmin != null
 						|| removedByUser != null || removedByAdmin != null) {
@@ -3363,35 +3329,6 @@ public class UserAction extends HPBaseAction {
 							.add("User removed from the circle successfully.");
 				}
 
-				/*
-				 * //check point for message if(declineByOwner != null ) {
-				 * CircleDTO dtoTemp =
-				 * ListOfValuesManager.getCircleDtoByCircleId
-				 * (Integer.parseInt(dto.getCircleid()));
-				 * userMessageDTO.setMessage("Admin of circle "+
-				 * dtoTemp.getName()
-				 * +" has declined your request to join the circle.");
-				 * userMessageDTO
-				 * .setToMember(Integer.parseInt(dto.getUserid())); }
-				 * 
-				 * if(confirm != null){ CircleDTO dtoTemp =
-				 * ListOfValuesManager.getCircleDtoByCircleId
-				 * (Integer.parseInt(dto.getCircleid()));
-				 * userMessageDTO.setMessage
-				 * ("User "+userRegistrationDTO.getFirst_name
-				 * ()+" has accepted your invitation to join your circle "+
-				 * dtoTemp.getName() +".");
-				 * userMessageDTO.setToMember(dtoTemp.getCircleOwner_Member_Id_P
-				 * ()); } if(decline != null){ CircleDTO dtoTemp =
-				 * ListOfValuesManager
-				 * .getCircleDtoByCircleId(Integer.parseInt(dto.getCircleid()));
-				 * userMessageDTO
-				 * .setMessage("User "+userRegistrationDTO.getFirst_name
-				 * ()+" has declined to join your circle "+ dtoTemp.getName()
-				 * +".");
-				 * userMessageDTO.setToMember(dtoTemp.getCircleOwner_Member_Id_P
-				 * ()); }
-				 */
 				userMessageDTO.setMessageChannel("M");
 				userMessageDTO = ListOfValuesManager
 						.getInsertedMessage(userMessageDTO);
@@ -4455,35 +4392,6 @@ public class UserAction extends HPBaseAction {
 		// return "decline";
 	}
 
-	public void findCircleByName() {
-		allCircleListByName = ListOfValuesManager.getCircleByName(
-				circleDTO.getName(), userRegistrationDTO.getId());
-
-		forregistrationOnly.setMyCircle(circleDTO.getName());
-		circleDTO = new CircleDTO();
-	}
-
-	//This for TaxiCircleByName in Master-my-circle.html
-	public void findTaxiCircleByName() {
-		allCircleListByName = ListOfValuesManager.getTaxiCircleByName(
-				circleDTO.getName(), userRegistrationDTO.getId());
-		System.out.println("Select Taxicircle by name:" + allCircleListByName);
-
-		forregistrationOnly.setMyCircle(circleDTO.getName());
-		circleDTO = new CircleDTO();
-	}
-
-	//This for NonTaxiCircleByName in Master-my-circle.html
-	public void findNonTaxiCircleByName() {
-		allCircleListByName = ListOfValuesManager.getNonTaxiCircleByName(
-				circleDTO.getName(), userRegistrationDTO.getId());
-		System.out.println("Select Taxicircle by name:" + allCircleListByName);
-
-		forregistrationOnly.setMyCircle(circleDTO.getName());
-		circleDTO = new CircleDTO();
-	}
-
-	
 	public String findListofCompanyForLoginUser() {
 		listofCompanyForLoginUser = ListOfValuesManager
 				.getListofCompanyForLoginUser(userRegistrationDTO.getId());
@@ -5304,9 +5212,11 @@ public class UserAction extends HPBaseAction {
 							return null;
 						} else {
 							rideManagementDTO.setRideID(dto.getRideId());
-							rideManagementDTO.setStatus("I");// rideManagementDTO.setStatus("2");rideManagementDTO.setStatus("I");
-							rideManagementDTO = ListOfValuesManager
-									.getCancleRide(rideManagementDTO, con);
+							rideManagementDTO.setStatus("T");// rideManagementDTO.setStatus("2");rideManagementDTO.setStatus("I");
+							/*
+							 * rideManagementDTO = ListOfValuesManager
+							 * .getCancleRide(rideManagementDTO, con);
+							 */
 							rideManagementDTO = ListOfValuesManager
 
 							.getRideManagerPopupDataDirect(dto.getRideId());
@@ -5784,9 +5694,11 @@ public class UserAction extends HPBaseAction {
 							return null;
 						} else {
 							rideManagementDTO.setRideID(dto.getRideId());
-							rideManagementDTO.setStatus("I");// rideManagementDTO.setStatus("2");rideManagementDTO.setStatus("I");
-							rideManagementDTO = ListOfValuesManager
-									.getCancleRide(rideManagementDTO, con);
+							rideManagementDTO.setStatus("A");// rideManagementDTO.setStatus("2");rideManagementDTO.setStatus("I");
+							/*
+							 * rideManagementDTO = ListOfValuesManager
+							 * .getCancleRide(rideManagementDTO, con);
+							 */
 							rideManagementDTO = ListOfValuesManager
 									.getRideManagerPopupDataDirect(dto
 											.getRideId());
@@ -5862,6 +5774,7 @@ public class UserAction extends HPBaseAction {
 							|| rideManagementDTO.getVehicleID().equals("0")) {
 						userDto = ListOfValuesManager.findDriverDtoByRideId(
 								rideManagementDTO.getRideID(), con);
+
 					} else {
 						userDto = ListOfValuesManager.findUserDtoByVehicleId(
 								Integer.parseInt(rideManagementDTO
@@ -5894,6 +5807,7 @@ public class UserAction extends HPBaseAction {
 					userMessageDTO.setEmailSubject(Messages.getValue(
 							"subject.match",
 							new Object[] { dto.getStartDate() }));
+
 					userMessageDTO.setMessage(Messages.getValue(
 							"ridematched.driver",
 							new Object[] {
@@ -6848,7 +6762,7 @@ public class UserAction extends HPBaseAction {
 								+ "() : "
 								+ e1.getStackTrace()[0].getLineNumber()
 								+ " :: " + e1.getMessage());
-				// TODO Auto-generated catch block
+
 			} catch (IOException e1) {
 				LoggerSingleton.getInstance().error(
 						e1.getStackTrace()[0].getClassName() + "->"
@@ -6856,7 +6770,6 @@ public class UserAction extends HPBaseAction {
 								+ "() : "
 								+ e1.getStackTrace()[0].getLineNumber()
 								+ " :: " + e1.getMessage());
-				// TODO Auto-generated catch block
 			}
 			vehicleList();
 			vehicleMasterDTO = new VehicleMasterDTO();
@@ -8846,8 +8759,6 @@ public class UserAction extends HPBaseAction {
 								dtoTemp = ListOfValuesManager
 										.getRideSeekerEntery("findByDTO",
 												dtoTemp, con2);
-								System.out.println("Ride Seeker Entry:"
-										+ dtoTemp);
 
 								try {
 									frequencyDTO = new FrequencyDTO();
@@ -9885,7 +9796,6 @@ public class UserAction extends HPBaseAction {
 	public void CreateXslSheetMessage1(List<List<String>> Lists,
 			SummaryMessageDTO seekerDtoTemp2) {
 
-		System.out.println("Lists of Values:" + Lists);
 		MessageBoardDTO userMessageDTO = new MessageBoardDTO();
 
 		try {
@@ -9898,11 +9808,10 @@ public class UserAction extends HPBaseAction {
 
 			}
 			String fileName = "attachement_" + (noOfFiles + 1) + ".xls";
-			System.out.println("filename:" + fileName);
 
 			WritableWorkbook workbook = Workbook
 					.createWorkbook(new java.io.File(path + fileName));
-			System.out.println("workbook is :" + workbook);
+
 			WritableSheet writablesheet = workbook.createSheet("Sheet1", 0);
 			writablesheet.addCell(new Label(1, 0, "Ride ID"));
 			writablesheet.addCell(new Label(2, 0, "Start Time"));
@@ -9964,7 +9873,7 @@ public class UserAction extends HPBaseAction {
 
 		try {
 			String path = ApplicationUtil.demoDirectoryPath;
-			System.out.println("File Path is" + path);
+
 			int noOfFiles = 0;
 			try {
 				noOfFiles = new java.io.File(path).listFiles().length;
@@ -9972,11 +9881,10 @@ public class UserAction extends HPBaseAction {
 
 			}
 			String fileName = "attachement_" + (noOfFiles + 1) + ".xls";
-			System.out.println("filename:" + fileName);
 
 			WritableWorkbook workbook = Workbook
 					.createWorkbook(new java.io.File(path + fileName));
-			System.out.println("workbook is :" + workbook);
+
 			WritableSheet writablesheet = workbook.createSheet("Sheet1", 0);
 			writablesheet.addCell(new Label(1, 0, "Ride ID"));
 			writablesheet.addCell(new Label(2, 0, "Start Time"));
@@ -9991,7 +9899,6 @@ public class UserAction extends HPBaseAction {
 			int counter = 1;
 			for (SummaryMessageDTO dto : Lists) {
 
-				System.out.println("list2 is getting :" + Lists);
 				writablesheet.addCell(new Label(0, counter, counter + ""));
 
 				writablesheet.addCell(new Label(1, counter, Integer
@@ -10027,7 +9934,7 @@ public class UserAction extends HPBaseAction {
 		userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
 
 	}
-	
+
 	/*
 	 * Here <code>dailyRide</code> Method For Insertig Oneway and Twoway
 	 */
@@ -11287,4 +11194,71 @@ public class UserAction extends HPBaseAction {
 		distancepaycalc(rideRegistered);
 
 	}
+
+	public void updateBalance() {
+		clearScreenMessage();
+		if (this.userRegistrationDTO.getTotalCredit() > (float) this.transferAmount) {
+			this.userRegistrationDTO.setTotalCredit(this.userRegistrationDTO
+					.getTotalCredit() - (float) this.transferAmount);
+			try {
+				ListOfValuesManager.updateTotalCredit(this.userRegistrationDTO);
+				this.successMessage.add("Payment withdrawn successfully!");
+			} catch (ConfigurationException e) {
+				this.userRegistrationDTO
+						.setTotalCredit(this.userRegistrationDTO
+								.getTotalCredit() + (float) this.transferAmount);
+				this.errorMessage.add("Payment withdrawn failed.");
+			}
+		} else {
+			this.errorMessage
+					.add("You entered amount which is greater then your account balance.");
+		}
+	}
+
+	public void fetchTransaction() {
+		paymentTxnList.clear();
+		paymentRequestList.clear();
+		Date d2 = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(d2);
+		cal.add(2, -1);
+		Date d1 = cal.getTime();
+		paymentTxnList.addAll(ListOfValuesManager.searchCompletedTransaction(
+				userRegistrationDTO.getId(), d1, d2));
+		paymentRequestList.addAll(ListOfValuesManager.searchPaymentTransfer(
+				userRegistrationDTO.getId(), d1, d2));
+	}
+
+	public void searchCompletedTransaction() {
+		clearScreenMessage();
+		try {
+			Date d1 = ApplicationUtil.dateFormat1.parse(paymentSearchFrom);
+			Date d2 = ApplicationUtil.dateFormat1.parse(paymentSearchTo);
+			paymentTxnList.clear();
+			paymentTxnList.addAll(ListOfValuesManager
+					.searchCompletedTransaction(userRegistrationDTO.getId(),
+							d1, d2));
+		} catch (ParseException r) {
+			errorMessage.add("Please add proper date format.");
+		}
+		setPaymentSearchFrom("");
+		setPaymentSearchTo("");
+	}
+
+	public void searchPaymentTransfer() {
+		clearScreenMessage();
+		try {
+			Date d1 = ApplicationUtil.dateFormat1.parse(paymentSearchFrom);
+			Date d2 = ApplicationUtil.dateFormat1.parse(paymentSearchTo);
+			paymentRequestList.clear();
+			paymentRequestList
+					.addAll(ListOfValuesManager.searchPaymentTransfer(
+							userRegistrationDTO.getId(), d1, d2));
+		} catch (ParseException r) {
+			errorMessage.add("Please add proper date format.");
+		}
+		setPaymentSearchFrom("");
+		setPaymentSearchTo("");
+	}
+
 }
