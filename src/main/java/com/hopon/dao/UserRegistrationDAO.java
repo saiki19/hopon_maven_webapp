@@ -429,6 +429,7 @@ public class UserRegistrationDAO {
 		pstmt.setFloat(1, dto.getTotalCredit());
 		pstmt.setString(2, dto.getId());
 		pstmt.executeUpdate();
+		System.out.println("Excute update:"+pstmt.executeUpdate());
 		pstmt.close();
 		return dto;
 	}

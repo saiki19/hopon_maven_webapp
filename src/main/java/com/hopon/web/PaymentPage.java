@@ -34,7 +34,7 @@ public class PaymentPage extends HttpServlet {
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
-
+		
 		if(session != null && !Validator.isEmpty(session.getAttribute("userId"))) {
 		
 			List<PaymentDTO> dtos = new ArrayList<PaymentDTO>();
@@ -48,8 +48,7 @@ public class PaymentPage extends HttpServlet {
 			}
 			
 			if(amountDue > 0) {
-				CheckSumServiceHelper checkSumServiceHelper = CheckSumServiceHelper.getCheckSumServiceHelper();
-				
+				CheckSumServiceHelper checkSumServiceHelper = CheckSumServiceHelper.getCheckSumServiceHelper();				
 				ResourceBundle bundle = ResourceBundle.getBundle("resource.paytm");
 				
 				TreeMap<String,String> parameters = new TreeMap<String,String>();

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.omg.CORBA.UserException;
 
 import com.hopon.dao.ApproverDAO;
 import com.hopon.dao.CircleAffiliationsDAO;
@@ -352,6 +353,7 @@ public class TripImpl implements Trip {
 	@Override
 	public FrequencyDTO loadFrequency(Connection con, String category,
 			FrequencyDTO frequencyDTO) throws ConfigurationException {
+		System.out.println("Category is printing:" + category);
 		// TODO Auto-generated method stub
 		FrequencyDAO frequencyDAO = DAOProvider.getFrequencyDAO();
 		try {
@@ -2789,24 +2791,7 @@ public class TripImpl implements Trip {
 		return dtos;
 	}
 
-	@Override
-	public List<RideSeekerDTO> fetchRecurringRideList(Connection con)
-			throws ConfigurationException {
-		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
-		RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
-		try {
-			dtos.addAll(dao.fetchRecurringRideList(con));
-		} catch (SQLException e) {
-			LoggerSingleton.getInstance().error(
-					e.getStackTrace()[0].getClassName() + "->"
-							+ e.getStackTrace()[0].getMethodName() + "() : "
-							+ e.getStackTrace()[0].getLineNumber() + " :: "
-							+ "Problem in db operation. " + e.getMessage());
-			throw new ConfigurationException(
-					"Exception in retriving providers", e);
-		}
-		return dtos;
-	}
+	
 
 	@Override
 	public void addSubSeekers(Connection con, RideSeekerDTO ride)
@@ -3125,7 +3110,9 @@ public class TripImpl implements Trip {
 	@Override
 	public List<SummaryMessageDTO> loadRideSummaryMessage()
 			throws ConfigurationException {
+
 		RideSummaryMessageToDriverDAO dao = DAOProvider.getMessageToDriverDAO();
+
 		List<SummaryMessageDTO> dto = new ArrayList<SummaryMessageDTO>();
 
 		dto = dao.rideSummaryMessage();
@@ -3135,11 +3122,57 @@ public class TripImpl implements Trip {
 	}
 
 	@Override
+	public List<RideSeekerDTO> fetchRecurringRideList(Connection con)
+			throws ConfigurationException {
+		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
+		RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
+		try {
+			dtos.addAll(dao.fetchRecurringRideList(con));
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<RideManagementDTO> loadDailyRidePaymentHelper(Connection con)
+			throws ConfigurationException {
+		
+		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
+		RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
+		try {
+			dtos=dao.DailyRidePaymentHelper(con);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dtos;
+	}
+
+	@Override
 	public UserRegistrationDTO updateTotalCredit(Connection con,
 			UserRegistrationDTO userRegistrationDTO)
 			throws ConfigurationException {
-		// TODO Auto-generated method stub
-		return null;
+		UserRegistrationDAO userdao = DAOProvider.getUserRegistrationDAO();
+		try {
+			userRegistrationDTO = userdao.updateTotalCredit(con,
+					userRegistrationDTO);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userRegistrationDTO;
 	}
 
 	/*
@@ -3177,22 +3210,62 @@ public class TripImpl implements Trip {
 
 	@Override
 	public RideManagementDTO updateRideSeeker(Connection con, String category,
-			RideManagementDTO rideSeekerDTO) throws ConfigurationException {
+			RideManagementDTO rideManagementDTO) throws ConfigurationException {
 		RideSeekerDAO seekerDAO = DAOProvider.getRideSeekerDAO();
-		boolean flag1 = false;
-		flag1 = seekerDAO.updateDailyRideData(con, rideSeekerDTO);
-		System.out.println("Trip Imple for Update:" + flag1);
+		boolean flag = false;
+		flag = seekerDAO.updateDailyRideData(con, rideManagementDTO);
+		System.out.println("Trip Imple for Update:" + flag);
 
-		if (flag1) {
-			return rideSeekerDTO;
+		if (flag) {
+			return rideManagementDTO;
 		} else {
 			return null;
 		}
 	}
 
 	@Override
+	public RideManagementDTO cancelRideSeeker(Connection con, String category,
+			RideManagementDTO rideManagementDTO) throws ConfigurationException {
+		RideSeekerDAO seekerDAO = DAOProvider.getRideSeekerDAO();
+		boolean flag1 = false;
+		try {
+			flag1 = seekerDAO.cancelDailyRideData(con, rideManagementDTO);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Trip Imple for Update:" + flag1);
+
+		if (flag1) {
+			return rideManagementDTO;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public FrequencyDTO updateFrequency(Connection con,
+			FrequencyDTO frequencyDTO, String rideId) {
+		FrequencyDAO frequencyDAO = DAOProvider.getFrequencyDAO();
+		boolean flag = false;
+		try {
+			flag = frequencyDAO.updateFrequency(con, frequencyDTO, rideId);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (flag) {
+			return frequencyDTO;
+		} else {
+
+			return null;
+		}
+
+	}
+	
+	@Override
 	public RideManagementDTO loadDailyRideSeeker(Connection con,
-			String category, RideManagementDTO rideSeekerDTO)
+			String category, RideManagementDTO rideManagementDTO)
 			throws ConfigurationException {
 		RideSeekerDAO rideSeekerDAO = DAOProvider.getRideSeekerDAO();
 		System.out.println("In TripImplementation class object:"
@@ -3200,12 +3273,12 @@ public class TripImpl implements Trip {
 		try {
 			if (category.equals("all")) {
 
-				rideSeekerDTO = rideSeekerDAO.registerDailyRideSeeker(con,
-						rideSeekerDTO);
+				rideManagementDTO = rideSeekerDAO.registerDailyRideSeeker(con,
+						rideManagementDTO);
 
 			} else if (category.equals("findByDTO")) {
-				rideSeekerDTO = rideSeekerDAO.registerDailyRideSeeker(con,
-						rideSeekerDTO);
+				rideManagementDTO = rideSeekerDAO.registerDailyRideSeeker(con,
+						rideManagementDTO);
 			}
 		} catch (Exception e) {
 			LoggerSingleton.getInstance().error(
@@ -3216,12 +3289,12 @@ public class TripImpl implements Trip {
 			throw new ConfigurationException(
 					"Exception in retriving providers", e);
 		}
-		return rideSeekerDTO;
+		return rideManagementDTO;
 	}
 
 	@Override
-	public List<CircleDTO> loadTaxiCircleByName(Connection con, String circleName,
-			String userId) throws ConfigurationException {
+	public List<CircleDTO> loadTaxiCircleByName(Connection con,
+			String circleName, String userId) throws ConfigurationException {
 		List<CircleDTO> circleList = null;
 		CircleDAO circleDAO = DAOProvider.getCircleDAO();
 		try {
@@ -3238,11 +3311,11 @@ public class TripImpl implements Trip {
 		}
 		return circleList;
 	}
-	
-	//NonTaxiCircleByName method
+
+	// NonTaxiCircleByName method
 	@Override
-	public List<CircleDTO> loadNonTaxiCircleByName(Connection con, String circleName,
-			String userId) throws ConfigurationException {
+	public List<CircleDTO> loadNonTaxiCircleByName(Connection con,
+			String circleName, String userId) throws ConfigurationException {
 		List<CircleDTO> circleList = null;
 		CircleDAO circleDAO = DAOProvider.getCircleDAO();
 		try {
@@ -3259,7 +3332,7 @@ public class TripImpl implements Trip {
 		}
 		return circleList;
 	}
-	
+
 	public List<PaymentTxnsDTO> searchCompletedTransaction(Connection con,
 			String userId, Date d1, Date d2) throws ConfigurationException {
 		List dtos = new ArrayList();
@@ -3277,6 +3350,7 @@ public class TripImpl implements Trip {
 		}
 		return dtos;
 	}
+
 	public List<PaymentRequestDTO> searchPaymentTransfer(Connection con,
 			String userId, String userName, Date startDate, Date endDate,
 			double minAmount, double maxAmount, String status)
@@ -3299,4 +3373,42 @@ public class TripImpl implements Trip {
 		return dtos;
 	}
 
+	@Override
+	public List<RideManagementDTO> fetchingHolidayList(RideManagementDTO dto)
+			throws ConfigurationException {
+		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
+		try {
+			RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
+			dtos = dao.fetchingHolidayList(dto);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dtos;
+	}
+	@Override
+	public List<RideManagementDTO> fetchingHolidaynxtweek(Connection con, RideManagementDTO dto)
+			throws ConfigurationException {
+		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
+		try {
+			RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
+			dtos = dao.fetchingHolidaynxtweek(con,dto);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dtos;
+	}
+
+	
 }

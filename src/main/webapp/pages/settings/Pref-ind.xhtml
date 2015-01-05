@@ -392,7 +392,8 @@ function scroll(){
 																			value="#{userAction.companyRegisterDTO.toNight}"
 																			id="toNight" />
                   	 		&nbsp; 
-                   													   <h:commandButton styleClass="btn btn-info" value="Save">
+                   													   <h:commandButton
+																			styleClass="btn btn-info" value="Save">
 																			<p:ajax
 																				oncomplete="modalUpdate();updateDataTable();scroll();"
 																				listener="#{userAction.companyRegister}"
@@ -519,8 +520,7 @@ function scroll(){
 														</div>
 													</div>
 
-													${userAction.clearScreenMessage()} <br />
-													<br />
+													${userAction.clearScreenMessage()} <br /> <br />
 													<p:panel id="messagePanel" style="border:none;">
 														<c:forEach var="sucMessage"
 															items="${userAction.successMessage}">

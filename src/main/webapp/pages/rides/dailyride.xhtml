@@ -36,7 +36,6 @@
 
 			<script type="text/javascript">
 				var x = jQuery.noConflict();
-
 				function googleLoc() {
 					x(function() {
 						x("#tab1\\:fromaddress")
@@ -242,6 +241,7 @@
 
 			<script type="text/javascript">
 				$(document).ready(function() {
+
 					$(".rdBtn").change(function() {
 						if ($("#r1").is(":checked")) {
 							$("#tab1\\:tp2").attr('disabled', true);
@@ -255,15 +255,29 @@
 				});
 			</script>
 			<script type="text/javascript">
-				function validate() {
+				function confirmFunction() {
 
+					var yesOrNo = confirm("Click ok to proceed to the payment page");
+					if (yesOrNo == 1) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			</script>
+
+
+			<script type="text/javascript">
+				function validate() {
+					//	$.post("http://localhost:8080/hopon_maven1/PurchaseCredit",{amount:1000});
 					var pickup = $('#tab1\\:fromaddress').val();
 
 					var drop = $('#tab1\\:toaddress').val();
 
 					var oneway = $('#tab1\\:r1').val();
 
-					var twoway = $('#tab1\\:r2').val();
+					var twoway = $('#tab1\\:r2').prop("readonly", true);
+					;
 
 					var timepic1 = $('#tab1\\:tp1').val();
 
@@ -353,8 +367,9 @@
 					}
 				}
 			</script>
-			
-		${userAction.viewRideData()}
+			<script>
+				${userAction.viewRideData()}
+			</script>
 			<h:head></h:head>
 			<h:body>
 				<ui:include src="../common/headerContent.xhtml"></ui:include>
@@ -441,7 +456,7 @@
 																
 																&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 																
-																	<!-- <c:choose> -->
+																	<!-- This is for the Radio Buttons Validations and Binding the Data -->
 																<pm:content
 																	rendered="#{userAction.rideRegistered.tripType == 2}">
 																	<input id="r1" type="radio" class="rdBtn"
@@ -449,7 +464,7 @@
 																	<input id="r1" type="radio" class="rdBtn"
 																		checked="checked" name="radioname" value="2">TwoWay</input>
 																</pm:content>
-																
+
 																<pm:content
 																	rendered="#{userAction.rideRegistered.tripType == 1}">
 																	<input id="r1" checked="checked" type="radio"
@@ -458,7 +473,7 @@
 																	<input id="r1" type="radio" class="rdBtn"
 																		name="radioname" value="2">TwoWay</input>
 																</pm:content>
-																
+
 																<pm:content
 																	rendered="#{userAction.rideRegistered.userID == null}">
 																	<input id="r1" type="radio" class="rdBtn"
@@ -466,7 +481,7 @@
 																	<input id="r1" type="radio" class="rdBtn"
 																		name="radioname" value="2">TwoWay</input>
 																</pm:content>
-																
+
 																<h:inputHidden id="hiddenid"
 																	value="#{userAction.rideRegistered.tripType}" />
 																<br></br>
@@ -493,17 +508,20 @@
 																					"#r1")
 																					.is(
 																							":checked")) {
+
 																				$(
 																						"#tab1\\:tp2")
 																						.attr(
 																								'disabled',
 																								true);
+
 																			} else {
 																				$(
 																						"#tab1\\:tp2")
 																						.attr(
 																								'disabled',
 																								false);
+
 																			}
 																		</script>
 
@@ -566,12 +584,12 @@
 																				pattern="HH:mm:ss" timeOnly="true"></p:calendar>
 																		</div>
 																	</div>
-
 																</div>
 																<br></br>
 																<div class="row">
 																	<div class="controls"
 																		style="display: block; float: left;">
+
 																		<pm:content
 																			rendered="#{userAction.rideRegistered.userID ==null}">
 																			<h:commandButton onclick="return validate();"
@@ -581,29 +599,26 @@
 																				<f:param value="takeRide" name="ride"></f:param>
 																				<p:ajax process="@form"
 																					listener="#{userAction.dailyRide}" update="@form"
-																					oncomplete="updatePart();googleLoc();" />
+																					oncomplete="updatePart();googleLoc();"
+																					onsuccess="window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml'" />
+																				
 																		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-																</h:commandButton>
+																	</h:commandButton>
 																		</pm:content>
 
 																		<pm:content
 																			rendered="#{userAction.rideRegistered.userID !=null}">
-																			<h:commandButton onclick="return validate();"
+																			<h:commandButton
 																				styleClass="btn btn-large btn-success "
-																				value="Update" id="EditBtn">
+																				value="Cancel" id="EditBtn">
 																				<p:ajax process="@form"
-																					listener="#{userAction.updateDailyRide}"
-																					oncomplete="googleLoc();" update="@form"
-																					onsuccess="window.location = '${url}/pages/rides/dailyride.xhtml'" />
+																					listener="#{userAction.cancelDailyRide}"
+																					oncomplete="googleLoc();" update="@form" />
 																			</h:commandButton>
-
 																		</pm:content>
 																	</div>
-
-
 																</div>
 																<br></br>
-
 																<c:forEach var="sucMessage"
 																	items="${userAction.successMessage}">
 																	<c:if test="${not empty sucMessage}">
@@ -630,6 +645,8 @@
 															</pm:content>
 														</span>
 													</h:form>
+
+
 												</div>
 
 											</div>

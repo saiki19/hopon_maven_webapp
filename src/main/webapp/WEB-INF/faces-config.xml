@@ -127,7 +127,6 @@
 		</navigation-case>
 	</navigation-rule>
 
-
 	<navigation-rule>
 		<from-view-id>/pages/settings/master-gr-my-msg.xhtml</from-view-id>
 
@@ -278,15 +277,6 @@
 			<redirect />
 		</navigation-case>
 	</navigation-rule>
-
-	<navigation-rule>
-		<from-view-id>/pages/dailyride.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>dailyRide1</from-outcome>
-			<to-view-id>/pages/dailyride.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
 	<navigation-rule>
 		<from-view-id>/pages/signup.xhtml</from-view-id>
 		<navigation-case>
@@ -296,6 +286,16 @@
 		</navigation-case>
 
 	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/pages/dailyride.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>dailyRide</from-outcome>
+			<to-view-id>/pages/dailyride.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
 
 	<application>
 		<locale-config>

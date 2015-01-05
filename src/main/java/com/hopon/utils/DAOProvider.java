@@ -229,7 +229,11 @@ public class DAOProvider {
 	public static void setContactUsDAO(ContactUsDAO contactUsDAO) {
 		DAOProvider.contactUsDAO = contactUsDAO;
 	}
-
+/*
+	public static RideSummaryMessageToDriverDAO getDaiyRidePayMentMessageDAO() {
+		return messageToDriverDAO;
+	}*/
+	
 	public static RideSummaryMessageToDriverDAO getMessageToDriverDAO() {
 		return messageToDriverDAO;
 	}

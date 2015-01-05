@@ -10,6 +10,7 @@ import com.hopon.dto.*;
 import com.hopon.utils.ConfigurationException;
 
 public interface Trip {
+	
 	UserRegistrationDTO loadUserRegistration(Connection con, String category,
 			UserRegistrationDTO userRegistrationDTO, String senderId)
 			throws ConfigurationException;
@@ -530,6 +531,9 @@ public interface Trip {
 	RideManagementDTO updateRideSeeker(Connection con, String category,
 			RideManagementDTO rideSeekerDTO) throws ConfigurationException;
 
+	RideManagementDTO cancelRideSeeker(Connection con, String category,
+			RideManagementDTO rideSeekerDTO) throws ConfigurationException;
+
 	public abstract List<PaymentTxnsDTO> searchCompletedTransaction(
 			Connection paramConnection, String paramString, Date paramDate1,
 			Date paramDate2) throws ConfigurationException;
@@ -538,6 +542,16 @@ public interface Trip {
 			Connection paramConnection, String paramString1,
 			String paramString2, Date paramDate1, Date paramDate2,
 			double paramDouble1, double paramDouble2, String paramString3)
+			throws ConfigurationException;
+
+	FrequencyDTO updateFrequency(Connection con, FrequencyDTO managementDTO,
+			String rideId);
+
+	List<RideManagementDTO> fetchingHolidayList(RideManagementDTO dto) throws ConfigurationException;
+	
+	List<RideManagementDTO> fetchingHolidaynxtweek(Connection con, RideManagementDTO dto) throws ConfigurationException;
+
+	List<RideManagementDTO> loadDailyRidePaymentHelper(Connection con)
 			throws ConfigurationException;
 
 }

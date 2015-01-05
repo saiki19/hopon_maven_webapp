@@ -3176,23 +3176,6 @@ public class ListOfValuesManager {
 		return map;
 	}
 
-	public static List<RideSeekerDTO> fetchRecurringRideList() {
-		Connection con = getLocalConnection();
-		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
-		try {
-			dtos.addAll(getTripService().fetchRecurringRideList(con));
-		} catch (ConfigurationException e) {
-			LoggerSingleton.getInstance().error(
-					e.getStackTrace()[0].getClassName() + "->"
-							+ e.getStackTrace()[0].getMethodName() + "() : "
-							+ e.getStackTrace()[0].getLineNumber() + " :: "
-							+ e.getMessage());
-		} finally {
-			ListOfValuesManager.releaseConnection(con);
-		}
-		return dtos;
-	}
-
 	public static void addSubSeekers(RideSeekerDTO ride, Connection con)
 			throws ConfigurationException {
 		UserRegistrationDTO dto = null;
@@ -3540,9 +3523,8 @@ public class ListOfValuesManager {
 		getTripService().paymentTxnUserToHopon(con, hoponAccountDto, userDto);
 	}
 
-	public static void updateTotalCredit(UserRegistrationDTO dto)
+	public static void updateTotalCredit(Connection con, UserRegistrationDTO dto)
 			throws ConfigurationException {
-		Connection con = getLocalConnection();
 		try {
 			dto = ServiceProvider.getTripService().updateTotalCredit(con, dto);
 		} catch (ConfigurationException e) {
@@ -3552,8 +3534,6 @@ public class ListOfValuesManager {
 							+ e.getStackTrace()[0].getLineNumber() + " :: "
 							+ e.getMessage());
 			throw new ConfigurationException(e);
-		} finally {
-			releaseConnection(con);
 		}
 	}
 
@@ -3617,6 +3597,41 @@ public class ListOfValuesManager {
 		return dto;
 	}
 
+	/*
+	public static List<RideSeekerDTO> fetchRecurringRideList() {
+		Connection con = getLocalConnection();
+		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
+		try {
+			dtos.addAll(getTripService().fetchRecurringRideList(con));
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return dtos;
+	}
+	*/// DailyRide Payment Method
+	public static List<RideManagementDTO> getDailyRidePaymentHelper() {
+		Connection con = getLocalConnection();
+		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
+		try {
+			dtos.addAll(getTripService().loadDailyRidePaymentHelper(con));
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return dtos;
+	}
+
 	public static RideManagementDTO getDailyRideEntry(Connection con,
 			String userId) throws ConfigurationException {
 		con = getLocalConnection();
@@ -3639,7 +3654,6 @@ public class ListOfValuesManager {
 	public static RideManagementDTO updateRideSeekerEntery(String category,
 			RideManagementDTO rideSeekerDTO, Connection con)
 			throws ConfigurationException {
-		System.out.println("This is inside the List Of values Manager");
 		if (con == null) {
 			con = getLocalConnection();
 			try {
@@ -3674,14 +3688,16 @@ public class ListOfValuesManager {
 		return rideSeekerDTO;
 	}
 
-	public static RideManagementDTO getDailyRideSeekerEntery(String category,
+	public static RideManagementDTO cancelRideSeekerEntery(String category,
 			RideManagementDTO rideSeekerDTO, Connection con)
 			throws ConfigurationException {
 		if (con == null) {
 			con = getLocalConnection();
 			try {
-				rideSeekerDTO = getTripService().loadDailyRideSeeker(con,
+				rideSeekerDTO = getTripService().cancelRideSeeker(con,
 						category, rideSeekerDTO);
+				System.out.println("RideSeekerDTO of listof values:"
+						+ rideSeekerDTO);
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -3694,7 +3710,7 @@ public class ListOfValuesManager {
 			}
 		} else {
 			try {
-				rideSeekerDTO = getTripService().loadDailyRideSeeker(con,
+				rideSeekerDTO = getTripService().cancelRideSeeker(con,
 						category, rideSeekerDTO);
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
@@ -3707,6 +3723,41 @@ public class ListOfValuesManager {
 			}
 		}
 		return rideSeekerDTO;
+	}
+
+	public static RideManagementDTO getDailyRideSeekerEntery(String category,
+			RideManagementDTO rideManagementDTO, Connection con)
+			throws ConfigurationException {
+		if (con == null) {
+			con = getLocalConnection();
+			try {
+				rideManagementDTO = getTripService().loadDailyRideSeeker(con,
+						category, rideManagementDTO);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			} finally {
+				ListOfValuesManager.releaseConnection(con);
+			}
+		} else {
+			try {
+				rideManagementDTO = getTripService().loadDailyRideSeeker(con,
+						category, rideManagementDTO);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+
+			}
+		}
+		return rideManagementDTO;
 	}
 
 	// TaxiCircleByName
@@ -3787,5 +3838,85 @@ public class ListOfValuesManager {
 		}
 		return dtos;
 	}
+
+	public static FrequencyDTO updateFrequencyEntry(Connection con,
+			FrequencyDTO rideSeekerDTO, String rideId)
+			throws ConfigurationException {
+		if (con == null) {
+			con = getLocalConnection();
+			try {
+				rideSeekerDTO = getTripService().updateFrequency(con,
+						rideSeekerDTO, rideId);
+			} catch (Exception e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			} finally {
+				ListOfValuesManager.releaseConnection(con);
+			}
+		} else {
+			try {
+				rideSeekerDTO = getTripService().updateFrequency(con,
+						rideSeekerDTO, rideId);
+				System.out.println("Inside the Listof Values Manager for Updating frequency :"+rideSeekerDTO);
+			} catch (Exception e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+
+			}
+		}
+		return rideSeekerDTO;
+	}
+
+	public static List<RideSeekerDTO> fetchRecurringRideList() {
+		Connection con = getLocalConnection();
+		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
+		try {
+			dtos.addAll(getTripService().fetchRecurringRideList(con));
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return dtos;
+	}
+	//This is for FetchingHolidayList
+	public static List<RideManagementDTO> fetchingHolidayList(RideManagementDTO dto) {
+		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
+		try {
+			dtos = getTripService().fetchingHolidayList(dto);
+			System.out.println("Inside the ListOfvalue Manager for fetchingHolidayList:"+dtos);
+		} catch (ConfigurationException e) {
+
+			e.printStackTrace();
+		}
+		return dtos;
+	}
+	public static List<RideManagementDTO> fetchingHolidaynxtweek(RideManagementDTO dto) {
+		Connection con = getLocalConnection();
+		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
+		try {
+			dtos = getTripService().fetchingHolidaynxtweek(con,dto);
+			System.out.println("Inside the ListOfvalue Manager for fetchingHolidaynxtweek:"+dtos);
+		} catch (ConfigurationException e) {
+
+			e.printStackTrace();
+		}finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return dtos;
+	}
+
 
 }

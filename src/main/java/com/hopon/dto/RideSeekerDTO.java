@@ -61,6 +61,44 @@ public class RideSeekerDTO {
 	private int tripType;
 	private String startdateValue1;
 	private Date startDate1;
+	private String daily_rides;
+
+	private String pickup_time1;
+	private String pickup_time2;
+	
+	private int count;
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public String getPickup_time1() {
+		return pickup_time1;
+	}
+
+	public void setPickup_time1(String pickup_time1) {
+		this.pickup_time1 = pickup_time1;
+	}
+
+	public String getPickup_time2() {
+		return pickup_time2;
+	}
+
+	public void setPickup_time2(String pickup_time2) {
+		this.pickup_time2 = pickup_time2;
+	}
+
+	public String getDaily_rides() {
+		return daily_rides;
+	}
+
+	public void setDaily_rides(String daily_rides) {
+		this.daily_rides = daily_rides;
+	}
 
 	public Date getStartDate1() {
 		return startDate1;

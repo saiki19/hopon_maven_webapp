@@ -12,11 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.common.collect.Multiset.Entry;
 import com.hopon.dto.PaymentRequestDTO;
 import com.hopon.utils.ConfigurationException;
 import com.hopon.utils.ListOfValuesManager;
+import com.hopon.utils.LoggerSingleton;
 import com.hopon.utils.Validator;
-import com.paytm.merchant.CheckSumServiceHelper;
 
 /**
  * Servlet implementation class PurchaseCredit
@@ -56,8 +57,8 @@ public class PurchaseCredit extends HttpServlet {
 				} catch (ConfigurationException e1) {
 					response.sendRedirect("/");
 				}
-				
-				CheckSumServiceHelper checkSumServiceHelper = CheckSumServiceHelper
+
+				com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper
 						.getCheckSumServiceHelper();
 
 				ResourceBundle bundle = ResourceBundle

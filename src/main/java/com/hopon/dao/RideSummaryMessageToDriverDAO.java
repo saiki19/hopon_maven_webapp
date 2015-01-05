@@ -21,7 +21,6 @@ public class RideSummaryMessageToDriverDAO {
 		List<SummaryMessageDTO> messageList = new ArrayList<SummaryMessageDTO>();
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT pq.rideseeker_id,rs.user_id,us.first_name,us.mobile_no,rs.start_point ,rs.destination_point,rs.start_time,vm1.driverid,vm1.drivername,rm1.ride_id,rm1.vehicleID FROM ride_seeker_details rs LEFT OUTER JOIN users us ON us.id = rs.user_id LEFT OUTER JOIN pool_requests pq ON rs.seeker_id IN(SELECT pq.rideseeker_id FROM rides_management rm,pool_requests pq WHERE rm.ride_id=pq.ride_id )LEFT OUTER JOIN rides_management rm1 ON rm1.ride_id=pq.ride_id LEFT OUTER JOIN vehicles_master vm1 ON vm1.id=rm1.vehicleID where CURRENT_TIMESTAMP < rs.start_time");
-		System.out.println("Fetching data from the Database:" + query);
 		PreparedStatement psmt;
 		messageList.clear();
 		try {

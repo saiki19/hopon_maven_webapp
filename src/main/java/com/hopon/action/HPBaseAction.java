@@ -80,6 +80,7 @@ public class HPBaseAction {
 	protected List<RideManagementDTO> rideManagementList = new ArrayList<RideManagementDTO>();
 	protected List<RideSeekerDTO> rideSeekerList = new ArrayList<RideSeekerDTO>();
 	protected List<RideSeekerDTO> recurringRideSeekerList = new ArrayList<RideSeekerDTO>();
+	protected List<RideSeekerDTO> dailyRideList = new ArrayList<RideSeekerDTO>();
 	protected List<PoolRequestsDTO> allCompleateRideList = new ArrayList<PoolRequestsDTO>();
 	protected List<PoolRequestsDTO> allCompleateRideSeekerList = new ArrayList<PoolRequestsDTO>();
 	protected List<PoolRequestsDTO> allMsgBoardCompleateRideList = new ArrayList<PoolRequestsDTO>();
@@ -613,6 +614,14 @@ public class HPBaseAction {
 
 	public int getTaxiCircleId() {
 		return taxiCircleId;
+	}
+
+	public List<RideSeekerDTO> getDailyRideList() {
+		return dailyRideList;
+	}
+
+	public void setDailyRideList(List<RideSeekerDTO> dailyRideList) {
+		this.dailyRideList = dailyRideList;
 	}
 
 	public void setTaxiCircleId(int taxiCircleId) {

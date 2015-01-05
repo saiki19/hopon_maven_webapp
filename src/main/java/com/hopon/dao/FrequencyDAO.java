@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.hopon.dto.FrequencyDTO;
+import com.hopon.dto.RideManagementDTO;
 import com.hopon.utils.ApplicationUtil;
 import com.hopon.utils.QueryExecuter;
 import com.mysql.jdbc.Statement;
@@ -20,20 +21,22 @@ public class FrequencyDAO {
 			FrequencyDTO frequencyDTO) throws SQLException {
 
 		StringBuilder query = new StringBuilder();
-		query.append("INSERT INTO trip_frequency (Trip_Freq_P,Days, ride_management_id, ride_seeker_id, Time, Start_date, End_date) VALUES (?,?,?,?,?,?,?) ");
+		query.append("INSERT INTO trip_frequency (Trip_Freq_P,Days, ride_management_id, ride_seeker_id, Time, Start_date, End_date, count) VALUES (?,?,?,?,?,?,?,?) ");
 
 		PreparedStatement pstmt = con.prepareStatement(query.toString(),
 				Statement.RETURN_GENERATED_KEYS);
 
 		pstmt.setString(1, frequencyDTO.getFrequencyID());
 		pstmt.setString(2, frequencyDTO.getFrequency().toString());
+		System.out.println("Days are printing in frequencyDAO:"
+				+ frequencyDTO.getFrequency().toString());
 		pstmt.setString(3, frequencyDTO.getRideManagementId());
 		pstmt.setString(4, frequencyDTO.getRideSeekerId());
 
 		pstmt.setString(5, frequencyDTO.getTime().toString());
 		pstmt.setString(6, frequencyDTO.getStartDate());
 		pstmt.setString(7, frequencyDTO.getEndDate());
-
+		pstmt.setInt(8, frequencyDTO.getCount());
 		pstmt.executeUpdate();
 		// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
 		ResultSet tableKeys = pstmt.getGeneratedKeys();
@@ -107,5 +110,33 @@ public class FrequencyDAO {
 		rs.close();
 		pstmt.close();
 		return dtos;
+	}
+
+	public boolean updateFrequency(Connection con, FrequencyDTO frequencyDTO,
+			String rideId) {
+		System.out.println("RideManagementDTO in FrequencyDAO:" + frequencyDTO.getCount()
+				+ "status:" + frequencyDTO.getStatus() + "id:" + rideId);
+		StringBuilder query = new StringBuilder();
+		query.append("UPDATE trip_frequency SET status = '"
+				+ frequencyDTO.getStatus() + "', count = "
+				+ frequencyDTO.getCount() + " WHERE ride_seeker_id = '"
+				+ rideId + "'");
+
+		PreparedStatement pstmt;
+		try {
+			pstmt = con.prepareStatement(query.toString());
+			int i = pstmt.executeUpdate();
+			if (i != 0) {
+				pstmt.close();
+				System.out.println("executeupdate:" + i);
+			}
+			return true;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+			return false;
+		}
+
 	}
 }

@@ -64,6 +64,40 @@ public class RideManagementDTO {
 	public String fullDay;
 	public int circleId;
 	private String daily_rides;
+	private float totalCredit;
+	private String seekerID;
+	private Date holiday_date;
+	
+	private int tripType;
+	
+	private String pickup_time1;
+	private String pickup_time2;
+	private String startdateValue1;
+
+
+	public Date getHoliday_date() {
+		return holiday_date;
+	}
+
+	public void setHoliday_date(Date holiday_date) {
+		this.holiday_date = holiday_date;
+	}
+
+	public String getSeekerID() {
+		return seekerID;
+	}
+
+	public void setSeekerID(String seekerID) {
+		this.seekerID = seekerID;
+	}
+
+	public float getTotalCredit() {
+		return totalCredit;
+	}
+
+	public void setTotalCredit(float totalCredit) {
+		this.totalCredit = totalCredit;
+	}
 
 	public String getDaily_rides() {
 		return daily_rides;
@@ -72,12 +106,6 @@ public class RideManagementDTO {
 	public void setDaily_rides(String daily_rides) {
 		this.daily_rides = daily_rides;
 	}
-
-	private int tripType;
-
-	private String pickup_time1;
-	private String pickup_time2;
-	private String startdateValue1;
 
 	public String getStartdateValue1() {
 		return startdateValue1;

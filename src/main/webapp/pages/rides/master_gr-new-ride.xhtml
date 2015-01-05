@@ -376,32 +376,11 @@ function validate_rideSeeker(){
                         <h:inputText id="toaddress" value="#{userAction.rideRegistered.toAddress1}" />
                       </div>
                     </div>
-                    <!-- <div class="control-group">
-                      <label class="control-label" for="inputPassword">Address1</label>
-                      <div class="controls">
-                        <input type="password" id="inputPassword" placeholder="Address1">
-                      </div>
-                    </div> -->
-                    
-                    
-                    <!-- Kirty -->
-                <!--     <div class="control-group">
-                      <label class="control-label" for="inputEmail">City</label>
-                      <div class="controls"> -->
                         <h:inputHidden id="tocity" value="#{userAction.rideRegistered.toAddressCity}" />
-                <!--       </div>
-                    </div>
-                    <div class="control-group">
-                      <label class="control-label" for="inputPassword">Pin</label>
-                      <div class="controls"> -->
                          	<h:inputHidden id="topin" value="#{userAction.rideRegistered.toAddressPin}"/>
 							<h:inputHidden id="endPoinLat" value="#{userAction.rideRegistered.endPointLatitude}"/>
                       		<h:inputHidden id="endPoinLng" value="#{userAction.rideRegistered.endPointLongitude}"/>
-                     <!--  </div>
-                    </div>
-                    -->
-                    
-                    <!-- Kirty -->
+                  
                     <div class="control-group">
                       <label class="control-label" for="inputPassword">Tag (20 limit)</label>
                       <div class="controls">
@@ -449,8 +428,11 @@ function validate_rideSeeker(){
         <p>
           <h:commandButton rendered="#{sessionScope.user_role == 'P' || (sessionScope.user_role == 'B' and userAction.ridePicker ==2)}" styleClass="btn btn-large btn-success" value="Register">
           	<f:param value="giveRide" name="ride"></f:param>
-			<p:ajax process="@form" listener="#{userAction.registerRide}" update="@form" oncomplete="googleLoc();updatePart();" onsuccess="setTimeout(function(){ if(parseInt($('#x3').find('span.form-message').length) == 0) window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml';  }, 500);"/>          	
-          </h:commandButton> &nbsp;
+														<p:ajax process="@form"
+															listener="#{userAction.registerRide}" update="@form"
+															oncomplete="googleLoc();updatePart();"
+															onsuccess="setTimeout(function(){ if(parseInt($('#x3').find('span.form-message').length) == 0) window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml';  }, 500);" />
+													</h:commandButton> &nbsp;
           <h:commandButton onclick="return validate_rideSeeker();" rendered="#{sessionScope.user_role == 'C' || (sessionScope.user_role == 'B' and userAction.ridePicker ==1)}" styleClass="btn btn-large btn-success" value="Register">
           	<f:param value="takeRide" name="ride"></f:param>
           	<p:ajax process="@form" listener="#{userAction.registerRide}" update="@form" oncomplete="googleLoc();updatePart();" onsuccess="setTimeout(function(){ if(parseInt($('#x3').find('span.form-message').length) == 0) window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml';  }, 500);"/>
