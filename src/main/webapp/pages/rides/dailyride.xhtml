@@ -266,7 +266,6 @@
 				}
 			</script>
 
-
 			<script type="text/javascript">
 				function validate() {
 					//	$.post("http://localhost:8080/hopon_maven1/PurchaseCredit",{amount:1000});
@@ -600,7 +599,7 @@
 																				<p:ajax process="@form"
 																					listener="#{userAction.dailyRide}" update="@form"
 																					oncomplete="updatePart();googleLoc();"
-																					onsuccess="window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml'" />
+																					onsuccess="window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml?page=daily'" />
 																				
 																		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 																	</h:commandButton>

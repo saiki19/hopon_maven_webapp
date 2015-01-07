@@ -219,6 +219,12 @@
 										<echo>Using local.properties</echo>
 										<copy file="src/main/resources/local.properties"
 											tofile="${project.build.outputDirectory}/Database.properties" />
+										<echo>Using MessageResources_local.properties</echo>
+										<copy file="src/main/resources/resource/MessageResources_local.properties"
+											tofile="${project.build.outputDirectory}/resource/MessageResources_en.properties" />
+										<echo>Using paytm_stage.properties</echo>
+										<copy file="src/main/resources/resource/paytm_stage.properties"
+											tofile="${project.build.outputDirectory}/resource/paytm.properties" />
 									</tasks>
 								</configuration>
 							</execution>
@@ -249,6 +255,12 @@
 										<echo>Using prod.properties</echo>
 										<copy file="src/main/resources/prod.properties"
 											tofile="${project.build.outputDirectory}/Database.properties" />
+										<echo>Using MessageResources_prod.properties</echo>
+										<copy file="src/main/resources/resource/MessageResources_prod.properties"
+											tofile="${project.build.outputDirectory}/resource/MessageResources_en.properties" />
+										<echo>Using paytm_prod.properties</echo>
+										<copy file="src/main/resources/resource/paytm_prod.properties"
+											tofile="${project.build.outputDirectory}/resource/paytm.properties" />
 									</tasks>
 								</configuration>
 							</execution>
@@ -278,6 +290,12 @@
 										<echo>Using dev.properties</echo>
 										<copy file="src/main/resources/dev.properties"
 											tofile="${project.build.outputDirectory}/Database.properties" />
+										<echo>Using MessageResources_dev.properties</echo>
+										<copy file="src/main/resources/resource/MessageResources_dev.properties"
+											tofile="${project.build.outputDirectory}/resource/MessageResources_en.properties" />
+										<echo>Using paytm_stage.properties</echo>
+										<copy file="src/main/resources/resource/paytm_stage.properties"
+											tofile="${project.build.outputDirectory}/resource/paytm.properties" />
 									</tasks>
 								</configuration>
 							</execution>

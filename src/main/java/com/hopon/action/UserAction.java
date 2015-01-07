@@ -7083,7 +7083,7 @@ public class UserAction extends HPBaseAction {
 			int rideId = 0;
 			try {
 				rideId = Integer.parseInt(bodyPart[1]);
-				if (msg.equalsIgnoreCase("CANCEL")) {
+				if (msg.equalsIgnoreCase("CAN")||msg.equalsIgnoreCase("CANCEL")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -7578,7 +7578,7 @@ public class UserAction extends HPBaseAction {
 										+ e1.getStackTrace()[0].getLineNumber()
 										+ " :: " + e1.getMessage());
 					}
-				} else if (msg.equalsIgnoreCase("APR")) {
+				} else if (msg.equalsIgnoreCase("APR")||msg.equalsIgnoreCase("APPROVE")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -7854,7 +7854,7 @@ public class UserAction extends HPBaseAction {
 										+ e1.getStackTrace()[0].getLineNumber()
 										+ " :: " + e1.getMessage());
 					}
-				} else if (msg.equalsIgnoreCase("REJECT")) {
+				} else if (msg.equalsIgnoreCase("REJ")||msg.equalsIgnoreCase("REJECT")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -11153,7 +11153,7 @@ public class UserAction extends HPBaseAction {
 			
 			String ridecost = dto.getRideCost();
 			float ridecost1 = Float.parseFloat(ridecost);
-			float credit = userdto.getTotalCredit();
+			float credit = dto.getTotalCredit();
 			if (ridecost1 >= credit) {
 				dto.setRideID(dto.getSeekerID());
 
@@ -11197,7 +11197,7 @@ public class UserAction extends HPBaseAction {
 		List<RideManagementDTO> dtoList = new ArrayList<RideManagementDTO>();
 		UserRegistrationDTO userdto = new UserRegistrationDTO();
 		dtoList = ListOfValuesManager.getDailyRidePaymentHelper();
-		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+		
 		UserRegistrationDTO userDtoRide = new UserRegistrationDTO();
 				
 		for (RideManagementDTO dto : dtoList) {
@@ -11215,7 +11215,7 @@ public class UserAction extends HPBaseAction {
 			userdto.setId(dto.getUserID());
 			float ridecost1 = Float.parseFloat(ridecost);
 			float credit = userdto.getTotalCredit();
-			if (credit > ridecost1) {
+			if (credit > ridecost1) {				
 				ridecost1 = ridecost1
 						* (float) (1 - ((double) rideManagementList.size() / 5));
 				credit = credit - ridecost1;
@@ -11224,8 +11224,8 @@ public class UserAction extends HPBaseAction {
 						+ ((double) rideManagementList.size() / 5));
 				userdto.setTotalCredit(credit);
 				
-			
-				try {	
+				Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+				try {
 					ListOfValuesManager.updateTotalCredit(con,userdto);
 					// Here code is to make entry in paymentTxn table.
 					PaymentTxnsDTO paymentTxnsDTO = new PaymentTxnsDTO();
@@ -11341,7 +11341,7 @@ public class UserAction extends HPBaseAction {
 								.releaseConnection(con);
 					} //end else
 				} // end finally
-			}else if (credit < ridecost1) {
+			}else if (credit <= ridecost1) {
 					System.out.println("Inside the else if condition");
 					// This is Creating the Email for Insufficient Balance
 					dto.setRideID(dto.getSeekerID());

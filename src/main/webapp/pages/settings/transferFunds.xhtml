@@ -28,7 +28,7 @@
 						})
 					});
 				</script>
-				<script>
+			<!-- 	<script>
 					$('#myTab a').click(function(e) {
 						if ($(this).parent('li').hasClass('active')) {
 							$($(this).attr('href')).hide();
@@ -37,7 +37,55 @@
 							$(this).tab('show');
 						}
 					});
+				</script> -->
+				<style type="text/css">
+				#hopon_credits{
+				 margin-left: 10px;
+				width: 60px;
+		
+				}
+				#access_charge{
+				 margin-left: 15px;
+				width: 60px;
+				}
+				#amount{
+				 margin-left: 10px;
+				width: 60px;
+			
+				}
+				
+				</style>
+
+				<script type="text/javascript">
+					$(document)
+							.ready(
+									function() {
+										
+										$("#topup_credits")
+												.change(
+														function() {
+															var credits = $(
+																	this).val();
+
+															$("#hopon_credits")
+																	.val(
+																			credits).prop("readonly", true);
+															var accesscharge = Math
+																	.round(credits * 1.025)
+																	- credits;
+															$("#access_charge")
+																	.val(
+																			accesscharge).prop("readonly", true);
+															var totalCredit = $(
+																	"#amount")
+																	.val(parseInt(accesscharge)
+																					+ parseInt(credits)).prop("readonly", true);
+
+														});
+										
+									});
 				</script>
+
 				<!-- Start: MAIN CONTENT -->
 				<div class="content">
 					<div class="container">
@@ -50,17 +98,21 @@
 							</div>
 							<div class="span10">
 								<div class="page-header">
-									<h1>Bill Payment</h1>
+									
+									<p:panel id="credit"
+													style="width:0px;border:none;display:inline;">
+													<h1 class="muted">HopOn Wallet: Balance - INR
+														${userAction.userRegistrationDTO.totalCredit}</h1>
+												</p:panel>
 								</div>
 								<div class="row">
 									<div class="span10">
 										<div class="bs-docs-example">
 											<ul id="myTab" class="nav nav-tabs">
-												<li class="active"><a href="#home" data-toggle="tab">One
-														Time Rides</a></li>
-												<li><a href="#profile" data-toggle="tab">Daily
-														Rides </a></li>
-												<li><a href="#mis" data-toggle="tab">Withdraw </a></li>
+						
+												<li class="active"><a href="#topup" data-toggle="tab">Top Up
+														 </a></li>
+												<li><a href="#withdraw" data-toggle="tab">Withdraw </a></li>
 
 											</ul>
 										</div>
@@ -87,60 +139,55 @@
 
 
 										<div id="myTabContent" class="tab-content">
-											<div class="tab-pane fade in active" id="home">
-												<p:panel id="credit"
-													style="width:0px;border:none;display:inline;">
-													<h3 class="muted">Transfer Funds: Balance -
-														${userAction.userRegistrationDTO.totalCredit}</h3>
-												</p:panel>
+											<div class="tab-pane fade in active" id="topup">
+
 												<form action="#{request.contextPath}/PurchaseCredit"
 													method="post">
 
-													<b>Top-up</b><br /> Transfer Amount (in INR) <input
-														placeholder="100" value="100" id="amount"
-														class="text-info" name="amount" style="width: 70px;" />
-														<select
-														onchange="$('#amount').val($(this).val());"
+													<br/> Top Up Amount (in INR)  <select name="topupamount" 
+														 id="topup_credits"
 														style="width: 70px;">
 														<option>100</option>
 														<option>200</option>
 														<option>300</option>
 														<option>400</option>
 														<option>500</option>
-													</select> <br />
-													<button class="btn btn-success" type="submit">Transfer</button>
-												</form>
-											</div>
-											<!--Ends the OneTime Rides Tab  -->
-											
-											<!--  This is for the daily Rides-->
-											<div class="tab-pane fade" id="profile">
-												<p:panel id="credit1"
-													style="width:0px;border:none;display:inline;">
-													<h3 class="muted">Transfer Funds: Balance -
-														${userAction.userRegistrationDTO.totalCredit}</h3>
-												</p:panel>
-												
-												<form action="#{request.contextPath}/PurchaseCredit"
-													method="post">
-													<b>Top-up</b><br /> Transfer Amount (in INR) <input
-														placeholder="1000" value="1000" id="amount1"
-														class="text-info" name="amount1" style="width: 70px;" />
-													<select onchange="$('#amount1').val($(this).val());"
-														style="width: 70px;">
 														<option>1000</option>
 														<option>2000</option>
 														<option>3000</option>
 														<option>4000</option>
 														<option>5000</option>
-													</select> <br />
+													</select> <br /><br/>
+														<div class="form byCredits">
+														<div id="box">
+															<p>
+															HopOn Credits  &nbsp; &nbsp; &nbsp;  INR 
+															<h:inputText id="hopon_credits" name="hopon_credits" ></h:inputText>
+															</p>
+														</div>
+														<br></br>
+														<div class="box">
+															<p>Access Charge &nbsp; &nbsp; INR
+															<h:inputText id="access_charge" name="access_charge">
+															</h:inputText>
+															<!-- <label id="access_charge" class="input_credit"> </label>-->
+															</p>
+														</div>
+														<br></br>
+														<div class="box">
+															<p>Total Amount &nbsp; &nbsp; &nbsp; &nbsp; INR
+															<h:inputText id="amount" name="total_amount"></h:inputText>
+															</p>
+														</div>
+													</div>
+
 													<button class="btn btn-success" type="submit">Transfer</button>
 												</form>
 											</div>
-											<!-- Ends the DailyRide Tab -->	
-													
-										<!--This is for the Withdraw Amount  -->
-											<div class="tab-pane fade" id="mis">
+											<!--Ends the top up Tab  -->
+
+											<!--This is for the Withdraw Amount tab -->
+											<div class="tab-pane fade" id="withdraw">
 												<h:form>
 													<h3 class="muted">Withdraw</h3>
 													<br /> Withdraw Amount (in INR) 
@@ -151,7 +198,7 @@
 														value="Withdraw" style="margin-left:4px;">
 														<p:ajax listener="#{userAction.updateBalance}"
 															process="@this,withdraAmount"
-															update="@form,:messagePanel,:credit1" />
+															update="@form,:messagePanel,:credit" />
 													</h:commandButton>
 												</h:form>
 

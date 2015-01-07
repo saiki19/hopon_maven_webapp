@@ -35,6 +35,7 @@ public class PurchaseCredit extends HttpServlet {
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
+		System.out.println("Response:" + response.getContentType());
 		String userId = (String) session.getAttribute("userId");
 		if (session != null && !Validator.isEmpty(userId)) {
 			float amount = 0;
@@ -106,7 +107,7 @@ public class PurchaseCredit extends HttpServlet {
 				}
 
 				out.print("<html><head><title>Merchant Check Out Page</title></head><body><center><h1>Please do not refresh this page...</h1></center>");
-				out.print("<form method='post' action='https://secure.paytm.in/oltp-web/processTransaction' name='f1'>");
+				out.print("<form method='post' action='"+bundle.getString("paytm.PAYTM_TXN_URL")+"' name='f1'>");
 				// out.print("<form method='post' action='http://localhost/hopdwld/captureImage/pgRedirect' name='f1'>");
 				out.print("<table><tbody>");
 
