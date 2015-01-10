@@ -3632,13 +3632,11 @@ public class ListOfValuesManager {
 		return dtos;
 	}
 
-	public static RideManagementDTO getDailyRideEntry(Connection con,
-			String userId) throws ConfigurationException {
+	public static RideManagementDTO getDailyRideEntry(String userId) throws ConfigurationException {
 		con = getLocalConnection();
 		RideManagementDTO dtos = new RideManagementDTO();
 		try {
 			dtos = getTripService().getDailyRideData(con, userId);
-			System.out.println("dtos is:" + dtos);
 		} catch (ConfigurationException e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"

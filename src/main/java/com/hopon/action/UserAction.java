@@ -10652,12 +10652,10 @@ public class UserAction extends HPBaseAction {
 	 */
 	private void getDailyRideData() {
 
-		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
-
 		try {
 			
 			RideManagementDTO rideDTO = new RideManagementDTO();
-			rideDTO = ListOfValuesManager.getDailyRideEntry(con,userRegistrationDTO.getId());
+			rideDTO = ListOfValuesManager.getDailyRideEntry(userRegistrationDTO.getId());
 			
 			if (rideDTO.getUserID() != null) {
 				rideRegistered.setStartPointLatitude(rideDTO
