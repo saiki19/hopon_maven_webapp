@@ -241,8 +241,9 @@
 
 			<script type="text/javascript">
 				$(document).ready(function() {
-
+				
 					$(".rdBtn").change(function() {
+						if (#{userAction.rideRegistered.userID ==null}){
 						if ($("#r1").is(":checked")) {
 							$("#tab1\\:tp2").attr('disabled', true);
 							$("#tab1\\:tp2").val('');
@@ -250,6 +251,21 @@
 
 							$("#tab1\\:tp2").attr('disabled', false);
 
+						}
+						} else {
+							
+							if ($("#r1").is(":checked")) {
+								$("#r1").prop('checked', false);
+								
+								$("#r2").prop('checked', true);
+								
+							} else if ($("#r2").is(":checked")){
+								
+								$("#r2").prop('checked', false);
+								
+								$("#r1").prop('checked', true);
+							}
+								
 						}
 					});
 				});
@@ -265,7 +281,6 @@
 					}
 				}
 			</script>
-
 			<script type="text/javascript">
 				function validate() {
 					//	$.post("http://localhost:8080/hopon_maven1/PurchaseCredit",{amount:1000});
@@ -275,8 +290,7 @@
 
 					var oneway = $('#tab1\\:r1').val();
 
-					var twoway = $('#tab1\\:r2').prop("readonly", true);
-					;
+					var twoway = $('#tab1\\:r2').val();
 
 					var timepic1 = $('#tab1\\:tp1').val();
 
@@ -460,7 +474,7 @@
 																	rendered="#{userAction.rideRegistered.tripType == 2}">
 																	<input id="r1" type="radio" class="rdBtn"
 																		name="radioname" value="1">One Way</input>
-																	<input id="r1" type="radio" class="rdBtn"
+																	<input id="r2" type="radio" class="rdBtn"
 																		checked="checked" name="radioname" value="2">TwoWay</input>
 																</pm:content>
 
@@ -469,7 +483,7 @@
 																	<input id="r1" checked="checked" type="radio"
 																		class="rdBtn" name="radioname" value="1">One
 																		Way</input>
-																	<input id="r1" type="radio" class="rdBtn"
+																	<input id="r2" type="radio" class="rdBtn"
 																		name="radioname" value="2">TwoWay</input>
 																</pm:content>
 
@@ -477,7 +491,7 @@
 																	rendered="#{userAction.rideRegistered.userID == null}">
 																	<input id="r1" type="radio" class="rdBtn"
 																		name="radioname" value="1">One Way</input>
-																	<input id="r1" type="radio" class="rdBtn"
+																	<input id="r2" type="radio" class="rdBtn"
 																		name="radioname" value="2">TwoWay</input>
 																</pm:content>
 
@@ -599,7 +613,7 @@
 																				<p:ajax process="@form"
 																					listener="#{userAction.dailyRide}" update="@form"
 																					oncomplete="updatePart();googleLoc();"
-																					onsuccess="window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml?page=daily'" />
+																					onsuccess="window.location ='${url}/pages/rides/master-gr-pending-trips.xhtml?page=daily'" />
 																				
 																		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 																	</h:commandButton>
@@ -611,9 +625,20 @@
 																				styleClass="btn btn-large btn-success "
 																				value="Cancel" id="EditBtn">
 																				<p:ajax process="@form"
-																					listener="#{userAction.cancelDailyRide}"
+																					listener="#{userAction.cancelDailyRide}" 
 																					oncomplete="googleLoc();" update="@form" />
 																			</h:commandButton>
+																			<script type="text/javascript">
+																				$(document).ready(function() {
+																				$('#tab1\\:fromaddress').attr('disabled', true);
+																				$('#tab1\\:toaddress').attr('disabled', true);			
+																				$('#tab1\\:tp1').attr('disabled', true);
+																				$('#tab1\\:tp2').attr('disabled', true);
+																				$('#tab1\\:dp1').attr('disabled', true);
+																				$('#tab1\\:dp2').attr('disabled', true);
+																				
+																				});
+																			</script>
 																		</pm:content>
 																	</div>
 																</div>

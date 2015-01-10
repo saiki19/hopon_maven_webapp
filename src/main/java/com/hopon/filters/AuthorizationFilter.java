@@ -59,12 +59,17 @@ public class AuthorizationFilter implements Filter {
     	//@SuppressWarnings("unused")
 		//String serverPath = scheme+"://"+serverName+":"+serverPort;
         //@SuppressWarnings("unused")
+    	
 		String currentURL = request.getRequestURI();
+		System.out.println("CurrentURL:"+currentURL);
         //serverPath += currentURL.substring(0, currentURL.indexOf("/", 1));
+		
     	String serverPath = request.getContextPath();
+    	System.out.println("ServerPath:"+serverPath);
         //session.setAttribute("url", serverPath + currentURL.substring(0, currentURL.substring(1).indexOf('/') + 2));
         //req.setAttribute("url", serverPath + currentURL.substring(0, currentURL.substring(1).indexOf('/') + 2));
         String extension = currentURL;
+        
 		if(extension.indexOf("?") >= 0) extension = extension.substring(0, extension.indexOf("?"));
 		if(extension.indexOf(".") >= 0) 
 			extension = extension.substring(extension.lastIndexOf(".") + 1);
@@ -72,10 +77,12 @@ public class AuthorizationFilter implements Filter {
 			extension = "";
 		
 		List<String> extensionsAllowed = new ArrayList<String>(Arrays.asList("css", "js", "gif", "png", "jpg", "eot", "svg", "ttf", "woff", "jspx", "ico"));
+		System.out.println("Extension Allowed:"+extensionsAllowed);
 		
         String url;
-        if(currentURL.contains("/pages/verification-failure.xhtml") || currentURL.contains("/pages/verification-success.xhtml") || currentURL.contains("/pages/signup.xhtml") || currentURL.contains("/pages/faq.xhtml") ||  currentURL.contains("/pages/contact.xhtml") || currentURL.contains("/emailCron.xhtml")||currentURL.contains("/pages/verify_user.xhtml")||currentURL.contains("/pages/approve_ride.xhtml")||currentURL.contains("/pages/approver-success.xhtml")||currentURL.contains("/pages/approver-failure.xhtml") ||currentURL.contains("/cron/summarymessage.xhtml")){
-        	 chain.doFilter(request, response);
+        if(currentURL.contains("/pages/verification-failure.xhtml") || currentURL.contains("/pages/verification-success.xhtml") || currentURL.contains("/pages/signup.xhtml") || currentURL.contains("/pages/faq.xhtml") ||  currentURL.contains("/pages/contact.xhtml") || currentURL.contains("/emailCron.xhtml")||currentURL.contains("/pages/verify_user.xhtml")||currentURL.contains("/pages/approve_ride.xhtml")||currentURL.contains("/pages/approver-success.xhtml")||currentURL.contains("/pages/approver-failure.xhtml") ||currentURL.contains("/cron/summarymessage.xhtml") || currentURL.contains("/pages/processTransaction")){
+        	System.out.println("Current URL:"+currentURL);
+        	chain.doFilter(request, response);
         	 return;
         }
         

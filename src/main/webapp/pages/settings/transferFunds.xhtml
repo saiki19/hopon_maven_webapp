@@ -55,8 +55,7 @@
 				}
 				
 				</style>
-
-				<script type="text/javascript">
+<script type="text/javascript">
 					$(document)
 							.ready(
 									function() {
@@ -66,6 +65,7 @@
 														function() {
 															var credits = $(
 																	this).val();
+															if (credits != "select"){
 
 															$("#hopon_credits")
 																	.val(
@@ -80,11 +80,18 @@
 																	"#amount")
 																	.val(parseInt(accesscharge)
 																					+ parseInt(credits)).prop("readonly", true);
+															}
+															else{
+																$("#hopon_credits").val("").prop("readonly", false);
+																$("#access_charge").val("").prop("readonly", false);
+																$("#amount").val("").prop("readonly", false);	
+															}
 
 														});
 										
 									});
 				</script>
+
 
 				<!-- Start: MAIN CONTENT -->
 				<div class="content">
@@ -146,7 +153,8 @@
 
 													<br/> Top Up Amount (in INR)  <select name="topupamount" 
 														 id="topup_credits"
-														style="width: 70px;">
+														style="width: 70px;">		
+														<option>select</option>
 														<option>100</option>
 														<option>200</option>
 														<option>300</option>
