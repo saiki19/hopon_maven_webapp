@@ -20,7 +20,7 @@
 					rendered="#{userAction.userRegistrationDTO.travel == 'B' and userAction.ridePicker ==1}"></h:commandLink>
 				<h:commandLink id="giveride1" styleClass="btn btn-small"
 					value="Give Ride" action="#{userAction.giveRide}"
-					rendered="#{userAction.userRegistrationDTO.travel == 'B' and userAction.ridePicker ==1}"></h:commandLink>	
+					rendered="#{userAction.userRegistrationDTO.travel == 'B' and userAction.ridePicker ==1}"></h:commandLink>
 			</h:form>
 		</div>
 	</div>
@@ -40,15 +40,15 @@
 					}
 				}
 			})
-/* 
-			$("#dailyride").click(function() {
-				$("#lefttab\\:viewBtn").trigger("click");
-				var url = $(location).attr('href');
-				alert(url);
-			//	var url1=url.split("/")[1];
-				//alert(url1);
-				$(location).attr("href",  "/pages/rides/dailyride.xhtml")
-			});  */
+			/* 
+			 $("#dailyride").click(function() {
+			 $("#lefttab\\:viewBtn").trigger("click");
+			 var url = $(location).attr('href');
+			 alert(url);
+			 //	var url1=url.split("/")[1];
+			 //alert(url1);
+			 $(location).attr("href",  "/pages/rides/dailyride.xhtml")
+			 });  */
 		});
 	</script>
 
@@ -57,14 +57,17 @@
 		<ul class="nav nav-list" id="left-panel-ul">
 			<li class="nav-header">Ride Section</li>
 
-			<pm:content rendered="#{sessionScope.user_role != 'T'}">
+			<!-- <pm:content rendered="#{sessionScope.user_role != 'T'}">
 				<li><a href="${url}/pages/rides/master_gr-new-ride.xhtml"><i
 						class="icon-edit"></i> New Ride</a></li>
+			</pm:content> -->
+			
+			<pm:content
+				rendered="#{sessionScope.user_role=='B' || sessionScope.user_role=='C'}">
+				<li><a href="${url}/pages/rides/dailyride.xhtml" id="dailyride"><i
+						class="icon-edit"></i>Daily Rides</a></li>
 			</pm:content>
-			<pm:content rendered="#{sessionScope.user_role=='B' || sessionScope.user_role=='C'}">
-			<li><a href="${url}/pages/rides/dailyride.xhtml" id="dailyride"><i class="icon-edit"></i>Daily
-					Rides</a></li>
-			</pm:content>
+	
 			<li><a href="${url}/pages/rides/master-gr-pending-trips.xhtml"><i
 					class="icon-share"></i> Pending Rides</a></li>
 			<li><a href="${url}/pages/rides/master-gr-completedride.xhtml"><i
@@ -93,9 +96,11 @@
 			</pm:content>
 
 			<li class="nav-header">Circles</li>
-
-			<li><a href="${url}/pages/settings/create-circle.xhtml"><i
-					class="icon-cog"></i> Create Circle</a></li>
+			<pm:content
+				rendered="#{not empty userAction.allCircleList and userAction.allCircleForLoginUserList != null}">
+				<li><a href="${url}/pages/settings/create-circle.xhtml"><i
+						class="icon-cog"></i> Create Circle</a></li>
+			</pm:content>
 			<li><a href="${url}/pages/settings/master-my-circle.xhtml"><i
 					class="icon-globe"></i> My Circles</a></li>
 
@@ -153,7 +158,7 @@
 				<li><a href="${url}/pages/settings/editcompany.xhtml"><i
 						class="icon-user"></i> Company Preferences</a></li>
 			</pm:content>
-			<li><a href="${url}/pages/settings/paymentTransaction.xhtml"><i
+			<li><a href="${url}/pages/payment/paymentTransactions.xhtml"><i
 					class="icon-user"></i> Payment Transactions</a></li>
 			<li><a href="${url}/pages/settings/transferFunds.xhtml"><i
 					class="icon-user"></i> Transfer Funds</a></li>

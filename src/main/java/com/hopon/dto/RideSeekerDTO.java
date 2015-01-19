@@ -66,7 +66,18 @@ public class RideSeekerDTO {
 	private String pickup_time1;
 	private String pickup_time2;
 	
+	private String groupId;
+	
 	private int count;
+	
+	
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 
 	public int getCount() {
 		return count;

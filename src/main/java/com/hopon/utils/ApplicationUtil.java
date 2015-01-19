@@ -27,7 +27,7 @@ public class ApplicationUtil {
 	public static String datePattern1 = "yyyy-MM-dd";
 	public static String datePattern2 = "dd-MMM-yyyy HH:mm";
 	public static String datePattern3 = "yyyy-MM-dd HH:mm:ss";
-	public static String datePattern4 = "dd MMM yy, hh.mm a";
+	public static String datePattern4 = "dd MMM yy, hh:mm a";
 	public static String datePattern5 = "E MMM dd HH:mm:ss Z yyyy";
 	public static String datePattern6 = "MM/dd/yyyy";
 	public static String datePattern7 = "dd-MMM-yyyy";
@@ -51,7 +51,7 @@ public class ApplicationUtil {
 	public static SimpleDateFormat dateFormat3 = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
 	public static SimpleDateFormat dateFormat4 = new SimpleDateFormat(
-			"dd MMM yy, hh.mm a");
+			"dd MMM yy, hh:mm a");
 	public static SimpleDateFormat dateFormat5 = new SimpleDateFormat(
 			"E MMM dd HH:mm:ss Z yyyy");
 	public static SimpleDateFormat dateFormat6 = new SimpleDateFormat(

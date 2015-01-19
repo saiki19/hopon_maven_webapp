@@ -55,7 +55,8 @@
 				}
 				
 				</style>
-<script type="text/javascript">
+
+				<script type="text/javascript">
 					$(document)
 							.ready(
 									function() {
@@ -70,16 +71,13 @@
 															$("#hopon_credits")
 																	.val(
 																			credits).prop("readonly", true);
-															var accesscharge = Math
-																	.round(credits * 1.025)
-																	- credits;
+															var accesscharge = (credits *2.5)/100 ;
+															
 															$("#access_charge")
-																	.val(
-																			accesscharge).prop("readonly", true);
-															var totalCredit = $(
-																	"#amount")
-																	.val(parseInt(accesscharge)
-																					+ parseInt(credits)).prop("readonly", true);
+																	.val(accesscharge).prop("readonly", true);
+															var totalCredit = $("#amount")
+																	.val(parseFloat(accesscharge)
+																					+ parseFloat(credits)).prop("readonly", true);
 															}
 															else{
 																$("#hopon_credits").val("").prop("readonly", false);
@@ -91,7 +89,21 @@
 										
 									});
 				</script>
-
+				<script type="text/javascript">
+				$(document).ready(function(){
+				
+					$('#tab2\\:withdrawAmount').keypress(function(event) {
+					
+					   if ((event.which != 46) &amp;&amp; (event.which  &lt;47 || event.which &gt;59))
+					    {
+					        event.preventDefault();
+					        if ((event.which == 46) &amp;&amp;($(this).indexOf('.') != -1)) {
+					            event.preventDefault();
+					        }
+					    }
+					});
+					});
+				</script>
 
 				<!-- Start: MAIN CONTENT -->
 				<div class="content">
@@ -151,17 +163,17 @@
 												<form action="#{request.contextPath}/PurchaseCredit"
 													method="post">
 
-													<br/> Top Up Amount (in INR)  <select name="topupamount" 
-														 id="topup_credits"
-														style="width: 70px;">		
+													<br/> Top Up Amount (in INR)  
+													<select name="topupamount" id="topup_credits"
+														style="width: 80px;">
 														<option>select</option>
-														<option>100</option>
-														<option>200</option>
-														<option>300</option>
-														<option>400</option>
+														<option>250</option>
 														<option>500</option>
+														<option>750</option>
 														<option>1000</option>
+														<option>1500</option>
 														<option>2000</option>
+														<option>2500</option>
 														<option>3000</option>
 														<option>4000</option>
 														<option>5000</option>
@@ -196,24 +208,24 @@
 
 											<!--This is for the Withdraw Amount tab -->
 											<div class="tab-pane fade" id="withdraw">
-												<h:form>
+												<h:form id="tab2" >
 													<h3 class="muted">Withdraw</h3>
 													<br /> Withdraw Amount (in INR) 
 														<h:inputText value="#{userAction.transferAmount}"
-														id="withdraAmount" style="width:70px;" />
+														id="withdrawAmount" style="width:70px;" />
 
-													<h:commandButton styleClass="btn btn-success"
+													<h:commandButton styleClass="btn btn-success" id="withdrawn"
 														value="Withdraw" style="margin-left:4px;">
-														<p:ajax listener="#{userAction.updateBalance}"
-															process="@this,withdraAmount"
+														<p:ajax listener="#{userAction.updateWithdraw}"
+															process="@this,withdrawAmount"
 															update="@form,:messagePanel,:credit" />
 													</h:commandButton>
 												</h:form>
 
 												${userAction.paymentTransaction()}
-												<pm:content rendered="#{empty userAction.duePaymentList}">
+												<!-- <pm:content rendered="#{empty userAction.duePaymentList}">
 												You dont have any dues.
-												</pm:content>
+												</pm:content> -->
 												<div id="ui-table-1">
 													<pm:content
 														rendered="#{not empty userAction.duePaymentList}">

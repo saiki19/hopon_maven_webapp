@@ -8,13 +8,14 @@ public class PaymentRequestDTO {
 	private String modeOrg;
 	private float amount;
 	private String dateTime;	
-	private float creditDebit;
+	private String creditDebit;
 	private String status;
 	private String reason;
 	private String updatedDate;
 	private int updateBy;
 	private String createdDate;
 	private int createdBy;
+
 	public int getId() {
 		return id;
 	}
@@ -57,10 +58,11 @@ public class PaymentRequestDTO {
 	public void setDateTime(String dateTime) {
 		this.dateTime = dateTime;
 	}
-	public float getCreditDebit() {
+	
+	public String getCreditDebit() {
 		return creditDebit;
 	}
-	public void setCreditDebit(float creditDebit) {
+	public void setCreditDebit(String creditDebit) {
 		this.creditDebit = creditDebit;
 	}
 	public String getStatus() {

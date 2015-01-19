@@ -7,7 +7,6 @@ response.setHeader("Location",newLocn);
 
 <head>
 <meta http-equiv="refresh" content="0;URL=http://118.139.161.91:8080/nov30/pages/signin.xhtml">
-<h1>Welcome</h1>
 </head>
 
 <body>

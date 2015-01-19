@@ -5,74 +5,161 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui"
-    xmlns:pm="http://primefaces.org/mobile"      
-    contentType="text/html" renderKitId="PRIMEFACES_MOBILE">
-  <f:view>    
-  <pm:page>
-   <pm:view>
-		<ui:include src="../../pages/common/headerScript.xhtml"></ui:include>
-   		<h:head></h:head>
-<h:body>
-	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
-  <!-- Start: MAIN CONTENT -->
+	xmlns:pm="http://primefaces.org/mobile" contentType="text/html"
+	renderKitId="PRIMEFACES_MOBILE">
+<f:view>
+	<pm:page>
+		<pm:view>
+			<ui:include src="../../pages/common/headerScript.xhtml"></ui:include>
+			<h:head></h:head>
+			<h:body>
+				<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
+				<!-- Start: MAIN CONTENT -->
+ 		 #{userAction.fetchTransaction()}
   <div class="content">
-    <div class="container">
-    	<div class="row">
-    		<div class="span2">
-          		<div class="smv-leftnav">
-          			<!-- Include leftPanel.xhtml -->
-          			<ui:include src="../../pages/common/leftPanel.xhtml"></ui:include> 
-          		</div>    		
-    		</div>
-    		<div class="span10">
-    			<div class="page-header">
-			    	<h1>Change Password</h1>
-				</div>
-				<div class="row">
-					<div class="span6">
-						<p:panel id="credit" style="width:0px;border:none;display:inline;"><h3 class="muted">Payment Balance - Rs. ${userAction.userRegistrationDTO.totalCredit}</h3></p:panel> 
-						
-						<h3 class="muted"> Completed Transactions</h3>
-						
-						<div id="ui-table-1">
-               				<p:dataTable paginatorAlwaysVisible="false" styleClass="table table-bordered table-striped" value="#{userAction.paymentTxnList}" var="txnList" rowIndexVar="index" paginator="true" rows="10" paginatorPosition="bottom" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" rendered="#{not empty userAction.paymentTxnList}">
-                				<p:column ><h:outputText value="#{index + 1}"></h:outputText></p:column>
-                				<p:column headerText="Transaction ID"><h:outputText value="#{txnList.paymentTxnsId}"></h:outputText></p:column>
-                				<p:column headerText="Amount"><h:outputText value="#{txnList.amount}"></h:outputText></p:column>
-                				<p:column headerText="Details"><h:outputText value="#{txnList.TripDetails}"></h:outputText></p:column>
-                				<p:column headerText="Date"><h:outputText value="#{txnList.PaymentDT}"></h:outputText></p:column>
-                				<p:column headerText="Notes"><h:outputText value="#{txnList.Notes}"></h:outputText></p:column>
-                				<p:column headerText="Distance"><h:outputText value="#{txnList.Dist}"></h:outputText></p:column>
-                			</p:dataTable>
-                		</div>
-						<h3 class="muted"> Payment transfers</h3>
-						
-						<div id="ui-table-2">
-               				<p:dataTable paginatorAlwaysVisible="false" styleClass="table table-bordered table-striped" value="#{userAction.paymentRequestList}" var="requestList" rowIndexVar="index" paginator="true" rows="10" paginatorPosition="bottom" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" rendered="#{not empty userAction.paymentTxnList}">
-                				<p:column ><h:outputText value="#{index + 1}"></h:outputText></p:column>
-                				<p:column headerText="Order ID"><h:outputText value="#{requestList.orderId}"></h:outputText></p:column>
-                				<p:column headerText="Mode of Payment"><h:outputText value="#{requestList.modeOrg}"></h:outputText></p:column>
-                				<p:column headerText="Amount"><h:outputText value="#{requestList.amount}"></h:outputText></p:column>
-                				<p:column headerText="Date"><h:outputText value="#{requestList.dateTime}"></h:outputText></p:column>
-                				<p:column headerText="CreditDebit"><h:outputText value="#{requestList.creditDebit}"></h:outputText></p:column>
-                				<p:column headerText="Status"><h:outputText value="#{requestList.status}"></h:outputText></p:column>
-                				<p:column headerText="Reason"><h:outputText value="#{requestList.reason}"></h:outputText></p:column>
-                			</p:dataTable>
-                		</div>
-						
+					<div class="container">
+						<div class="row">
+							<div class="span2">
+								<div class="smv-leftnav">
+									<!-- Include leftPanel.xhtml -->
+									<ui:include src="../../pages/common/leftPanel.xhtml"></ui:include>
+								</div>
+							</div>
+							<div class="span10 ">
+								 <div class="page-header"><p:panel id="credit"
+									style="width:0px;border:none;display:inline;">
+									<h1 class="muted">HopOn Wallet: Balance - INR.
+										${userAction.userRegistrationDTO.totalCredit}</h1>
+								</p:panel></div>
+								<div class="row">
+									<div class="span6">
+
+
+										<div class="bs-docs-example">
+											<ul id="myTab" class="nav nav-tabs">
+
+												<li class="active"><a href="#completed_transactions"
+													data-toggle="tab">Wallet Transactions </a></li>
+												<li><a href="#payment_transfer" data-toggle="tab">Payment
+														Transfers </a></li>
+											</ul>
+										</div>
+										<!-- StartTab for Completed Transactions -->
+										<div id="myTabContent" class="tab-content">
+											<div class="tab-pane fade in active" id="completed_transactions">
+												<!-- 	<h3 class="muted">Completed Transactions</h3> -->
+												<div id="ui-table-1">
+												<pm:content
+													rendered="#{empty userAction.paymentTxnList}">
+													<p class="alert alert-info">No records found.</p>
+												</pm:content>
+													<p:dataTable paginatorAlwaysVisible="false"
+														styleClass="table table-bordered table-striped"
+														value="#{userAction.paymentTxnList}" var="txnList"
+														rowIndexVar="index" paginator="true" rows="10"
+														paginatorPosition="bottom"
+														paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+														rendered="#{not empty userAction.paymentTxnList}">
+														<p:column>
+															<h:outputText value="#{index + 1}"></h:outputText>
+														</p:column>
+														<p:column headerText="Payment ID">
+															<h:outputText value="#{txnList.payment_txnsid}"></h:outputText>
+														</p:column>
+														<p:column headerText="Amount">
+															<h:outputText value="#{txnList.amount}"></h:outputText>
+														</p:column>
+														<p:column headerText="Details">
+															<h:outputText value="#{txnList.trip_details}"></h:outputText>
+														</p:column>
+														<p:column headerText="Date">
+															<h:outputText value="#{txnList.payment_dt}"></h:outputText>
+														</p:column>
+														<p:column headerText="Notes">
+															<h:outputText value="#{txnList.notes}"></h:outputText>
+														</p:column>
+														<p:column headerText="Distance">
+															<h:outputText value="#{txnList.distance}"></h:outputText>
+														</p:column>
+													</p:dataTable>
+												</div>
+											</div>
+											<!-- EndTab for Completed Transactions -->
+
+											<!-- StartTab for PaymentTransfer Transactions -->
+											<div class="tab-pane fade" id="payment_transfer">
+												<!-- 	<h3 class="muted">Payment transfers</h3>-->
+												<div id="ui-table-2">
+												<pm:content
+													rendered="#{empty userAction.paymentRequestList}">
+													<p class="alert alert-info">No records found.</p>
+												</pm:content>
+													<p:dataTable paginatorAlwaysVisible="false"
+														styleClass="table table-bordered table-striped"
+														value="#{userAction.paymentRequestList}" var="requestList"
+														rowIndexVar="index" paginator="true" rows="10"
+														paginatorPosition="bottom"
+														paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+														rendered="#{not empty userAction.paymentRequestList}">
+														<p:column>
+															<h:outputText value="#{index + 1}"></h:outputText>
+														</p:column>
+														
+														<p:column headerText="Order ID">
+															<h:outputText value="#{requestList.orderId}"></h:outputText>
+														</p:column>
+
+														<!-- 	<p:column headerText="Mode of Payment">
+															<h:outputText value="#{requestList.modeOrg}"></h:outputText>
+														</p:column> -->
+
+														<p:column headerText="Amount">
+															<h:outputText value="#{requestList.amount}"></h:outputText>
+														</p:column>
+														<p:column headerText="Date">
+															<h:outputText value="#{requestList.dateTime}"></h:outputText>
+														</p:column>
+
+													<p:column headerText="CreditDebit">
+															<h:outputText value="#{requestList.creditDebit}"></h:outputText>
+														</p:column> 
+
+														<p:column headerText="Status">
+															<h:outputText value="#{requestList.status}"></h:outputText>
+														</p:column>
+														<p:column headerText="Reason">
+															<h:outputText value="#{requestList.reason}"></h:outputText>
+														</p:column>		
+													</p:dataTable>
+													<pm:content
+													rendered="#{not empty userAction.paymentRequestList}">
+													<p style="color: red;
+   										 text-align: center;">*Note:  S=Success; D=Completed; I=Initiated; C=Cancel; F=Failure</p>
+												</pm:content>										
+												</div>
+												
+												
+												<!-- <pm:content rendered="#{not empty userAction.paymentTxnList}">		
+										<p style="color: red;
+   										 text-align: center;">*Note:  S=Success; D=Completed; I=Initiated; C=Cancel; F=Failure</p>
+											</pm:content> -->
+											</div>
+											<!-- EndTab for PaymentTransfer Transactions -->
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-    		</div>
-    	</div>
-    </div>
-  </div>
-  
-  <!-- End: MAIN CONTENT -->
 
-	<ui:include src="../../pages/common/footer-content.xhtml"></ui:include>
+				<!-- End: MAIN CONTENT -->
 
-</h:body>
-</pm:view>
-</pm:page>
+				<ui:include src="../../pages/common/footer-content.xhtml"></ui:include>
+
+			</h:body>
+		</pm:view>
+	</pm:page>
 </f:view>
 </html>

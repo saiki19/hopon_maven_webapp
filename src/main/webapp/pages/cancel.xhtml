@@ -10,29 +10,23 @@
 <f:view>
 	<pm:page>
 		<pm:view>
-			<ui:include src="common/headerScript.xhtml"></ui:include>
+			<ui:include src="../pages/common/headerScript.xhtml"></ui:include>
+
 			<link href="../pages/css/excite-bike/jquery-ui-1.10.4.custom.css"
 				rel="stylesheet" />
 			<link rel="stylesheet"
 				href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+
+			<script src="../resources/js/jquery.min.js"></script>
+
+			<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+			<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+
 			<h:head>
-				<script type="text/javascript">
-		$(document).ready(function(){
-			alert("Entry");
-			alert(${list});
-
-		});
-			</script>
 			</h:head>
-			<script type="text/javascript">
-		$(document).ready(function(){
-			alert("Entry1");
-			alert(${list});
-
-		});
-		</script>
 			<h:body>
-				<ui:include src="common/headerContent.xhtml"></ui:include>
+				<ui:include src="../pages/common/headerContent.xhtml"></ui:include>
 				<!-- Start: MAIN CONTENT -->
 				<div class="content">
 					<div class="container">
@@ -41,52 +35,83 @@
 								<h2>Sorry! Your payment transaction has been cancelled.</h2>
 							</center>
 						</div>
+
 						<div class="row">
 							<div class="span6 offset3">
-								<div class="well">
-									<div id="myTabContent" class="tab-content">
-										<div class="tab-pane active in" id="login">
-
-											<fieldset>
-												<c:forEach items="${list}" var="responsedata">
-												<script>
-												alert(responsedata);
-												</script>
-													<div class="control-group">
-														<label class="control-label" for="TAXNID">Transaction
-															ID : </label>
-														<h:outputText name="trnscid" disabled="true" >${responsedata.getTransaction_id}</h:outputText>
-
-													</div>
-													<br />
-													<div class="control-group">
-														<label class="control-label" for="ORDID">Order ID
-															${responsedata.getTransaction_id}:</label>
-													<h:outputText name="ordid" id="ord" disabled="true" ></h:outputText>
-															
-													</div>
+								<pm:content>
+									<div class="well">
 
 
-													<br />
-												</c:forEach>
-													<p>
-														Please try doing your transaction again. Need help? Write
-														to us at <a href="http://www.hopon.co.in/contactus"
-															style="text-decoration: underline"> HopOn Care </a>
-													</p>
-											</fieldset>
+										<div id="myTabContent" class="tab-content">
+											<div class="tab-pane active in" id="login">
+												<pm:content>
+													<fieldset>
+
+
+
+														<div class="control-group">
+															<label class="control-label" for="TAXNID">Transaction
+																ID : ${transactionid}</label>
+														</div>
+														<br />
+														<div class="control-group">
+															<label class="control-label" for="ORDID">Order ID
+																: ${orderid}</label>
+
+
+														</div>
+														<br />
+														<p>
+															Please try doing your transaction again. Need help? Write
+															to us at <a
+																href="http://118.139.161.91/corp/pages/contact.xhtml"
+																style="text-decoration: underline"> HopOn Care </a>
+														</p>
+
+													</fieldset>
+
+												</pm:content>
+											</div>
+
 										</div>
 
 									</div>
-
-								</div>
+								</pm:content>
 							</div>
 						</div>
+						
+						<!--  Start for Button Section -->
+						<center>
+							<p>
+							
+									<a href="http://118.139.161.91/corp/pages/payment/paymentTransactions.xhtml"
+									class="btn btn-success" type="submit">View Transaction History 
+									
+									</a>
+									 &nbsp;&nbsp; 
+									 
+									<a href="http://118.139.161.91/corp/pages/settings/master-gr-my-msg.xhtml"
+									class="btn btn-success" type="submit">Home </a>
+
+							</p>
+						</center>
+						<!-- End for Button Section -->
+						
 					</div>
 				</div>
+
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+
 				<!-- End of modal -->
 				<!-- End: MAIN CONTENT -->
-				<ui:include src="common/footer-content.xhtml"></ui:include>
+				<ui:include src="../pages/common/footer-content.xhtml"></ui:include>
 			</h:body>
 
 		</pm:view>

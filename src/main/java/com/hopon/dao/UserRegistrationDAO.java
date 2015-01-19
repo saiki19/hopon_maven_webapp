@@ -102,6 +102,8 @@ public class UserRegistrationDAO {
 			result.setState(rs.getString(14));
 			result.setCountry(rs.getString(15));
 			result.setTotalCredit(rs.getFloat(16));
+			
+			System.out.println("credit"+result.getTotalCredit()+"credit got"+rs.getFloat(16));
 			result.setTotalGreenMiles(rs.getFloat(17));
 			result.setCity(rs.getString(18));
 			result.setLatitude(rs.getFloat(19));
@@ -435,17 +437,24 @@ public class UserRegistrationDAO {
 	}
 
 	public void updateTotalCreditById(Connection con, int userId,
-			float amount) throws SQLException {
+			float amount, String txntype) throws SQLException {
+		
 		StringBuilder query = new StringBuilder();
-		if (amount > 0) {
-			query.append("UPDATE users SET totalCredit = totalCredit + ? WHERE id = ?");
-		} else {
+		PreparedStatement pstmt = null;
+		if (txntype.equals("debit")){
 			query.append("UPDATE users SET totalCredit = totalCredit - ? WHERE id = ?");
-		}
-		PreparedStatement pstmt = con
-				.prepareStatement(query.toString());
-		pstmt.setFloat(1, amount > 0 ? amount : amount * -1);
+		pstmt = con.prepareStatement(query.toString());
+		 
+		pstmt.setFloat(1, amount);
 		pstmt.setInt(2, userId);
+		}else {
+			// for credit
+				query.append("UPDATE users SET totalCredit = totalCredit + ? WHERE id = ?");
+				pstmt = con.prepareStatement(query.toString());
+			 
+				pstmt.setFloat(1, amount);
+				pstmt.setInt(2, userId);
+		}
 		pstmt.executeUpdate();
 		pstmt.close();
 	}

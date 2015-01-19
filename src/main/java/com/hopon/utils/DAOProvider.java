@@ -27,9 +27,19 @@ public class DAOProvider {
 	private static PaymentPlanDAO paymentPlanDAO = new PaymentPlanDAO();
 	private static PaymentTxnsDAO paymentTxnsDAO = new PaymentTxnsDAO();
 	private static PaymentRequestDAO paymentRequestDAO = new PaymentRequestDAO();
+	private static HoponAccountDAO hoponAccountDAO=new HoponAccountDAO();
 	// Helper class
 	private static ContactUsDAO contactUsDAO = new ContactUsDAO();
 	private static RideSummaryMessageToDriverDAO messageToDriverDAO = new RideSummaryMessageToDriverDAO();
+
+	
+	public static HoponAccountDAO getHoponAccountDAO() {
+		return hoponAccountDAO;
+	}
+
+	public static void setHoponAccountDAO(HoponAccountDAO hoponAccountDAO) {
+		DAOProvider.hoponAccountDAO = hoponAccountDAO;
+	}
 
 	public static MessageBoardDAO getMessageBoardDAO() {
 		return messageBoardDAO;

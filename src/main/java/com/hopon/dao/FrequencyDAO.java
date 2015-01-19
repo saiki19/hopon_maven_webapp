@@ -21,7 +21,7 @@ public class FrequencyDAO {
 			FrequencyDTO frequencyDTO) throws SQLException {
 
 		StringBuilder query = new StringBuilder();
-		query.append("INSERT INTO trip_frequency (Trip_Freq_P,Days, ride_management_id, ride_seeker_id, Time, Start_date, End_date, count) VALUES (?,?,?,?,?,?,?,?) ");
+		query.append("INSERT INTO trip_frequency (Trip_Freq_P,Days, ride_management_id, ride_seeker_id, Time, Start_date, End_date, count, status) VALUES (?,?,?,?,?,?,?,?,?) ");
 
 		PreparedStatement pstmt = con.prepareStatement(query.toString(),
 				Statement.RETURN_GENERATED_KEYS);
@@ -37,6 +37,8 @@ public class FrequencyDAO {
 		pstmt.setString(6, frequencyDTO.getStartDate());
 		pstmt.setString(7, frequencyDTO.getEndDate());
 		pstmt.setInt(8, frequencyDTO.getCount());
+		pstmt.setString(9, frequencyDTO.getStatus());
+		
 		pstmt.executeUpdate();
 		// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
 		ResultSet tableKeys = pstmt.getGeneratedKeys();
@@ -52,7 +54,7 @@ public class FrequencyDAO {
 			String rideSeekerId) throws SQLException {
 		List<FrequencyDTO> dtos = new ArrayList<FrequencyDTO>();
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT Trip_Freq_P,Days, ride_management_id, Time, Start_date, End_date from trip_frequency where ride_seeker_id = "
+		query.append("SELECT Trip_Freq_P,Days, ride_management_id, Time, Start_date, End_date, count, status from trip_frequency where ride_seeker_id = "
 				+ rideSeekerId);
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
@@ -73,6 +75,8 @@ public class FrequencyDAO {
 			}
 			dto.setStartDate(rs.getString(5));
 			dto.setEndDate(rs.getString(6));
+			dto.setCount(rs.getInt(7));
+			dto.setStatus(rs.getString(8));
 			dtos.add(dto);
 		}
 		rs.close();
@@ -84,7 +88,7 @@ public class FrequencyDAO {
 			String rideManagerId) throws SQLException {
 		List<FrequencyDTO> dtos = new ArrayList<FrequencyDTO>();
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT Trip_Freq_P,Days, ride_seeker_id, Time, Start_date, End_date from trip_frequency where ride_management_id = "
+		query.append("SELECT Trip_Freq_P,Days, ride_seeker_id, Time, Start_date, End_date, count, status from trip_frequency where ride_management_id = "
 				+ rideManagerId);
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
@@ -105,6 +109,8 @@ public class FrequencyDAO {
 			}
 			dto.setStartDate(rs.getString(5));
 			dto.setEndDate(rs.getString(6));
+			dto.setCount(rs.getInt(7));
+			dto.setStatus(rs.getString(8));
 			dtos.add(dto);
 		}
 		rs.close();

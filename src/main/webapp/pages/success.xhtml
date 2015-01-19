@@ -11,7 +11,7 @@
 	<pm:page>
 		<pm:view>
 			<ui:include src="common/headerScript.xhtml"></ui:include>
-			<link href="css/excite-bike/jquery-ui-1.10.4.custom.css"
+			<link href="../pages/css/excite-bike/jquery-ui-1.10.4.custom.css"
 				rel="stylesheet" />
 			<link rel="stylesheet"
 				href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
@@ -24,7 +24,7 @@
 					<div class="container">
 						<div class="page-header">
 							<center>
-								<h2>Sorry! Your payment transaction has failed.</h2>
+								<h2>Thank You! Your payment transaction is successful.</h2>
 							</center>
 						</div>
 						<div class="row">
@@ -32,37 +32,46 @@
 								<div class="well">
 									<div id="myTabContent" class="tab-content">
 										<div class="tab-pane active in" id="login">
-
 											<fieldset>
 												<div class="control-group">
-													<label class="control-label" for="TAXNID">Transaction
+													<label class="control-label" for="taxnid">Transaction
 														ID : ${transactionid}</label>
 												</div>
 												<br />
-
 												<div class="control-group">
-													<label class="control-label" for="ORDID">Order ID :
-														${orderid}</label>
-
+													<label class="control-label" for="orderid">Order ID
+														: ${orderid}</label>
 												</div>
 												<br />
-												<p>
-													Please try doing your transaction again. Need help? Write
-													to us at <a
+
+												<div class="control-group">
+													<label class="control-label" for="amount">Amount :
+														${transferamount}</label>
+												</div>
+												<br />
+
+												<div class="control-group">
+													<label class="control-label" for="datetime">Date
+														and Time : ${transactiondate}</label>
+												</div>
+												<br />
+												<p
+													style="font-size: 17px; text-align: center; font-style: bold; padding: inherit;">
+													<b>Need help? Write to us at <a
 														href="http://118.139.161.91/corp/pages/contact.xhtml"
 														style="text-decoration: underline"> HopOn Care </a>
+													</b>
 												</p>
 
 											</fieldset>
-
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-						<!--  End for Row Section -->
-						
-						<!--  Start for Button Section -->
+						<!--End of the Row Section-->
+
+						<!-- Start for Button section -->
 						<center>
 							<p>
 								<a
@@ -75,19 +84,17 @@
 							</p>
 						</center>
 						<!-- End for Button Section -->
-
 					</div>
 				</div>
 				<!-- End of modal -->
+
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
 				
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
 				<!-- End: MAIN CONTENT -->
 				<ui:include src="common/footer-content.xhtml"></ui:include>
 			</h:body>

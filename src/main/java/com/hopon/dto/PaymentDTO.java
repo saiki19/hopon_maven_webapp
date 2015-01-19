@@ -15,6 +15,24 @@ public class PaymentDTO {
 	private int userId;
 	private String order_id;
 	private String transaction_id;
+	private String transferammount;
+	private String transactiondate;
+
+	public String getTransactiondate() {
+		return transactiondate;
+	}
+
+	public void setTransactiondate(String transactiondate) {
+		this.transactiondate = transactiondate;
+	}
+
+	public String getTransferammount() {
+		return transferammount;
+	}
+
+	public void setTransferammount(String transferammount) {
+		this.transferammount = transferammount;
+	}
 
 	public String getOrder_id() {
 		return order_id;

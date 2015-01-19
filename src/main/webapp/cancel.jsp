@@ -11,6 +11,7 @@
 
 </head>
 <body>
+<fieldset>
 	<table border="1">
 		<tr>
 			<th>TransactionID :</th>
@@ -25,5 +26,6 @@
 			</tr>
 		</c:forEach>
 	</table>
+	</fieldset>
 </body>
 </html>

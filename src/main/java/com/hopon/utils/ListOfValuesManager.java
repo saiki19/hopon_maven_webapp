@@ -29,6 +29,7 @@ import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.json.JSONException;
 
+import com.hopon.dao.PaymentTxnsDAO;
 import com.hopon.dto.ApproverDTO;
 import com.hopon.dto.CircleAffiliationsDTO;
 import com.hopon.dto.CircleDTO;
@@ -3424,9 +3425,9 @@ public class ListOfValuesManager {
 		return dtos;
 	}
 
-	public static PaymentRequestDTO addPaymentRequestEntry(PaymentRequestDTO dto)
-			throws ConfigurationException {
-		Connection con = getLocalConnection();
+	public static PaymentRequestDTO addPaymentRequestEntry(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException {
+
 		List<PaymentTxnsDTO> dtos = new ArrayList<PaymentTxnsDTO>();
 		try {
 			dto = getTripService().addPaymentRequestEntry(con, dto);
@@ -3437,8 +3438,6 @@ public class ListOfValuesManager {
 							+ e.getStackTrace()[0].getLineNumber() + " :: "
 							+ e.getMessage());
 			throw new ConfigurationException();
-		} finally {
-			ListOfValuesManager.releaseConnection(con);
 		}
 		return dto;
 	}
@@ -3597,24 +3596,7 @@ public class ListOfValuesManager {
 		return dto;
 	}
 
-	/*
-	public static List<RideSeekerDTO> fetchRecurringRideList() {
-		Connection con = getLocalConnection();
-		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
-		try {
-			dtos.addAll(getTripService().fetchRecurringRideList(con));
-		} catch (ConfigurationException e) {
-			LoggerSingleton.getInstance().error(
-					e.getStackTrace()[0].getClassName() + "->"
-							+ e.getStackTrace()[0].getMethodName() + "() : "
-							+ e.getStackTrace()[0].getLineNumber() + " :: "
-							+ e.getMessage());
-		} finally {
-			ListOfValuesManager.releaseConnection(con);
-		}
-		return dtos;
-	}
-	*/// DailyRide Payment Method
+	// / DailyRide Payment Method
 	public static List<RideManagementDTO> getDailyRidePaymentHelper() {
 		Connection con = getLocalConnection();
 		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
@@ -3632,11 +3614,13 @@ public class ListOfValuesManager {
 		return dtos;
 	}
 
-	public static RideManagementDTO getDailyRideEntry(String userId) throws ConfigurationException {
-		con = getLocalConnection();
+	public static RideManagementDTO getDailyRideEntry(String userId)
+			throws ConfigurationException {
+		Connection con = getLocalConnection();
 		RideManagementDTO dtos = new RideManagementDTO();
 		try {
 			dtos = getTripService().getDailyRideData(con, userId);
+			System.out.println("dtos is:" + dtos);
 		} catch (ConfigurationException e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"
@@ -3813,7 +3797,7 @@ public class ListOfValuesManager {
 							+ e.getStackTrace()[0].getLineNumber() + " :: "
 							+ e.getMessage());
 		} finally {
-			releaseConnection(con);
+			ListOfValuesManager.releaseConnection(con);
 		}
 		return dtos;
 	}
@@ -3832,7 +3816,7 @@ public class ListOfValuesManager {
 							+ e.getStackTrace()[0].getLineNumber() + " :: "
 							+ e.getMessage());
 		} finally {
-			releaseConnection(con);
+			ListOfValuesManager.releaseConnection(con);
 		}
 		return dtos;
 	}
@@ -3859,7 +3843,9 @@ public class ListOfValuesManager {
 			try {
 				rideSeekerDTO = getTripService().updateFrequency(con,
 						rideSeekerDTO, rideId);
-				System.out.println("Inside the Listof Values Manager for Updating frequency :"+rideSeekerDTO);
+				System.out
+						.println("Inside the Listof Values Manager for Updating frequency :"
+								+ rideSeekerDTO);
 			} catch (Exception e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -3889,32 +3875,191 @@ public class ListOfValuesManager {
 		}
 		return dtos;
 	}
-	//This is for FetchingHolidayList
-	public static List<RideManagementDTO> fetchingHolidayList(RideManagementDTO dto) {
+
+	// This is for FetchingHolidayList
+	public static List<RideManagementDTO> fetchingHolidayList(
+			RideManagementDTO dto) {
 		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
 		try {
 			dtos = getTripService().fetchingHolidayList(dto);
-			System.out.println("Inside the ListOfvalue Manager for fetchingHolidayList:"+dtos);
+			System.out
+					.println("Inside the ListOfvalue Manager for fetchingHolidayList:"
+							+ dtos);
 		} catch (ConfigurationException e) {
 
 			e.printStackTrace();
 		}
 		return dtos;
 	}
-	public static List<RideManagementDTO> fetchingHolidaynxtweek(RideManagementDTO dto) {
+
+	public static List<RideManagementDTO> fetchingHolidaynxtweek(
+			RideManagementDTO dto) {
 		Connection con = getLocalConnection();
 		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
 		try {
-			dtos = getTripService().fetchingHolidaynxtweek(con,dto);
-			System.out.println("Inside the ListOfvalue Manager for fetchingHolidaynxtweek:"+dtos);
+			dtos = getTripService().fetchingHolidaynxtweek(con, dto);
+			System.out
+					.println("Inside the ListOfvalue Manager for fetchingHolidaynxtweek:"
+							+ dtos);
 		} catch (ConfigurationException e) {
 
 			e.printStackTrace();
-		}finally {
+		} finally {
 			ListOfValuesManager.releaseConnection(con);
 		}
 		return dtos;
 	}
 
+	public static PaymentRequestDTO insertWithDrawAmount(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException {
+		if (con == null) {
+			con = getLocalConnection();
+
+			try {
+				dto = getTripService().insertWithDrawEntry(con, dto);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+
+			} finally {
+				ListOfValuesManager.releaseConnection(con);
+			}
+			return dto;
+		} else {
+			try {
+				dto = getTripService().insertWithDrawEntry(con, dto);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+
+			}
+			return dto;
+		}
+	}
+
+	public static PaymentRequestDTO fetchPaymentRequestByOrderId1(
+			PaymentRequestDTO dto) {
+		Connection con = getLocalConnection();
+		try {
+			dto = getTripService().fetchPaymentRequestByOrderId(con, dto);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return dto;
+	}
+
+	public static HoponAccountDTO fetchHoponAccountBalancebyId(
+			HoponAccountDTO dto, int id) {
+		Connection con = getLocalConnection();
+		try {
+			dto = getTripService().fetchHoponAccountBalance(con, dto, id);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return dto;
+
+	}
+
+	public static HoponAccountDTO updateHoponAccountBalanceById(Connection con,
+			HoponAccountDTO dto, int id) {
+		if (con == null) {
+			con = getLocalConnection();
+			try {
+				dto = getTripService().updateHoponAccountBalance(con, dto, id);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			} finally {
+				ListOfValuesManager.releaseConnection(con);
+			}
+			return dto;
+		} else {
+			try {
+				dto = getTripService().updateHoponAccountBalance(con, dto, id);
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			}
+		}
+		return dto;
+	}
+
+	public static void updateTotalCreditById(Connection con, int user_id,
+			float amount, String txntype) {
+		try {
+			getTripService().updateTotalCreditById(con, user_id, amount,
+					txntype);
+
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+	}
+
+	public static PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con,
+			PaymentTxnsDTO dto, int id) {
+
+		try {
+			getTripService().fetchTxnAmountByToPayee(con, dto, id);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+
+		return dto;
+
+	}
+	
+	public static List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con,
+		 int id) throws ConfigurationException {
+		
+		List<PaymentTxnsDTO> PaymentTxnsList = new ArrayList<PaymentTxnsDTO>();
+		try {
+			PaymentTxnsList=getTripService().fetchTxnAmountByfrompayer(con,  id);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return PaymentTxnsList;
+	}
 
 }

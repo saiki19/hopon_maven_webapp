@@ -12,7 +12,7 @@
 
 	<pm:page>
 		<pm:view>
-			<ui:include src="../../pages/common//headerScript.xhtml"></ui:include>
+			<ui:include src="../../pages/common/headerScript.xhtml"></ui:include>
 
 			<!-- bootstarp css and js -->
 			<!-- <script src="resources/js/bootstrap.min.js"></script>
@@ -625,8 +625,9 @@
 																				styleClass="btn btn-large btn-success "
 																				value="Cancel" id="EditBtn">
 																				<p:ajax process="@form"
-																					listener="#{userAction.cancelDailyRide}" 
-																					oncomplete="googleLoc();" update="@form" />
+																					listener="#{userAction.cancelDailyRide}"
+																					update="@form" oncomplete="googleLoc();"  onsuccess="window.location ='${url}/pages/rides/dailyride.xhtml'"
+																					/>
 																			</h:commandButton>
 																			<script type="text/javascript">
 																				$(document).ready(function() {

@@ -26,14 +26,23 @@ import com.mysql.jdbc.Statement;
 public class RideSeekerDAO {
 	public RideManagementDTO registerRideSeeker(Connection con,
 			RideManagementDTO rideSeekerDTO) {
-
 		StringBuilder query = new StringBuilder();
+		if (rideSeekerDTO.getTripType()!=0){
+			
+			query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point,"
+					+ "ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,"
+					+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, "
+					+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, "
+					+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id,trip_type,daily_rides,group_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
+			
+		}else{
+
 		query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point,"
 				+ "ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,"
 				+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, "
 				+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, "
 				+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id,trip_type,daily_rides) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
-
+		}
 		System.out.println("Ride Seeker DAO:" + query);
 		PreparedStatement pstmt;
 		try {
@@ -122,6 +131,9 @@ public class RideSeekerDAO {
 				pstmt.setString(38, "N");
 			}else{
 				pstmt.setString(38, "Y");
+			}
+			if(rideSeekerDTO.getTripType()!=0){
+			pstmt.setString(39, rideSeekerDTO.getGroupId());
 			}
 			int i = pstmt.executeUpdate();
 			System.out.println("Excute update:" + i);
@@ -314,7 +326,6 @@ public class RideSeekerDAO {
 				try {
 
 					Date date = formatter.parse(rs.getString(5));
-
 					dto.setEnddateValue(formatter1.format(date));
 				} catch (ParseException e) {
 					e.printStackTrace();
@@ -575,8 +586,10 @@ public class RideSeekerDAO {
 			throws SQLException {
 		List<RideSeekerDTO> rideSeekerList = new ArrayList<RideSeekerDTO>();
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT ride_seeker_details.seeker_id,  ride_seeker_details.start_point, ride_seeker_details.via_point, ride_seeker_details.destination_point,ride_seeker_details.ride_cost,ride_seeker_details.start_tw_early, ride_seeker_details.status, trip_frequency.Trip_Freq_P,trip_frequency.Days, ride_seeker_details.ride_match_rideid, ride_seeker_details.custom, ride_seeker_details.is_result, ride_seeker_details.recurring, ride_seeker_details.fullDay FROM ride_seeker_details, trip_frequency where ride_seeker_details.seeker_id = trip_frequency.ride_seeker_id and ride_seeker_details.status = 'I' and DATEDIFF('"
-				+ ApplicationUtil.currentTimeStamp()
+		query.append("SELECT ride_seeker_details.seeker_id,  ride_seeker_details.start_point, ride_seeker_details.via_point, "
+				+ "ride_seeker_details.destination_point,ride_seeker_details.ride_cost,ride_seeker_details.start_tw_early, ride_seeker_details.status, trip_frequency.Trip_Freq_P,trip_frequency.Days, ride_seeker_details.ride_match_rideid, ride_seeker_details.custom, ride_seeker_details.is_result, ride_seeker_details.recurring, ride_seeker_details.fullDay FROM ride_seeker_details, trip_frequency "
+				+ "WHERE ride_seeker_details.seeker_id = trip_frequency.ride_seeker_id and ride_seeker_details.status = 'I' and "
+				+ "DATEDIFF('"+ ApplicationUtil.currentTimeStamp()
 				+ "', ride_seeker_details.start_tw_early) = 1");
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
@@ -873,9 +886,9 @@ public class RideSeekerDAO {
 			throws SQLException {
 		List<RideSeekerDTO> dtos = new ArrayList<RideSeekerDTO>();
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT ride_seeker_details.seeker_id, ride_seeker_details.user_id, ride_seeker_details.start_point, ride_seeker_details.destination_point, ride_seeker_details.start_tw_early, ride_seeker_details.status, ride_seeker_details.ride_match_rideid, ride_seeker_details.is_result, ride_seeker_details.isSharedTaxi, ride_seeker_details.start_point_lat, ride_seeker_details.start_point_long, ride_seeker_details.end_point_lat, ride_seeker_details.end_point_long, ride_seeker_details.via_point_lat, ride_seeker_details.via_point_long, ride_seeker_details.created_by, ride_seeker_details.approverID, ride_seeker_details.recurring, ride_seeker_details.via_point, trip_frequency.Trip_Freq_P,trip_frequency.Days, trip_frequency.End_date, ride_seeker_details.subSeekerId, ride_seeker_details.FromCity, ride_seeker_details.ToCity, ride_seeker_details.FromPin, ride_seeker_details.ToPin,ride_seeker_details.trip_type,ride_seeker_details.start_time2,ride_seeker_details.circle_id,trip_frequency.count,ride_seeker_details.daily_rides FROM ride_seeker_details, trip_frequency WHERE ride_seeker_details.seeker_id = trip_frequency.ride_seeker_id and ride_seeker_details.status IN('A', 'T', 'O') and trip_frequency.status IN('A') and ride_seeker_details.recurring = 'Y' AND DATE_ADD(NOW(), INTERVAL +2 DAY) <= DATE(trip_frequency.End_date) AND DATE_ADD(NOW(), INTERVAL +2 DAY) >= DATE(trip_frequency.Start_date)");
+		query.append("SELECT rs.seeker_id, rs.user_id, rs.start_point, rs.destination_point, rs.start_tw_early, rs.status, rs.ride_match_rideid, rs.is_result, rs.isSharedTaxi, rs.start_point_lat, rs.start_point_long, rs.end_point_lat, rs.end_point_long, rs.via_point_lat, rs.via_point_long, rs.created_by, rs.approverID, rs.recurring, rs.via_point, tp.Trip_Freq_P,tp.Days, tp.End_date, rs.subSeekerId, rs.FromCity, rs.ToCity, rs.FromPin, rs.ToPin, rs.trip_type, rs.start_time2, rs.circle_id,tp.count, rs.daily_rides, rs.group_id FROM ride_seeker_details rs, trip_frequency tp WHERE rs.seeker_id = tp.ride_seeker_id and rs.status IN('A', 'T', 'O') and tp.status IN('A') and rs.recurring = 'Y' AND DATE_ADD(NOW(), INTERVAL +2 DAY) <= DATE(tp.End_date) AND DATE_ADD(NOW(), INTERVAL +2 DAY) >= DATE(tp.Start_date)");
 		// Here add more condition for 2 month limit.
-
+		System.out.println("Query From RideSeekerDAO:"+query);
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
 		while (rs.next()) {
@@ -941,6 +954,7 @@ public class RideSeekerDAO {
 			dto.setCircleId(rs.getInt(30));
 			dto.setCount(rs.getInt(31));
 			dto.setDaily_rides(rs.getString(32));
+			dto.setGroupId(rs.getString(33));
 			dtos.add(dto);
 		}
 		rs.close();
@@ -953,8 +967,7 @@ public class RideSeekerDAO {
 			throws SQLException {
 		StringBuilder query = new StringBuilder();
 
-		query.append("UPDATE ride_seeker_details SET subSeekerId = '"
-				+ ride.getSubSeekers() + "', updated_dt = '"
+		query.append("UPDATE ride_seeker_details SET subSeekerId = '"+ ride.getSubSeekers() + "', updated_dt = '"
 				+ ApplicationUtil.currentTimeStamp() + "' where seeker_id ='"
 				+ ride.getSeekerID() + "'");
 
@@ -995,7 +1008,7 @@ public class RideSeekerDAO {
 	public List<RideManagementDTO> DailyRidePaymentHelper(Connection con) {
 		StringBuilder query = new StringBuilder();
 		List<RideManagementDTO> rideList=new ArrayList<RideManagementDTO>();
-		RideManagementDTO dto = new RideManagementDTO();
+		
 
 		query.append("SELECT rs.ride_cost,u.totalCredit,rs.user_id,rs.seeker_id,"
 				+ "rs.ride_distance,rs.circle_id,tp.status "
@@ -1006,6 +1019,7 @@ public class RideSeekerDAO {
 			PreparedStatement psmt = con.prepareStatement(query.toString());
 			ResultSet rs = QueryExecuter.getResultSet(psmt, query.toString());
 			while (rs.next()) {
+				RideManagementDTO dto = new RideManagementDTO();
 				dto.setRideCost(rs.getString(1));
 				dto.setTotalCredit(rs.getFloat(2));
 				dto.setUserID(rs.getString(3));

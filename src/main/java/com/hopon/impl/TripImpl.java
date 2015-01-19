@@ -22,6 +22,7 @@ import com.hopon.dao.CompanyRegisterDAO;
 import com.hopon.dao.ContactUsDAO;
 import com.hopon.dao.FavoritePlacesDAO;
 import com.hopon.dao.FrequencyDAO;
+import com.hopon.dao.HoponAccountDAO;
 import com.hopon.dao.LoginPageDAO;
 import com.hopon.dao.MatchTripDAO;
 import com.hopon.dao.MessageBoardDAO;
@@ -2791,8 +2792,6 @@ public class TripImpl implements Trip {
 		return dtos;
 	}
 
-	
-
 	@Override
 	public void addSubSeekers(Connection con, RideSeekerDTO ride)
 			throws ConfigurationException {
@@ -3143,11 +3142,11 @@ public class TripImpl implements Trip {
 	@Override
 	public List<RideManagementDTO> loadDailyRidePaymentHelper(Connection con)
 			throws ConfigurationException {
-		
+
 		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
 		RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
 		try {
-			dtos=dao.DailyRidePaymentHelper(con);
+			dtos = dao.DailyRidePaymentHelper(con);
 		} catch (Exception e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"
@@ -3262,7 +3261,7 @@ public class TripImpl implements Trip {
 		}
 
 	}
-	
+
 	@Override
 	public RideManagementDTO loadDailyRideSeeker(Connection con,
 			String category, RideManagementDTO rideManagementDTO)
@@ -3351,6 +3350,7 @@ public class TripImpl implements Trip {
 		return dtos;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<PaymentRequestDTO> searchPaymentTransfer(Connection con,
 			String userId, String userName, Date startDate, Date endDate,
 			double minAmount, double maxAmount, String status)
@@ -3391,13 +3391,14 @@ public class TripImpl implements Trip {
 		}
 		return dtos;
 	}
+
 	@Override
-	public List<RideManagementDTO> fetchingHolidaynxtweek(Connection con, RideManagementDTO dto)
-			throws ConfigurationException {
+	public List<RideManagementDTO> fetchingHolidaynxtweek(Connection con,
+			RideManagementDTO dto) throws ConfigurationException {
 		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
 		try {
 			RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
-			dtos = dao.fetchingHolidaynxtweek(con,dto);
+			dtos = dao.fetchingHolidaynxtweek(con, dto);
 		} catch (Exception e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"
@@ -3410,5 +3411,113 @@ public class TripImpl implements Trip {
 		return dtos;
 	}
 
-	
+	@Override
+	public PaymentRequestDTO insertWithDrawEntry(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException {
+		PaymentRequestDAO dao = DAOProvider.getPaymentRequestDAO();
+		try {
+			dto = dao.insertWithDrawEntry(con, dto);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dto;
+	}
+
+	@Override
+	public HoponAccountDTO fetchHoponAccountBalance(Connection con,
+			HoponAccountDTO dto, int id) throws ConfigurationException {
+		HoponAccountDAO dao = DAOProvider.getHoponAccountDAO();
+		try {
+			dto = dao.fetchHoponAccountBalanceById(con, dto, id);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dto;
+
+	}
+
+	@Override
+	public HoponAccountDTO updateHoponAccountBalance(Connection con,
+			HoponAccountDTO dto, int id) throws ConfigurationException {
+		HoponAccountDAO dao = DAOProvider.getHoponAccountDAO();
+		try {
+			dto = dao.updateHoponAccountBalanceById(con, dto, id);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dto;
+	}
+
+	@Override
+	public void updateTotalCreditById(Connection con, int user_id,
+			float amount, String txntype) throws ConfigurationException {
+		UserRegistrationDAO dao = DAOProvider.getUserRegistrationDAO();
+		try {
+			dao.updateTotalCreditById(con, user_id, amount, txntype);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+	}
+
+	@Override
+	public PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con,
+			PaymentTxnsDTO dto, int id) throws ConfigurationException {
+		PaymentTxnsDAO dao = DAOProvider.getPaymentTxnsDAO();
+		try {
+			dto=dao.fetchTxnAmountByToPayee(con, dto, id);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dto;
+
+	}
+
+	@Override
+	public List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con,
+		 int id) throws ConfigurationException {
+		PaymentTxnsDAO dao = DAOProvider.getPaymentTxnsDAO();
+		List<PaymentTxnsDTO> PaymentTxnsList = new ArrayList<PaymentTxnsDTO>();
+		try {
+			PaymentTxnsList=dao.fetchTxnAmountByfrompayer(con, id);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return PaymentTxnsList;
+	}
 }

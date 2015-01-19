@@ -553,5 +553,25 @@ public interface Trip {
 
 	List<RideManagementDTO> loadDailyRidePaymentHelper(Connection con)
 			throws ConfigurationException;
+	
 
+	PaymentRequestDTO insertWithDrawEntry(Connection con,
+			PaymentRequestDTO dto) throws ConfigurationException;
+
+	HoponAccountDTO fetchHoponAccountBalance(Connection con, HoponAccountDTO dto, int id)
+			throws ConfigurationException;
+	
+	HoponAccountDTO updateHoponAccountBalance(Connection con,HoponAccountDTO dto, int id)throws ConfigurationException;
+	void updateTotalCreditById(Connection con,int user_id,float amount, String txntype)throws ConfigurationException;
+	PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con,PaymentTxnsDTO dto, int id) throws ConfigurationException;
+	List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con, int id) throws ConfigurationException;
+
+	//For Update WithDraw Amount
+
+	/*HoponAccountDTO fetchWithDrawHoponAccountBalance(Connection con, HoponAccountDTO dto)
+			throws ConfigurationException;
+	
+	HoponAccountDTO updateWithDrawHoponAccountBalance(Connection con,HoponAccountDTO dto)throws ConfigurationException;
+*/
+	
 }

@@ -67,13 +67,21 @@ public class RideManagementDTO {
 	private float totalCredit;
 	private String seekerID;
 	private Date holiday_date;
-	
+
 	private int tripType;
-	
+
 	private String pickup_time1;
 	private String pickup_time2;
 	private String startdateValue1;
+	private String groupId;
 
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 
 	public Date getHoliday_date() {
 		return holiday_date;

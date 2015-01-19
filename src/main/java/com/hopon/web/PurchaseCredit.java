@@ -2,6 +2,8 @@ package com.hopon.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.common.collect.Multiset.Entry;
+import com.hopon.dto.HoponAccountDTO;
 import com.hopon.dto.PaymentRequestDTO;
 import com.hopon.utils.ConfigurationException;
 import com.hopon.utils.ListOfValuesManager;
@@ -42,9 +45,11 @@ public class PurchaseCredit extends HttpServlet {
 			String amtStr = request.getParameter("amount");
 			amount = Float.parseFloat(amtStr);
 			if (amount > 0) {
-
+				Connection con = ListOfValuesManager.getLocalConnection();
+				boolean rollbackTest = false;
 				String orderId = "ORDS"
 						+ Math.round((Math.random() * 100000000));
+				try{
 				// Add record into payment request table.
 
 				PaymentRequestDTO dto = new PaymentRequestDTO();
@@ -52,13 +57,60 @@ public class PurchaseCredit extends HttpServlet {
 				dto.setOrderId(orderId);
 				dto.setAmount(amount);
 				dto.setStatus("I");
+				dto.setCreditDebit("credit");
 				dto.setCreatedBy(Integer.parseInt(userId));
 				try {
-					dto = ListOfValuesManager.addPaymentRequestEntry(dto);
+					dto = ListOfValuesManager.addPaymentRequestEntry(con,dto);
 				} catch (ConfigurationException e1) {
 					response.sendRedirect("/");
 				}
-
+				
+				HoponAccountDTO hoponAccountDTO=new HoponAccountDTO();
+				int id = 101;
+				
+				hoponAccountDTO=ListOfValuesManager.fetchHoponAccountBalancebyId(hoponAccountDTO,id);
+				
+				float hoponAccount_balance=hoponAccountDTO.getBalance();
+				hoponAccount_balance=hoponAccount_balance+dto.getAmount();
+				hoponAccountDTO.setBalance(hoponAccount_balance);
+				
+				ListOfValuesManager.updateHoponAccountBalanceById(con,hoponAccountDTO,id);
+				}catch (Exception e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName() + "() : "
+									+ e.getStackTrace()[0].getLineNumber() + " :: "
+									+ e.getMessage());
+					rollbackTest = true;
+				}finally {
+					if (rollbackTest) {
+						try {
+							con.rollback();
+						} catch (SQLException e) {
+							LoggerSingleton.getInstance().error(
+									e.getStackTrace()[0].getClassName() + "->"
+											+ e.getStackTrace()[0].getMethodName()
+											+ "() : "
+											+ e.getStackTrace()[0].getLineNumber()
+											+ " :: " + e.getMessage());
+						}
+						ListOfValuesManager.releaseConnection(con);
+					} else {
+						try {
+							con.commit();
+						} catch (SQLException e) {
+							LoggerSingleton.getInstance().error(
+									e.getStackTrace()[0].getClassName() + "->"
+											+ e.getStackTrace()[0].getMethodName()
+											+ "() : "
+											+ e.getStackTrace()[0].getLineNumber()
+											+ " :: " + e.getMessage());
+						}
+						ListOfValuesManager.releaseConnection(con);
+					}
+					rollbackTest = false;
+				}
+				
 				com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper
 						.getCheckSumServiceHelper();
 
@@ -124,6 +176,7 @@ public class PurchaseCredit extends HttpServlet {
 				out.print("<input type='hidden' name='CHECKSUMHASH' value='"
 						+ checkSum + "'>");
 				out.print("</tbody></table><script type='text/javascript'>document.f1.submit();</script></form></body></html>");
+			
 			}
 		} else {
 			response.sendRedirect("/");
