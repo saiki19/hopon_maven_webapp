@@ -27,23 +27,23 @@ public class RideSeekerDAO {
 	public RideManagementDTO registerRideSeeker(Connection con,
 			RideManagementDTO rideSeekerDTO) {
 		StringBuilder query = new StringBuilder();
-		if (rideSeekerDTO.getTripType()!=0){
-			
+		if (rideSeekerDTO.getTripType() != 0) {
+
 			query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point,"
 					+ "ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,"
 					+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, "
 					+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, "
 					+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id,trip_type,daily_rides,group_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
 			
-		}else{
+		} else {
 
-		query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point,"
-				+ "ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,"
-				+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, "
-				+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, "
-				+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id,trip_type,daily_rides) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
+			query.append("INSERT INTO ride_seeker_details (seeker_id,user_id, start_point, via_point, destination_point,"
+					+ "ride_cost,start_tw_early,status,vehicleID,MatchInCircle,FlexiTimeBefore,FlexiTimeAfter,FromCity,"
+					+ "ToCity,FromPin,ToPin,created_by,created_dt, start_time, isSharedTaxi,custom, start_point_lat, "
+					+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, ride_distance, "
+					+ "start_tw_late, end_tw_early, end_tw_late, is_result, approverID, recurring, fullDay, circle_id,trip_type,daily_rides) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
 		}
-		System.out.println("Ride Seeker DAO:" + query);
+		
 		PreparedStatement pstmt;
 		try {
 			pstmt = con.prepareStatement(query.toString(),
@@ -87,9 +87,8 @@ public class RideSeekerDAO {
 			pstmt.setString(15, rideSeekerDTO.getFromAddressPin());
 			pstmt.setString(16, rideSeekerDTO.getToAddressPin());
 			pstmt.setString(17, rideSeekerDTO.getCreatedBy());
-			if (rideSeekerDTO.getCreated_dt() != null) {
-				pstmt.setString(18, rideSeekerDTO.getCreated_dt().toString());
-			}
+			
+			pstmt.setString(18,ApplicationUtil.currentTimeStamp());
 			pstmt.setString(19, rideSeekerDTO.getStartdateValue());
 			if (rideSeekerDTO.isSharedTaxi()) {
 				pstmt.setString(20, "1");
@@ -127,13 +126,13 @@ public class RideSeekerDAO {
 			pstmt.setString(35, rideSeekerDTO.getFullDay());
 			pstmt.setInt(36, rideSeekerDTO.getCircleId());
 			pstmt.setInt(37, rideSeekerDTO.getTripType());
-			if(rideSeekerDTO.getTripType()==0){
+			if (rideSeekerDTO.getTripType() == 0) {
 				pstmt.setString(38, "N");
-			}else{
+			} else {
 				pstmt.setString(38, "Y");
 			}
-			if(rideSeekerDTO.getTripType()!=0){
-			pstmt.setString(39, rideSeekerDTO.getGroupId());
+			if (rideSeekerDTO.getTripType() != 0) {
+				pstmt.setString(39, rideSeekerDTO.getGroupId());
 			}
 			int i = pstmt.executeUpdate();
 			System.out.println("Excute update:" + i);
@@ -164,7 +163,7 @@ public class RideSeekerDAO {
 				+ "start_point_long, via_point_lat, via_point_long, end_point_lat, end_point_long, "
 				+ "start_tw_late, end_tw_early, end_tw_late,trip_type,end_time,isSharedTaxi,recurring,daily_rides,circle_id,ride_cost,ride_distance) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ");
 		PreparedStatement pstmt;
-		
+
 		try {
 			pstmt = con.prepareStatement(query.toString(),
 					Statement.RETURN_GENERATED_KEYS);
@@ -183,11 +182,8 @@ public class RideSeekerDAO {
 			pstmt.setString(8, rideManagementDTO.getToAddressPin());
 			pstmt.setString(9, rideManagementDTO.getFromAddressPin());
 			pstmt.setString(10, rideManagementDTO.getCreatedBy());
+			pstmt.setString(11, ApplicationUtil.currentTimeStamp());
 
-			if (rideManagementDTO.getCreated_dt() != null) {
-				pstmt.setString(11, rideManagementDTO.getCreated_dt().toString());
-
-			}
 			pstmt.setString(12, rideManagementDTO.getStartdateValue());
 			pstmt.setString(13, rideManagementDTO.getStartdateValue1());
 
@@ -273,12 +269,18 @@ public class RideSeekerDAO {
 				dto.setStartDateLate(rs.getString(16));
 				dto.setEndDateEarly(rs.getString(17));
 				dto.setEndDateLate(rs.getString(18));
+				
+				SimpleDateFormat formatter = new SimpleDateFormat(
+						"yyyy-MM-dd HH:mm:ss.S");
+				SimpleDateFormat formatter1 = new SimpleDateFormat(
+						ApplicationUtil.datePattern3);
 
+				
 				String str = rs.getString(19);
 
 				try {
-					dto.setCreated_dt(new SimpleDateFormat(
-							ApplicationUtil.datePattern5).parse(str));
+					dto.setCreated_dt(formatter1.parse(str));
+					
 				} catch (ParseException e1) {
 					e1.printStackTrace();
 				}
@@ -301,11 +303,7 @@ public class RideSeekerDAO {
 
 				dto.setTripType(rs.getInt(6));
 
-				SimpleDateFormat formatter = new SimpleDateFormat(
-						"yyyy-MM-dd HH:mm:ss.S");
-				SimpleDateFormat formatter1 = new SimpleDateFormat(
-						ApplicationUtil.datePattern3);
-
+			
 				try {
 
 					Date date = formatter.parse(rs.getString(3));
@@ -429,7 +427,7 @@ public class RideSeekerDAO {
 	public boolean cancelDailyRideData11(Connection con,RideManagementDTO rideManagementDTO) throws SQLException {
 		
 		String query = "UPDATE ride_seeker_details set status=? WHERE user_id=? AND daily_rides='Y' AND status='A'";
-		System.out.println("query is printing:" + query);
+	
 		try {
 			PreparedStatement pstmt = con.prepareStatement(query.toString());
 			pstmt.setString(1, "I");
@@ -474,6 +472,7 @@ public class RideSeekerDAO {
 		}
 
 	}
+
 	public List<RideSeekerDTO> findAllRideSeeker(Connection con, String userID)
 			throws SQLException {
 
@@ -503,16 +502,16 @@ public class RideSeekerDAO {
 			dto.setFromAddress1(rs.getString(2));
 			dto.setToAddress1(rs.getString(4));
 			dto.setRideCost(rs.getString(5));
-		
+
 			SimpleDateFormat formatter = new SimpleDateFormat(
 					ApplicationUtil.datePattern3);
 			SimpleDateFormat formatter1 = new SimpleDateFormat(
 					ApplicationUtil.datePattern9);
 			try {
 				Date date = formatter.parse(rs.getString(6));
-				
+
 				dto.setStartdateValue(formatter1.format(date));
-				
+
 			} catch (ParseException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -530,7 +529,7 @@ public class RideSeekerDAO {
 			dto.setRideMatchRideId(rs.getString(11));
 			dto.setIsResult(rs.getString(12));
 			dto.setRecurring(rs.getString(13));
-		if (rs.getString(14) != null) {
+			if (rs.getString(14) != null) {
 				try {
 					Date date1 = formatter.parse(rs.getString(14));
 					dto.setEndDate(date1);
@@ -544,12 +543,12 @@ public class RideSeekerDAO {
 									+ " :: " + "Date is : " + rs.getString(14)
 									+ "." + e.getMessage());
 				}
-		}
-		dto.setFullDay(rs.getString(15));
+			}
+			dto.setFullDay(rs.getString(15));
 			dto.setDaily_rides(rs.getString(16));
 			dto.setRideDistance(rs.getFloat(17));
 			dto.setTripType(rs.getInt(19));
-		
+
 			try {
 				if (rs.getString(18) != null) {
 					Date date = formatter.parse(rs.getString(18));
@@ -558,14 +557,14 @@ public class RideSeekerDAO {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			
-		
+
 			rideSeekerList.add(dto);
 		}
 		rs.close();
 		pstmt.close();
 		return rideSeekerList;
 	}
+
 	public RideSeekerDTO cancleRideSeeker(Connection con,
 			RideSeekerDTO rideSeekerDTO) throws SQLException {// also use for
 																// update
@@ -888,7 +887,6 @@ public class RideSeekerDAO {
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT rs.seeker_id, rs.user_id, rs.start_point, rs.destination_point, rs.start_tw_early, rs.status, rs.ride_match_rideid, rs.is_result, rs.isSharedTaxi, rs.start_point_lat, rs.start_point_long, rs.end_point_lat, rs.end_point_long, rs.via_point_lat, rs.via_point_long, rs.created_by, rs.approverID, rs.recurring, rs.via_point, tp.Trip_Freq_P,tp.Days, tp.End_date, rs.subSeekerId, rs.FromCity, rs.ToCity, rs.FromPin, rs.ToPin, rs.trip_type, rs.start_time2, rs.circle_id,tp.count, rs.daily_rides, rs.group_id FROM ride_seeker_details rs, trip_frequency tp WHERE rs.seeker_id = tp.ride_seeker_id and rs.status IN('A', 'T', 'O') and tp.status IN('A') and rs.recurring = 'Y' AND DATE_ADD(NOW(), INTERVAL +2 DAY) <= DATE(tp.End_date) AND DATE_ADD(NOW(), INTERVAL +2 DAY) >= DATE(tp.Start_date)");
 		// Here add more condition for 2 month limit.
-		System.out.println("Query From RideSeekerDAO:"+query);
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
 		while (rs.next()) {
@@ -1007,8 +1005,7 @@ public class RideSeekerDAO {
 
 	public List<RideManagementDTO> DailyRidePaymentHelper(Connection con) {
 		StringBuilder query = new StringBuilder();
-		List<RideManagementDTO> rideList=new ArrayList<RideManagementDTO>();
-		
+		List<RideManagementDTO> rideList = new ArrayList<RideManagementDTO>();
 
 		query.append("SELECT rs.ride_cost,u.totalCredit,rs.user_id,rs.seeker_id,"
 				+ "rs.ride_distance,rs.circle_id,tp.status "
@@ -1034,8 +1031,7 @@ public class RideSeekerDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-	
+
 		return rideList;
 	}
 
@@ -1053,33 +1049,52 @@ public class RideSeekerDAO {
 
 			}
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return rideManagementDTOList;
 	}
-	
+
 	public List<RideManagementDTO> fetchingHolidayList(RideManagementDTO dto) {
-		
+
 		List<RideManagementDTO> rideManagementDTOList = new ArrayList<RideManagementDTO>();
 		Connection con = ListOfValuesManager.getBroadConnection();
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT holiday_date FROM holiday_list WHERE circle_id= '"+dto.getCircleId()+ "'");
-		System.out.println("Query :"+query);
+
 		try {
 			PreparedStatement psmt = con.prepareStatement(query.toString());
 			ResultSet rs = QueryExecuter.getResultSet(psmt, query.toString());
 			while (rs.next()) {
 				dto.setHoliday_date(rs.getDate(1));
-				
+
 				rideManagementDTOList.add(dto);
 
 			}
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return rideManagementDTOList;
 	}
 
+	public RideManagementDTO getRideIDByUserID(int user_id, Connection con) {
+		StringBuilder query = new StringBuilder();
+		RideManagementDTO dto = new RideManagementDTO();
+		query.append("SELECT seeker_id FROM ride_seeker_details WHERE user_id='"
+				+ user_id
+				+ "' AND status='A' AND daily_rides='Y' AND recurring='Y'");
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query.toString());
+			ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
+			while (rs.next()) {
+				dto.setSeekerID(rs.getString(1));
+		
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dto;
+	}
 }

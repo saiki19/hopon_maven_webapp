@@ -566,12 +566,6 @@ public interface Trip {
 	PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con,PaymentTxnsDTO dto, int id) throws ConfigurationException;
 	List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con, int id) throws ConfigurationException;
 
-	//For Update WithDraw Amount
-
-	/*HoponAccountDTO fetchWithDrawHoponAccountBalance(Connection con, HoponAccountDTO dto)
-			throws ConfigurationException;
-	
-	HoponAccountDTO updateWithDrawHoponAccountBalance(Connection con,HoponAccountDTO dto)throws ConfigurationException;
-*/
+	RideManagementDTO getRideIDByUserID(Connection con,int user_id) throws ConfigurationException;
 	
 }

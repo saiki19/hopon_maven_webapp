@@ -3483,6 +3483,8 @@ public class TripImpl implements Trip {
 		}
 	}
 
+	
+
 	@Override
 	public PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con,
 			PaymentTxnsDTO dto, int id) throws ConfigurationException {
@@ -3520,4 +3522,24 @@ public class TripImpl implements Trip {
 		}
 		return PaymentTxnsList;
 	}
+	@Override
+	public RideManagementDTO getRideIDByUserID(Connection con, int user_id)
+			throws ConfigurationException {
+	RideManagementDTO dto=new RideManagementDTO();
+
+	RideSeekerDAO dao=DAOProvider.getRideSeekerDAO();
+	try{
+	dto=dao.getRideIDByUserID(user_id, con);
+	} catch (Exception e) {
+		LoggerSingleton.getInstance().error(
+				e.getStackTrace()[0].getClassName() + "->"
+						+ e.getStackTrace()[0].getMethodName() + "() : "
+						+ e.getStackTrace()[0].getLineNumber() + " :: "
+						+ "Problem in db operation. " + e.getMessage());
+		throw new ConfigurationException(
+				"Exception in retriving providers", e);
+	}
+	return dto;
+
+}
 }

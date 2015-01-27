@@ -411,17 +411,17 @@
 																	</h:selectOneMenu>
 																</div>
 															</div>
-														<div class="control-group"
+															<div class="control-group"
 																style="float: left; clear: both;">
 																<label class="control-label" for="travel">Circle</label>
-																		
+
 																<div class="controls">
 
 																	<p:autoComplete id="nonTaxiCircleInput"
 																		completeMethod="#{userAction.autoNonTaxiCircle}"
 																		minQueryLength="2" var="p" itemLabel="#{p.name}"
 																		itemValue="#{p.circleID} "
-																	value="#{userAction.autoNonTaxiCircleValue}" />
+																		value="#{userAction.autoNonTaxiCircleValue}" />
 																	<p:autoComplete id="taxiCircleInput"
 																		completeMethod="#{userAction.autoTaxiCircle}"
 																		minQueryLength="2" var="p" itemLabel="#{p.name}"
@@ -436,9 +436,9 @@
 																	<h:commandLink styleClass="btn btn-success"
 																		value="Register" action="#{userAction.registerUser}" />
 																	&nbsp;
-																	<h:commandLink styleClass="btn btn-default"
-																		value="Clear" action="#{userAction.clearLoginData}" />
-															
+																	<h:commandButton styleClass="btn btn-warning"
+																		type="reset" value="Clear" />
+
 																</div>
 															</div>
 														</fieldset>
@@ -455,7 +455,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- End of modal -->
 				<!-- End: MAIN CONTENT -->
 				<ui:include src="../pages/common/footer-content.xhtml"></ui:include>

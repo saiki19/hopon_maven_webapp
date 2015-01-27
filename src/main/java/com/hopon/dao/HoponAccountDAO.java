@@ -104,31 +104,7 @@ public class HoponAccountDAO {
 		return dto;
 	}
 	
-	/*public HoponAccountDTO WithDrawHoponAccountBalanceById(Connection con,
-			HoponAccountDTO dto) throws SQLException {
-		StringBuilder query = new StringBuilder();
-		query.append("SELECT balance FROM hoponaccounts WHERE idHoponAccounts=102");
-		PreparedStatement psmt = con.prepareStatement(query.toString());
-		ResultSet rs = QueryExecuter.getResultSet(psmt, query.toString());
-		if (rs.next()) {
-			dto.setBalance(rs.getFloat(1));
-			System.out.println("Balance fro HoponAccount:" + rs.getFloat(1));
-		}
-		return dto;
-
-	}
-	public HoponAccountDTO updateWithDrawHoponAccountBalanceById(Connection con,
-			HoponAccountDTO dto) throws SQLException {
-		StringBuilder query = new StringBuilder();
-		query.append("UPDATE users SET balance = ? WHERE idHoponAccounts = 102");
-		PreparedStatement pstmt = con.prepareStatement(query.toString());
-		pstmt.setFloat(1, dto.getBalance());
-		//pstmt.setInt(2, dto.getIdHoponAccounts());
-		pstmt.executeUpdate();
-		System.out.println("Excute update:"+pstmt.executeUpdate());
-		pstmt.close();
-		return dto;
-	}*/
+	
 	
 	
 

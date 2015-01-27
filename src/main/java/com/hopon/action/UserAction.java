@@ -313,10 +313,12 @@ public class UserAction extends HPBaseAction {
 		if (ListOfValuesManager.testUniqueMobileNumber(forregistrationOnly
 				.getMobile_no())) {
 			errorMessage
-					.add("Mobile Number is alrady registered. Please enter another mobile number.");
+					.add("Mobile Number is already registered. Please enter another mobile number.");
 			autoTaxiCircleValue = null;
 			autoNonTaxiCircleValue = null;
+			forregistrationOnly.setMobile_no("");
 			return "clear";
+
 		}
 
 		String emailTest = ListOfValuesManager
@@ -324,21 +326,24 @@ public class UserAction extends HPBaseAction {
 
 		if (emailTest.equalsIgnoreCase("P")) {
 			errorMessage.add("Email ID is pending for approval.");
-			forregistrationOnly = new UserRegistrationDTO();
+			// forregistrationOnly = new UserRegistrationDTO();
 			autoTaxiCircleValue = null;
 			autoNonTaxiCircleValue = null;
+			forregistrationOnly.setEmail_id("");
 			return "clear";
 		} else if (emailTest.equalsIgnoreCase("I")) {
 			errorMessage.add("Email ID de activated. Please contact admin.");
-			forregistrationOnly = new UserRegistrationDTO();
+			// forregistrationOnly = new UserRegistrationDTO();
 			autoTaxiCircleValue = null;
 			autoNonTaxiCircleValue = null;
+			forregistrationOnly.setEmail_id("");
 			return "clear";
 		} else if (emailTest.equalsIgnoreCase("A")) {
 			errorMessage.add("Email ID already registered.");
-			forregistrationOnly = new UserRegistrationDTO();
+			// forregistrationOnly = new UserRegistrationDTO();
 			autoTaxiCircleValue = null;
 			autoNonTaxiCircleValue = null;
+			forregistrationOnly.setEmail_id("");
 			return "clear";
 		} else if (emailTest.equalsIgnoreCase("N") && errorMessage.size() == 0) {
 
@@ -936,15 +941,19 @@ public class UserAction extends HPBaseAction {
 
 		rideSeekerList = ListOfValuesManager
 				.getAllRideSeekerList(userRegistrationDTO.getId());
+
 		List<RideSeekerDTO> temp1 = new ArrayList<RideSeekerDTO>();
 		recurringRideSeekerList.clear();
 		dailyRideList.clear();
+
 		for (RideSeekerDTO dto : rideSeekerList) {
 			if (dto.getRecurring().equals("Y")
 					&& dto.getDaily_rides().equals("N")) {
 				recurringRideSeekerList.add(dto);
+
 			} else if (dto.getRecurring().equals("Y")
 					&& dto.getDaily_rides().equals("Y")) {
+
 				String startDate = dto.getStartdateValue().split(" ")[0];
 				String pickuptime = dto.getStartdateValue().split(" ")[1];
 				dto.setStartdateValue(startDate);
@@ -1046,6 +1055,7 @@ public class UserAction extends HPBaseAction {
 	 * field conditions according to xhtml page and we are two options one is
 	 * TakeRide and 2nd one is GiveRideand related Operations.
 	 */
+
 	public void registerRide() {
 
 		if (userCirclePaymentPending)
@@ -1175,7 +1185,7 @@ public class UserAction extends HPBaseAction {
 				value.add(putValue);
 				frequencyDTO.setFrequency(value);
 				frequencyDTO.setCount(1);
-				
+
 				System.out.println("couunt in regidter ride:"
 						+ frequencyDTO.getCount());
 			} else {
@@ -2128,10 +2138,10 @@ public class UserAction extends HPBaseAction {
 				frequencyDTO.setFrequency(list);
 				frequencyDTO.setRideSeekerId(rideRegistered.getRideID());
 				rideRegistered.setCreatedBy(rideRegistered.getCreatedBy());
-				
+
 				frequencyDTO.setCount(list.size());
 				frequencyDTO.setStatus("A");
-				
+
 				frequencyDTO = ListOfValuesManager.getFrequencyEntery(
 						"findByDTO", frequencyDTO, con);
 				rideManagementList();
@@ -5892,7 +5902,8 @@ public class UserAction extends HPBaseAction {
 							new Object[] { seekerUserDto.getFirst_name(),
 									userDto.getFirst_name(),
 									rideManagementDTO.getRideID(),
-									dto.getStartPoint(), dto.getEndPoint(),
+									dto.getStartPoint(), 
+									dto.getEndPoint(),
 									dto.getStartDate(),
 									vehicleDto1.getReg_NO(),
 									userDto.getMobile_no() }));
@@ -5940,11 +5951,9 @@ public class UserAction extends HPBaseAction {
 															.substring(0, 25)
 															: dto.getEndPoint(),
 
-													managerUserDto
-															.getFirst_name(),
+													userDto.getFirst_name(),
 													dto.getStartDate(),
-													managerUserDto
-															.getMobile_no(),
+													userDto.getMobile_no(),
 													managementDtoTemp
 															.getRideID(),
 
@@ -7124,7 +7133,7 @@ public class UserAction extends HPBaseAction {
 			int rideId = 0;
 			try {
 				rideId = Integer.parseInt(bodyPart[1]);
-				if (msg.equalsIgnoreCase("CANCEL")) {
+				if (msg.equalsIgnoreCase("CAN") || msg.equalsIgnoreCase("CANCEL")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -7619,7 +7628,7 @@ public class UserAction extends HPBaseAction {
 										+ e1.getStackTrace()[0].getLineNumber()
 										+ " :: " + e1.getMessage());
 					}
-				} else if (msg.equalsIgnoreCase("APR")) {
+				} else if (msg.equalsIgnoreCase("APR") || msg.equalsIgnoreCase("APPROVE")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -7895,7 +7904,7 @@ public class UserAction extends HPBaseAction {
 										+ e1.getStackTrace()[0].getLineNumber()
 										+ " :: " + e1.getMessage());
 					}
-				} else if (msg.equalsIgnoreCase("REJECT")) {
+				} else if (msg.equalsIgnoreCase("REJ") || msg.equalsIgnoreCase("REJECT")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -10288,7 +10297,6 @@ public class UserAction extends HPBaseAction {
 
 		ride = (String) requestMap.get("ride");
 		clearScreenMessage();
-		System.out.println("User Id:" + rideRegistered.getUserID());
 
 		if (rideRegistered.getTripType() == 1) {
 			if (ride != null) {
@@ -10906,7 +10914,6 @@ public class UserAction extends HPBaseAction {
 				}
 
 				String enddate = rideDTO.getEnddateValue().split(" ")[0];
-
 				String time = rideDTO.getEnddateValue().split(" ")[1];
 				try {
 
@@ -10921,7 +10928,7 @@ public class UserAction extends HPBaseAction {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				// Time Picker Spliting.
+				// Time Picker Splitting.
 				String timepic1 = rideDTO.getStartdateValue().split(" ")[1];
 				String splittime_pic1[] = timepic1.split(":");
 				timepic1 = splittime_pic1[0] + ":" + splittime_pic1[1];
@@ -10973,8 +10980,11 @@ public class UserAction extends HPBaseAction {
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 		if (rideRegistered.getTripType() == 1) {
 			try {
-
-				rideRegistered.setUserID(userRegistrationDTO.getId());
+				rideRegistered.setUserID(this.userRegistrationDTO.getId());
+				RideManagementDTO dto = new RideManagementDTO();
+				dto = ListOfValuesManager.getRideIDByUserID(con,
+						Integer.parseInt(rideRegistered.getUserID()));
+				rideRegistered.setRideID(dto.getSeekerID());
 
 				rideRegistered = ListOfValuesManager.cancelRideSeekerEntery(
 						"findByDTO", rideRegistered, con);
@@ -10991,8 +11001,7 @@ public class UserAction extends HPBaseAction {
 				UserRegistrationDTO userDtoRide = new UserRegistrationDTO();
 				userDtoRide = ListOfValuesManager.getUserById(Integer
 						.parseInt(rideRegistered.getUserID()));
-				System.out
-						.println("Request Ride:" + rideRegistered.getRideID());
+
 				userMessageDTO.setMessage(Messages.getValue(
 						"dailyrideseeker.canceled.oneway",
 						new Object[] { userDtoRide.getFirst_name(),
@@ -11079,7 +11088,13 @@ public class UserAction extends HPBaseAction {
 		} else if (rideRegistered.getTripType() == 2) {
 			try {
 
-				rideRegistered.setUserID(userRegistrationDTO.getId());
+				
+
+				rideRegistered.setUserID(this.userRegistrationDTO.getId());
+				RideManagementDTO dto = new RideManagementDTO();
+				dto = ListOfValuesManager.getRideIDByUserID(con,
+						Integer.parseInt(rideRegistered.getUserID()));
+				rideRegistered.setRideID(dto.getSeekerID());
 
 				rideRegistered = ListOfValuesManager.cancelRideSeekerEntery(
 						"findByDTO", rideRegistered, con);
@@ -11362,7 +11377,7 @@ public class UserAction extends HPBaseAction {
 		Date d2 = new Date();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(d2);
-		System.out.println("Date in UserAction:" + cal.getTime());
+
 		cal.add(2, -1);
 		Date d1 = cal.getTime();
 		paymentTxnList.addAll(ListOfValuesManager.searchCompletedTransaction(
@@ -11432,13 +11447,13 @@ public class UserAction extends HPBaseAction {
 								userDtoRide.getFirst_name(), dto.getRideID(),
 								dto.getRideCost(), dto.getTotalCredit() }));
 				userMessageDTO.setToMember(Integer.parseInt(dto.getUserID()));
-				userMessageDTO.setMessageChannel("E");
+				userMessageDTO.setMessageChannel("S");
 				userMessageDTO = ListOfValuesManager
 						.getInsertedMessage(userMessageDTO);
 
 				// This is for the PaymentAlert Mail
 				userMessageDTO.setEmailSubject(Messages
-						.getValue("subject.payment"));
+						.getValue("subject.payment.alert"));
 				userMessageDTO.setMessage(Messages.getValue(
 						"mail.dailyridepayment.alert", new Object[] {
 								userDtoRide.getFirst_name(), dto.getRideID(),
@@ -11538,8 +11553,10 @@ public class UserAction extends HPBaseAction {
 					// This is Creating the Email Message for Deducted Amount
 					MessageBoardDTO userMessageDTO = new MessageBoardDTO();
 					dto.setRideID(dto.getSeekerID());
+
 					userMessageDTO.setEmailSubject(Messages
 							.getValue("subject.payment.deduct"));
+
 					userMessageDTO.setMessage(Messages.getValue(
 							"mail.dailyridepayment.deduct",
 							new Object[] { userDtoRide.getFirst_name(),
@@ -11607,15 +11624,15 @@ public class UserAction extends HPBaseAction {
 					} // end else
 				} // end finally
 			} else if (credit < ridecost1) {
-				System.out.println("Inside the else if condition");
+
 				// This is Creating the Email for Insufficient Balance
 				dto.setRideID(dto.getSeekerID());
 				userMessageDTO.setEmailSubject(Messages
-						.getValue("subject.payment.insufficient"));
+						.getValue("subject.payment.deduct"));
 				userMessageDTO.setMessage(Messages.getValue(
-						"email.dailyridepayment.insufficient", new Object[] {
+						"mail.dailyridepayment.alert", new Object[] {
 								userDtoRide.getFirst_name(), dto.getRideID(),
-								userdto.getTotalCredit() }));
+								dto.getRideCost(), dto.getTotalCredit() }));
 				userMessageDTO.setToMember(Integer.parseInt(dto.getUserID()));
 				userMessageDTO.setMessageChannel("E");
 				userMessageDTO = ListOfValuesManager
@@ -11623,9 +11640,9 @@ public class UserAction extends HPBaseAction {
 
 				// This is the Creating SMS for Insufficient Balance
 				userMessageDTO.setMessage(Messages.getValue(
-						"sms.dailyridepayment.insufficient", new Object[] {
+						"sms.dailyridepayment.alert", new Object[] {
 								userDtoRide.getFirst_name(), dto.getRideID(),
-								userdto.getTotalCredit() }));
+								dto.getRideCost(), dto.getTotalCredit() }));
 				userMessageDTO.setToMember(Integer.parseInt(dto.getUserID()));
 				userMessageDTO.setMessageChannel("S");
 				userMessageDTO = ListOfValuesManager
@@ -11637,7 +11654,7 @@ public class UserAction extends HPBaseAction {
 
 	public void credittempTransactionCron() {
 		Connection con = ListOfValuesManager.getLocalConnection();
-		System.out.println("Entry credit");
+	
 		try {
 			int id = 100;
 			PaymentTxnsDTO txnsDTO = new PaymentTxnsDTO();
@@ -11692,15 +11709,14 @@ public class UserAction extends HPBaseAction {
 
 	public void debittempTransactionCron() {
 		Connection con = ListOfValuesManager.getLocalConnection();
-		System.out.println("Entry debit");
+	
 		try {
 			int id = 100;
 			int rider = 107;
 			int taxi = 108;
-		
+
 			List<PaymentTxnsDTO> txnsDTO = new ArrayList<PaymentTxnsDTO>();
-			txnsDTO = ListOfValuesManager.fetchTxnAmountByfrompayer(con,
-			 id);
+			txnsDTO = ListOfValuesManager.fetchTxnAmountByfrompayer(con, id);
 			HoponAccountDTO riderdto = new HoponAccountDTO();
 			riderdto = ListOfValuesManager.fetchHoponAccountBalancebyId(riderdto, rider);
 
@@ -11715,11 +11731,10 @@ public class UserAction extends HPBaseAction {
 			float balance = accountDTO.getBalance();
 
 			for (PaymentTxnsDTO dto : txnsDTO) {
-				System.out.println("amount"+dto.getAmount());
 				riderdto = new HoponAccountDTO();
 				taxidto = new HoponAccountDTO();
 				accountDTO = new HoponAccountDTO();
-				
+
 				if (dto.getTravel().equals("T")) {
 					taxibalance = taxibalance + dto.getAmount();
 					taxidto.setBalance(taxibalance);

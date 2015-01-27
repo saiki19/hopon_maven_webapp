@@ -3678,8 +3678,7 @@ public class ListOfValuesManager {
 			try {
 				rideSeekerDTO = getTripService().cancelRideSeeker(con,
 						category, rideSeekerDTO);
-				System.out.println("RideSeekerDTO of listof values:"
-						+ rideSeekerDTO);
+		
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -3843,9 +3842,7 @@ public class ListOfValuesManager {
 			try {
 				rideSeekerDTO = getTripService().updateFrequency(con,
 						rideSeekerDTO, rideId);
-				System.out
-						.println("Inside the Listof Values Manager for Updating frequency :"
-								+ rideSeekerDTO);
+
 			} catch (Exception e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -3882,9 +3879,7 @@ public class ListOfValuesManager {
 		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
 		try {
 			dtos = getTripService().fetchingHolidayList(dto);
-			System.out
-					.println("Inside the ListOfvalue Manager for fetchingHolidayList:"
-							+ dtos);
+		
 		} catch (ConfigurationException e) {
 
 			e.printStackTrace();
@@ -3898,9 +3893,7 @@ public class ListOfValuesManager {
 		List<RideManagementDTO> dtos = new ArrayList<RideManagementDTO>();
 		try {
 			dtos = getTripService().fetchingHolidaynxtweek(con, dto);
-			System.out
-					.println("Inside the ListOfvalue Manager for fetchingHolidaynxtweek:"
-							+ dtos);
+		
 		} catch (ConfigurationException e) {
 
 			e.printStackTrace();
@@ -4062,4 +4055,21 @@ public class ListOfValuesManager {
 		return PaymentTxnsList;
 	}
 
+	public static RideManagementDTO getRideIDByUserID(Connection con,
+			 int user_id) {
+		System.out.println("User id in ListOfValues:"+user_id);
+		RideManagementDTO dto=new RideManagementDTO();
+		try {
+		dto=getTripService().getRideIDByUserID(con, user_id);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+
+		return dto;
+
+	}
 }

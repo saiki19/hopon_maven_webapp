@@ -78,8 +78,6 @@ public class PaymentPage extends HttpServlet {
 				for(Entry<String, String> entry : parameters.entrySet()) {
 					  String key = entry.getKey();
 					  String value = entry.getValue();
-		
-					  System.out.println(key + " => " + value);
 				
 					out.print("<input type='hidden' name='"+key+"' value='"+value+"'>");
 				}

@@ -103,7 +103,7 @@ public class UserRegistrationDAO {
 			result.setCountry(rs.getString(15));
 			result.setTotalCredit(rs.getFloat(16));
 			
-			System.out.println("credit"+result.getTotalCredit()+"credit got"+rs.getFloat(16));
+		
 			result.setTotalGreenMiles(rs.getFloat(17));
 			result.setCity(rs.getString(18));
 			result.setLatitude(rs.getFloat(19));

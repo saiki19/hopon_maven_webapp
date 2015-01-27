@@ -25,9 +25,12 @@
 					src="../../resources/js/bootstrap-tooltip.js"></script>
 				<script type="text/javascript"
 					src="../../resources/js/bootstrap-modal.js"></script>
+
 				<script type="text/javascript">
 					jQuery(document).ready(function() {
+						
 						setTimeout(function() {
+							
 							$("[data-toggle='tooltip']").tooltip({
 								trigger : "hover focus",
 								delay : {
@@ -311,7 +314,7 @@
 											</div>
 											<div class="tab-pane fade" id="profile">
 												<pm:content
-													rendered="#{empty userAction.allCircleOwnerManagerUserList and empty userAction.allCircleMembershipInvitationList and empty userAction.allCircleAffiliationRequest}">
+													rendered="#{empty userAction.allRideApprovalRequest and empty empty userAction.allCircleOwnerManagerUserList and empty userAction.allMsgBoardCompleateRideList and empty userAction.allMsgBoardCompleateRideSeekerList}">
 													<p class="alert alert-info">There is no Ride related
 														Message.</p>
 												</pm:content>
@@ -394,7 +397,7 @@
 												</pm:content>
 
 												<pm:content
-													rendered="#{not empty userAction.allMsgBoardCompleateRideSeekerList}">
+													rendered="#{not empty userAction.allMsgBoardCompleateRideList and (sessionScope.user_role eq 'T' || (sessionScope.user_role eq 'B' and userAction.ridePicker eq 2))}">
 													<h3 class="muted">Rate Completed Rides</h3>
 
 													<script type="text/javascript">
@@ -472,7 +475,7 @@
 																styleClass="table table-bordered table-striped"
 																value="#{userAction.allMsgBoardCompleateRideList}"
 																var="rideList" rowIndexVar="index"
-																rendered="#{userAction.allMsgBoardCompleateRideList.size() gt 0 and userAction.ridePicker ==2}"
+																rendered="#{userAction.allMsgBoardCompleateRideList.size() gt 0 and userAction.ridePicker eq 2}"
 																paginator="true" rows="5" paginatorPosition="bottom"
 																paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
 																<p:column>
@@ -486,11 +489,25 @@
 																	<h:outputText value="giver" />
 																</p:column>
 																<p:column headerText="From" style="width:150px;">
-																	<h:outputText value="#{rideList.rideManagementFrom}" />
+																	<span data-toggle="tooltip"
+																		title="${rideList.rideManagementFrom}">${(fn:length(rideList.rideManagementFrom)
+																		> 25) ? fn:substring(rideList.rideManagementFrom, 0,
+																		25) : rideList.rideManagementFrom}
+																		${(fn:length(rideList.rideManagementFrom) > 25) ?
+																		'...' : ''}
+																	</span>
 																</p:column>
 																<p:column headerText="To" style="width:150px;">
-																	<h:outputText value="#{rideList.rideManagementTO}" />
+																	<span data-toggle="tooltip"
+																		title="${rideList.rideManagementTO}">
+																		${(fn:length(rideList.rideManagementTO)
+																		> 25) ? fn:substring(rideList.rideManagementTO, 0, 25)
+																		: rideList.rideManagementTO}
+																		${(fn:length(rideList.rideManagementTO) > 25) ? '...'
+																		: ''} 
+																	</span>
 																</p:column>
+
 																<p:column headerText="Date" style="width:300px;">
 																	<h:outputText
 																		value="#{rideList.rideManagementStartDate}"></h:outputText>
@@ -516,14 +533,87 @@
 																</p:column>
 															</p:dataTable>
 														</div>
+														</h:form>
+												</pm:content>
+														<pm:content
+													rendered="#{not empty userAction.allMsgBoardCompleateRideSeekerList and (sessionScope.user_role ne 'T' || (sessionScope.user_role eq 'B' and userAction.ridePicker eq 1))}">
+													<h3 class="muted">Rate Completed Rides</h3>
 
-
+													<script type="text/javascript">
+														$(document)
+																.ready(
+																		function() {
+																			setTimeout(
+																					function() {
+																						$(
+																								"div[id*='_paginator_']")
+																								.attr(
+																										"style",
+																										"background: none repeat scroll 0 0 #D9EDF7;border: 1px solid #55AA55;border-radius: 5px;color: #BD362F;font-family: Lucida Console;font-size: 14px;font-style: inherit;height: 28px;padding-bottom: 2px;padding-top: 4px;");
+																						$(
+																								"div[id*='_paginator_']")
+																								.find(
+																										".ui-paginator-current")
+																								.attr(
+																										"style",
+																										"margin-top: 2px;vertical-align: top;");
+																						$(
+																								"div[id*='_paginator_']")
+																								.bind(
+																										"click",
+																										function() {
+																											setTimeout(
+																													function() {
+																														modalUpdate();
+																														updateDataTable()
+																													},
+																													300);
+																											setTimeout(
+																													function() {
+																														modalUpdate();
+																														updateDataTable()
+																													},
+																													600);
+																											setTimeout(
+																													function() {
+																														modalUpdate();
+																														updateDataTable()
+																													},
+																													1000)
+																										});
+																						$(
+																								"span[id$=\\:creation_time]")
+																								.each(
+																										function() {
+																											$(
+																													this)
+																													.html(
+																															Date
+																																	.parseString(
+																																			$(
+																																					this)
+																																					.html(),
+																																			"yyyy-MM-dd HH:mm:ss.0")
+																																	.format(
+																																			"dd MMM yy, hh:mm a"))
+																										});
+																						$(
+																								"#x4\\:popupButton1")
+																								.click();
+																						$(
+																								"#x3\\:msgUnread")
+																								.click()
+																					},
+																					1000)
+																		});
+													</script>
+													<h:form id="form6">
 														<div id="ui-table-5">
 															<p:dataTable
 																styleClass="table table-bordered table-striped"
 																value="#{userAction.allMsgBoardCompleateRideSeekerList}"
 																var="rideList" rowIndexVar="index"
-																rendered="#{userAction.allMsgBoardCompleateRideSeekerList.size() gt 0 and userAction.ridePicker ==1}"
+																rendered="#{userAction.allMsgBoardCompleateRideSeekerList.size() gt 0 and userAction.ridePicker eq 1}"
 																paginator="true" rows="5" paginatorPosition="bottom"
 																paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
 																<p:column>
@@ -537,11 +627,29 @@
 																	<h:outputText value="Taker" />
 																</p:column>
 																<p:column headerText="From" style="width:150px;">
+																	<span data-toggle="tooltip"
+																		title="${rideList.rideSeekerFrom}">${(fn:length(rideList.rideSeekerFrom)
+																		> 25) ? fn:substring(rideList.rideSeekerFrom, 0, 25) :
+																		rideList.rideSeekerFrom}
+																		${(fn:length(rideList.rideSeekerFrom) > 25) ? '...' :
+																		''}</span>
+																</p:column>
+																<p:column headerText="To" style="width:150px;">
+																	<span data-toggle="tooltip"
+																		title="${rideList.rideSeekerTo}">${(fn:length(rideList.rideSeekerTo)
+																		> 25) ? fn:substring(rideList.rideSeekerTo, 0, 25) :
+																		rideList.rideSeekerTo}
+																		${(fn:length(rideList.rideSeekerTo) > 25) ? '...' :
+																		''} </span>
+																</p:column>
+
+
+																<!-- <p:column headerText="From" style="width:150px;">
 																	<h:outputText value="#{rideList.rideSeekerFrom}" />
 																</p:column>
 																<p:column headerText="To" style="width:150px;">
 																	<h:outputText value="#{rideList.rideSeekerTo}" />
-																</p:column>
+																</p:column> -->
 																<p:column headerText="Date" style="width:300px;">
 																	<h:outputText value="#{rideList.rideSeekerStartDate}"></h:outputText>
 																</p:column>
@@ -636,9 +744,10 @@
 																	});
 												</script>
 											</div>
+											<!-- End section for Ride Messages -->
 											<div class="tab-pane fade" id="mis">
 												<pm:content
-													rendered="#{empty userAction.allCircleOwnerManagerUserList and empty userAction.allCircleMembershipInvitationList and empty userAction.allCircleAffiliationRequest}">
+													rendered="#{empty userAction.allUnreadMessageList}">
 													<p class="alert alert-info">There is no Miscellaneous
 														Message.</p>
 												</pm:content>
@@ -710,7 +819,7 @@
 											</p:commandButton>
 											<p:commandButton id="refreshpagebutton2" value="Refresh page">
 												<p:ajax listener="#{userAction.memberForSelectedCircle}"
-													update=":form3"
+													update=":form3,:form6"
 													oncomplete="updateDataTable();modalUpdate();return false;"
 													onsuccess="updateDataTable1();modalUpdate();return false;">
 												</p:ajax>
@@ -845,7 +954,7 @@
 																	<p:ajax
 																		oncomplete="modalUpdate();updateDataTable();scroll();"
 																		listener="#{userAction.rateAndWriteNotes}"
-																		process="@form" update="@form,:form3"></p:ajax>
+																		process="@form" update="@form,:form3,:form6"></p:ajax>
 																</h:commandButton>
 															</h:panelGrid>
 														</h:form>
@@ -876,7 +985,7 @@
 																	<p:ajax
 																		oncomplete="modalUpdate();updateDataTable();scroll();"
 																		listener="#{userAction.rateAndWriteNotes}"
-																		process="@form" update="@form,:form3"></p:ajax>
+																		process="@form" update="@form,:form3,:form6"></p:ajax>
 																	<f:param value="taker" name="taker"></f:param>
 																</h:commandButton>
 															</h:panelGrid>
