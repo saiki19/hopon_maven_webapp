@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.hopon.dto.CircleDTO;
+import com.hopon.dto.GuestRideDTO;
 import com.hopon.dto.RideManagementDTO;
 import com.hopon.dto.RideSeekerDTO;
 import com.hopon.dto.SummaryMessageDTO;
@@ -488,6 +491,7 @@ public class RideSeekerDAO {
 				+ userID
 				+ "' and ride_seeker_details.seeker_id = trip_frequency.ride_seeker_id and ride_seeker_details.status IN('A', 'T', 'O') AND TIMESTAMPDIFF(SECOND,ride_seeker_details.start_tw_early,'"
 				+ ApplicationUtil.currentTimeStamp() + "') < 0 ");
+		
 		// query.append(" SELECT  ride_seeker_details.seeker_id,  ride_seeker_details.start_point, ride_seeker_details.via_point,ride_seeker_details.destination_point,ride_seeker_details.ride_cost,ride_seeker_details.start_tw_early,ride_seeker_details.status, trip_frequency.Trip_Freq_P,trip_frequency.Days, ride_seeker_details.custom, ride_seeker_details.ride_match_rideid, ride_seeker_details.is_result FROM ride_seeker_details, trip_frequency where ride_seeker_details.user_id = '"+userID+"' and ride_seeker_details.seeker_id = trip_frequency.ride_seeker_id and ride_seeker_details.status != '0' AND TIMESTAMPDIFF(SECOND,ride_seeker_details.start_tw_early,'"
 		// +ApplicationUtil.currentTimeStamp+"') < 0 ");
 		// query.append(" SELECT  ride_seeker_details.seeker_id,  ride_seeker_details.start_point, ride_seeker_details.via_point,ride_seeker_details.destination_point,ride_seeker_details.ride_cost,ride_seeker_details.start_tw_early,ride_seeker_details.status, trip_frequency.Trip_Freq_P,trip_frequency.Days, vehicles_master.Avilable FROM ride_seeker_details,vehicles_master,trip_frequency where ride_seeker_details.user_id = '"+userID+"' and ride_seeker_details.vehicleID = vehicles_master.id and ride_seeker_details.seeker_id = trip_frequency.ride_seeker_id and ride_seeker_details.status != '0' and vehicles_master.status = 'A' ");
@@ -548,7 +552,7 @@ public class RideSeekerDAO {
 			dto.setDaily_rides(rs.getString(16));
 			dto.setRideDistance(rs.getFloat(17));
 			dto.setTripType(rs.getInt(19));
-
+			dto.setGuest_id(rs.getInt(20));
 			try {
 				if (rs.getString(18) != null) {
 					Date date = formatter.parse(rs.getString(18));
@@ -1088,13 +1092,56 @@ public class RideSeekerDAO {
 			PreparedStatement pstmt = con.prepareStatement(query.toString());
 			ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
 			while (rs.next()) {
-				dto.setSeekerID(rs.getString(1));
-		
+				dto.setSeekerID(rs.getString(1));	
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return dto;
+	}
+	
+	public boolean upadteGuestInfo(Connection con,String guest_id,String seeker_id){
+		StringBuilder query=new StringBuilder();
+		query.append("UPDATE ride_seeker_details SET guest_id=? WHERE seeker_id=?");
+		try {
+			PreparedStatement pstmt=con.prepareStatement(query.toString());
+			pstmt.setString(1,guest_id);
+			pstmt.setString(2, seeker_id);
+			int i=pstmt.executeUpdate();
+			System.out.println("Excute update:"+i);
+			pstmt.close();
+			if(i==1){
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}
+
+
+	public RideSeekerDTO showGuestRidePopup(Connection con,String seeker_id){
+		StringBuilder query=new StringBuilder();
+		RideSeekerDTO dto=new RideSeekerDTO();
+		query.append("SELECT first_name,last_name,mobile_no,email_id,id from guests WHERE seeker_id='"+seeker_id+"'");
+		try {
+			PreparedStatement pstmt=con.prepareStatement(query.toString());
+			ResultSet rs=QueryExecuter.getResultSet(pstmt, query.toString());
+			while(rs.next()){
+				dto.setGuest_fname(rs.getString(1));
+				dto.setGuest_lname(rs.getString(2));
+				dto.setGuest_mobile_no(rs.getString(3));
+				dto.setGuest_email_id(rs.getString(4));
+				dto.setGuest_id(rs.getInt(5));
+			}
+			pstmt.close();
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dto;	
 	}
 }

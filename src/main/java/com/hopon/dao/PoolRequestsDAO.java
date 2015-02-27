@@ -222,8 +222,7 @@ public class PoolRequestsDAO {
 
 			if (rs.getString(7) != null) {
 				try {
-					Date date = ApplicationUtil.dateFormat3.parse(rs
-							.getString(7));
+					Date date = ApplicationUtil.dateFormat3.parse(rs.getString(7));
 					dto.setRideManagementStartDate(ApplicationUtil.dateFormat9
 							.format(date));
 				} catch (ParseException e) {

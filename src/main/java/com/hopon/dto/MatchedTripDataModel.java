@@ -20,7 +20,7 @@ public class MatchedTripDataModel extends ListDataModel<MatchedTripDTO> implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	public MatchedTripDTO getRowData(String arg0) {
-		// TODO Auto-generated method stub
+
            List<MatchedTripDTO> matchedTripDTOs = (List<MatchedTripDTO>)getWrappedData();
 		
 		  for (MatchedTripDTO matchedTripDTO : matchedTripDTOs) {
@@ -32,7 +32,7 @@ public class MatchedTripDataModel extends ListDataModel<MatchedTripDTO> implemen
 	}
 	@Override
 	public Object getRowKey(MatchedTripDTO matchedTripDTO) {
-		// TODO Auto-generated method stub
+
 		return matchedTripDTO.getUserName();
 	}
 

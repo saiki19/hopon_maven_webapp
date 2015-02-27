@@ -320,27 +320,18 @@ public class RideAction extends BaseAction {
 									.get(5).toString()) / 1000;
 							rideRegistered.setRideDistance(distance);
 							if (rideRegistered.isSharedTaxi() == true) {
-								System.out
-										.println("inside the Rideaction Class:"
-												+ distance);
+								
 								rideRegistered.setRideCost(distance
 										* Float.parseFloat(Messages.getValue(
 												"ride.perkm.charge").trim())
 										+ "");
-								System.out
-										.println("value is printing in the RideAction class:"
-												+ Messages.getValue(
-														"ride.perkm.charge")
-														.trim() + "");
+							
 							} else {
 								rideRegistered.setRideCost(distance
 										* Float.parseFloat(Messages.getValue(
 												"ride.perkm.sharecharge")
 												.trim()) + "");
-								System.out
-										.println("inside Rieaction classs amount 12:"
-												+ Messages
-														.getValue("ride.perkm.sharecharge"));
+								
 							}
 						}
 					} catch (IOException e) {

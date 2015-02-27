@@ -10,7 +10,7 @@ import com.hopon.dto.*;
 import com.hopon.utils.ConfigurationException;
 
 public interface Trip {
-	
+
 	UserRegistrationDTO loadUserRegistration(Connection con, String category,
 			UserRegistrationDTO userRegistrationDTO, String senderId)
 			throws ConfigurationException;
@@ -506,17 +506,11 @@ public interface Trip {
 	List<SummaryMessageDTO> loadRideSummaryMessage()
 			throws ConfigurationException;
 
-	/*
-	 * <!-- Code Changed by Kirty for selection Ride option with different User
-	 * Id-->
-	 */
+	
 	CircleDTO getCircleType(Connection con, int userId)
 			throws ConfigurationException;
 
-	/*
-	 * <!-- Code Changed by Kirty for selection Ride option with different User
-	 * Id-->
-	 */
+	
 
 	RideManagementDTO loadDailyRideSeeker(Connection con, String category,
 			RideManagementDTO rideSeekerDTO) throws ConfigurationException;
@@ -555,17 +549,37 @@ public interface Trip {
 			throws ConfigurationException;
 	
 
-	PaymentRequestDTO insertWithDrawEntry(Connection con,
-			PaymentRequestDTO dto) throws ConfigurationException;
+	PaymentRequestDTO insertWithDrawEntry(Connection con, PaymentRequestDTO dto)
+			throws ConfigurationException;
 
-	HoponAccountDTO fetchHoponAccountBalance(Connection con, HoponAccountDTO dto, int id)
+	HoponAccountDTO fetchHoponAccountBalance(Connection con,
+			HoponAccountDTO dto, int id) throws ConfigurationException;
+
+	HoponAccountDTO updateHoponAccountBalance(Connection con,
+			HoponAccountDTO dto, int id) throws ConfigurationException;
+
+	void updateTotalCreditById(Connection con, int user_id, float amount,
+			String txntype) throws ConfigurationException;
+
+	PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con, PaymentTxnsDTO dto,
+			int id) throws ConfigurationException;
+
+	List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con, int id)
 			throws ConfigurationException;
 	
-	HoponAccountDTO updateHoponAccountBalance(Connection con,HoponAccountDTO dto, int id)throws ConfigurationException;
-	void updateTotalCreditById(Connection con,int user_id,float amount, String txntype)throws ConfigurationException;
-	PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con,PaymentTxnsDTO dto, int id) throws ConfigurationException;
-	List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con, int id) throws ConfigurationException;
 
-	RideManagementDTO getRideIDByUserID(Connection con,int user_id) throws ConfigurationException;
+	RideManagementDTO getRideIDByUserID(Connection con, int user_id)
+			throws ConfigurationException;
+
+	UserRegistrationDTO getTravelByID(Connection con, String id)
+			throws ConfigurationException;
+
+	void updateVehicleReassign(Connection con, int rideIdToReassign,
+			int vehicleIdToTake) throws ConfigurationException;
+	GuestRideDTO insertGuestInfo(Connection con,GuestRideDTO dto)throws ConfigurationException;
 	
+	boolean updateGuestIdBySeekerId(Connection con,String guest_id,String seeker_id) throws ConfigurationException;
+	
+	RideSeekerDTO showGuestRidePopup(Connection con,String seeker_id)throws ConfigurationException;
+
 }

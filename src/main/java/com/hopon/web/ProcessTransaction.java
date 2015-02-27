@@ -45,8 +45,7 @@ public class ProcessTransaction extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter pw = response.getWriter();
-		// TODO Auto-generated method stub
+		PrintWriter pw = response.getWriter();	
 		HttpSession session = request.getSession();
 		response.setContentType("text/html");
 		if (session != null
@@ -58,27 +57,15 @@ public class ProcessTransaction extends HttpServlet {
 				String parameterName = (String) enumeration.nextElement();
 				parameterNames.add(parameterName);
 			}
-
-			PaymentDTO payment = new PaymentDTO();
-			ArrayList<String> parameterValue = new ArrayList<String>();
-
-			payment.setTransaction_id(request.getParameter("TXNID"));
-			payment.setOrder_id(request.getParameter("ORDERID"));
-			payment.setTransferammount(request.getParameter("TXNAMOUNT"));
-			// payment.setTransactiondate(request.getParameter("TXNDATE"));
-
-			parameterValue.add(payment.getTransaction_id());
-			parameterValue.add(payment.getOrder_id());
-			parameterValue.add(payment.getTransferammount());
-			parameterValue.add(payment.getTransactiondate());
-
+			PaymentRequestDTO payment = new PaymentRequestDTO();
+		
 			if (parameterNames.size() == 0) {
 
-				// retuen error
+				// return error
 			} else if (request.getParameter("STATUS") != null
 					&& request.getParameter("STATUS").equals("TXN_SUCCESS")) {
+				
 				// transaction success
-
 				float amount = Float.parseFloat(request
 						.getParameter("TXNAMOUNT"));
 
@@ -86,9 +73,11 @@ public class ProcessTransaction extends HttpServlet {
 				float credit = Math.round(amount - amountNew);
 
 				PaymentRequestDTO dto = new PaymentRequestDTO();
-				dto.setOrderId(request.getParameter("ORDERID"));
-
+				dto.setOrder_id(request.getParameter("ORDERID"));
+				
 				dto = ListOfValuesManager.fetchPaymentRequestByOrderId(dto);
+				
+				dto.setTransaction_id(request.getParameter("TXNID"));
 				dto.setStatus("S");
 				try {
 					ListOfValuesManager
@@ -159,7 +148,7 @@ public class ProcessTransaction extends HttpServlet {
 						payment.getTransaction_id());
 				httpSession.setAttribute("orderid", payment.getOrder_id());
 				httpSession.setAttribute("transferamount",
-						payment.getTransferammount());
+						payment.getTransferamount());
 				httpSession.setAttribute("transactiondate",
 						payment.getTransactiondate());
 				request.getRequestDispatcher("success.xhtml").include(request,
@@ -172,7 +161,7 @@ public class ProcessTransaction extends HttpServlet {
 					if (request.getParameter("RESPCODE").equals("141")) {
 						errorMessage = "Sorry! Your payment transaction has been cancelled.";
 						PaymentRequestDTO dto = new PaymentRequestDTO();
-						dto.setOrderId(request.getParameter("ORDERID"));
+						dto.setOrder_id(request.getParameter("ORDERID"));
 
 						dto = ListOfValuesManager
 								.fetchPaymentRequestByOrderId(dto);
@@ -196,7 +185,7 @@ public class ProcessTransaction extends HttpServlet {
 					} else {
 						errorMessage = "Sorry! Your payment transaction has failed.";
 						PaymentRequestDTO dto = new PaymentRequestDTO();
-						dto.setOrderId(request.getParameter("ORDERID"));
+						dto.setOrder_id(request.getParameter("ORDERID"));
 
 						dto = ListOfValuesManager
 								.fetchPaymentRequestByOrderId(dto);

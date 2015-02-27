@@ -4,8 +4,8 @@ public class PaymentRequestDTO {
 	private int id;
 	private int userId;
 	private String userName;
-	private String orderId;
-	private String modeOrg;
+	
+
 	private float amount;
 	private String dateTime;	
 	private String creditDebit;
@@ -15,7 +15,39 @@ public class PaymentRequestDTO {
 	private int updateBy;
 	private String createdDate;
 	private int createdBy;
+	
+	//PayTm Request Fields
+	private String order_id;
+	private String transaction_id;
+	private String transferamount;
+	private String transactiondate;
+	
 
+	public String getOrder_id() {
+		return order_id;
+	}
+	public void setOrder_id(String order_id) {
+		this.order_id = order_id;
+	}
+	public String getTransaction_id() {
+		return transaction_id;
+	}
+	public void setTransaction_id(String transaction_id) {
+		this.transaction_id = transaction_id;
+	}
+	public String getTransferamount() {
+		return transferamount;
+	}
+	public void setTransferamount(String transferamount) {
+		this.transferamount = transferamount;
+	}
+	public String getTransactiondate() {
+		return transactiondate;
+	}
+	public void setTransactiondate(String transactiondate) {
+		this.transactiondate = transactiondate;
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -34,18 +66,8 @@ public class PaymentRequestDTO {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public String getOrderId() {
-		return orderId;
-	}
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
-	public String getModeOrg() {
-		return modeOrg;
-	}
-	public void setModeOrg(String modeOrg) {
-		this.modeOrg = modeOrg;
-	}
+	
+	
 	public float getAmount() {
 		return amount;
 	}

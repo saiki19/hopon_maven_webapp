@@ -50,6 +50,7 @@ import com.hopon.dto.CompanyRegisterDTO;
 import com.hopon.dto.ContactusDTO;
 import com.hopon.dto.FavoritePlacesDTO;
 import com.hopon.dto.FrequencyDTO;
+import com.hopon.dto.GuestRideDTO;
 import com.hopon.dto.HoponAccountDTO;
 import com.hopon.dto.LoginPageDTO;
 import com.hopon.dto.ManageRideDTO;
@@ -354,14 +355,11 @@ public class TripImpl implements Trip {
 	@Override
 	public FrequencyDTO loadFrequency(Connection con, String category,
 			FrequencyDTO frequencyDTO) throws ConfigurationException {
-		System.out.println("Category is printing:" + category);
-		// TODO Auto-generated method stub
 		FrequencyDAO frequencyDAO = DAOProvider.getFrequencyDAO();
 		try {
 			if (category.equals("all")) {
 
 				frequencyDTO = frequencyDAO.insertFrequency(con, frequencyDTO);
-				System.out.println("Inside the TripImpl:" + frequencyDTO);
 			} else if (category.equals("findByDTO")) {
 				frequencyDTO = frequencyDAO.insertFrequency(con, frequencyDTO);
 			}
@@ -380,7 +378,6 @@ public class TripImpl implements Trip {
 	@Override
 	public List<RideManagementDTO> loadAllRidemanagement(Connection con,
 			String userName) throws ConfigurationException {
-		// TODO Auto-generated method stub
 		List<RideManagementDTO> rideList = new ArrayList<RideManagementDTO>();
 		RideManagementDAO rideManagementDAO = DAOProvider
 				.getRideManagementDAO();
@@ -816,7 +813,7 @@ public class TripImpl implements Trip {
 	public List<CombineRideDTO> getAllTodaysCombineVehicleList(Connection con,
 			String startPoint, String endPoint, String companyName, int circleId)
 			throws ConfigurationException {
-		// TODO Auto-generated method stub
+
 		List<CombineRideDTO> tripList = new ArrayList<CombineRideDTO>();
 		MatchTripDAO matchTripDAO = DAOProvider.getMatchTripDAO();
 		try {
@@ -968,7 +965,7 @@ public class TripImpl implements Trip {
 	@Override
 	public List<VehicleMasterDTO> loadAllVehicle(Connection con, String userID)
 			throws ConfigurationException {
-		// TODO Auto-generated method stub
+
 		List<VehicleMasterDTO> vehicleList = new ArrayList<VehicleMasterDTO>();
 		VehicleMasterDAO vehicleMasterDAO = DAOProvider.getVehicleMasterDAO();
 		try {
@@ -3168,7 +3165,7 @@ public class TripImpl implements Trip {
 			userRegistrationDTO = userdao.updateTotalCredit(con,
 					userRegistrationDTO);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return userRegistrationDTO;
@@ -3483,8 +3480,6 @@ public class TripImpl implements Trip {
 		}
 	}
 
-	
-
 	@Override
 	public PaymentTxnsDTO fetchTxnAmountByToPayee(Connection con,
 			PaymentTxnsDTO dto, int id) throws ConfigurationException {
@@ -3504,7 +3499,9 @@ public class TripImpl implements Trip {
 
 	}
 
-	@Override
+
+
+@Override
 	public List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con,
 		 int id) throws ConfigurationException {
 		PaymentTxnsDAO dao = DAOProvider.getPaymentTxnsDAO();
@@ -3522,6 +3519,7 @@ public class TripImpl implements Trip {
 		}
 		return PaymentTxnsList;
 	}
+	
 	@Override
 	public RideManagementDTO getRideIDByUserID(Connection con, int user_id)
 			throws ConfigurationException {
@@ -3542,4 +3540,99 @@ public class TripImpl implements Trip {
 	return dto;
 
 }
+	@Override
+	public UserRegistrationDTO getTravelByID(Connection con,String id)
+			throws ConfigurationException {
+		UserRegistrationDTO dto=new UserRegistrationDTO();
+
+	UserRegistrationDAO dao=DAOProvider.getUserRegistrationDAO();
+	try{
+	dto=dao.fetchTravelType(con,id);
+	} catch (Exception e) {
+		LoggerSingleton.getInstance().error(
+				e.getStackTrace()[0].getClassName() + "->"
+						+ e.getStackTrace()[0].getMethodName() + "() : "
+						+ e.getStackTrace()[0].getLineNumber() + " :: "
+						+ "Problem in db operation. " + e.getMessage());
+		throw new ConfigurationException(
+				"Exception in retriving providers", e);
+	}
+	return dto;
+
+}
+	@Override
+	public void updateVehicleReassign(Connection con,
+			int rideIdToReassign,int vehicleIdToTake)
+			throws ConfigurationException {
+		RideManagementDAO dao = DAOProvider.getRideManagementDAO();
+		try {
+			dao.updateVehicleReassign(con, rideIdToReassign, vehicleIdToTake);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+	}
+
+	@Override
+	public GuestRideDTO insertGuestInfo(Connection con, GuestRideDTO dto)
+			throws ConfigurationException {
+		UserRegistrationDAO dao = DAOProvider.getUserRegistrationDAO();
+		try {
+			dto = dao.insertGuestInfo(con, dto);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return dto;
+	}
+
+	@Override
+	public boolean updateGuestIdBySeekerId(Connection con, String guest_id,
+			String seeker_id) throws ConfigurationException {
+		RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
+		try {
+			dao.upadteGuestInfo(con, guest_id, seeker_id);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+		return false;
+	}
+	public RideSeekerDTO showGuestRidePopup(Connection con, String seeker_id) {
+		RideSeekerDTO dtoList = new RideSeekerDTO();
+		RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
+		try {
+			dtoList = dao.showGuestRidePopup(con, seeker_id);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			try {
+				throw new ConfigurationException(
+						"Exception in retriving providers", e);
+			} catch (ConfigurationException e1) {
+				e1.printStackTrace();
+			}
+
+		}
+		return dtoList;
+
+	}
 }

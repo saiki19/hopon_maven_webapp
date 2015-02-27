@@ -42,6 +42,7 @@ import com.hopon.dto.CompanyRegisterDTO;
 import com.hopon.dto.ContactusDTO;
 import com.hopon.dto.FavoritePlacesDTO;
 import com.hopon.dto.FrequencyDTO;
+import com.hopon.dto.GuestRideDTO;
 import com.hopon.dto.HoponAccountDTO;
 import com.hopon.dto.LoginPageDTO;
 import com.hopon.dto.ManageRideDTO;
@@ -388,8 +389,6 @@ public class ListOfValuesManager {
 			try {
 				frequencyDTO = getTripService().loadFrequency(con, category,
 						frequencyDTO);
-				System.out.println("Inside the list of values manager:"
-						+ frequencyDTO);
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -2372,6 +2371,7 @@ public class ListOfValuesManager {
 	}
 
 	public static RideManagementDTO getRideManagerPopupDataDirect(String rideID) {
+
 		Connection con = getLocalConnection();
 		RideManagementDTO dto = null;
 		try {
@@ -4035,8 +4035,7 @@ public class ListOfValuesManager {
 
 		return dto;
 
-	}
-	
+	}	
 	public static List<PaymentTxnsDTO> fetchTxnAmountByfrompayer(Connection con,
 		 int id) throws ConfigurationException {
 		
@@ -4057,7 +4056,7 @@ public class ListOfValuesManager {
 
 	public static RideManagementDTO getRideIDByUserID(Connection con,
 			 int user_id) {
-		System.out.println("User id in ListOfValues:"+user_id);
+
 		RideManagementDTO dto=new RideManagementDTO();
 		try {
 		dto=getTripService().getRideIDByUserID(con, user_id);
@@ -4072,4 +4071,87 @@ public class ListOfValuesManager {
 		return dto;
 
 	}
-}
+	
+	public static UserRegistrationDTO getTravelByID(Connection con,
+			 String id) {
+		UserRegistrationDTO dto=new UserRegistrationDTO();
+		try {
+		dto=getTripService().getTravelByID(con,id);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+		return dto;
+	}
+	
+	public static void updateVehicleReassign(
+			int rideIdToReassign, int vehicleIdToTake)throws ConfigurationException {
+	
+		Connection con= getLocalConnection();
+			try {
+				getTripService().updateVehicleReassign(con, rideIdToReassign,
+						vehicleIdToTake);
+				
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			} finally {
+				ListOfValuesManager.releaseConnection(con);
+			}
+		}
+	public static GuestRideDTO GuestInfo(Connection con,GuestRideDTO dto) throws ConfigurationException{
+		try{
+			getTripService().insertGuestInfo(con, dto);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName()
+							+ "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+		return dto;
+	}
+	public static void updateGuestIdBySeekerId(Connection con,
+		String guest_id,String seeker_id)throws ConfigurationException {
+	
+	//	Connection con= getLocalConnection();
+			try {
+				getTripService().updateGuestIdBySeekerId(con, guest_id,seeker_id);				
+			} catch (ConfigurationException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+			} /*finally {
+				ListOfValuesManager.releaseConnection(con);
+			}*/
+		}
+	
+
+
+	public static RideSeekerDTO showGuestRidePopup(Connection con,String seeker_id) throws ConfigurationException{
+		RideSeekerDTO dto=new RideSeekerDTO();
+		try{
+		dto=getTripService().showGuestRidePopup(con, seeker_id);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName()
+							+ "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+		return dto;
+	}
+
+

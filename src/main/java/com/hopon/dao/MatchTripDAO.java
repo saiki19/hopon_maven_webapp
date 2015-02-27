@@ -189,19 +189,19 @@ public class MatchTripDAO {
 			final String rideDate, final int circleId) throws SQLException {
 		final List<CombineRideDTO> tripList = new ArrayList<CombineRideDTO>();
 		final StringBuilder query = new StringBuilder();
-		System.out.println("circle id:" + circleId);
+
 		if (circleId > 0) {
 			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name,"
-					+ " v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p "
+					+ " v.id, v.registration_no, v.Capacity, p.request_by,count(*) as capacity_used from pool_requests p "
 					+ "INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id "
 					+ "INNER JOIN users u ON r1.user_id = u.id "
 					+ "INNER JOIN vehicles_master v ON r1.vehicleID = v.id "
-					+ "INNER JOIN circle_members cm ON r1.user_id = cm.MemberId WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
+					+ "INNER JOIN circle_members cm ON p.request_by = cm.MemberId WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
 					+ ApplicationUtil.currentTimeStamp()
 					+ "' AND p.request_status = 'A' ");
 		} else {
 			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name, "
-					+ "v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p "
+					+ "v.id, v.registration_no, v.Capacity, p.request_by, count(*) as capacity_used from pool_requests p "
 					+ "INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id INNER JOIN users u ON r1.user_id = u.id"
 					+ " INNER JOIN vehicles_master v ON r1.vehicleID = v.id WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
 					+ ApplicationUtil.currentTimeStamp()
@@ -220,7 +220,7 @@ public class MatchTripDAO {
 					+ "' ");
 		}
 		query.append(" group by r1.ride_id, v.id ORDER BY r1.start_time ASC");
-		System.out.println("query :" + query);
+	
 		final PreparedStatement pstmt = con.prepareStatement(query.toString());
 		final ResultSet rs = QueryExecuter
 				.getResultSet(pstmt, query.toString());
@@ -229,7 +229,7 @@ public class MatchTripDAO {
 			dto.setRideId(rs.getString(1));
 			dto.setStartPoint(rs.getString(2));
 			dto.setEndPoint(rs.getString(3));
-			System.out.println("date:" + rs.getString(4));
+			
 			if (rs.getString(4) != null) {
 				try {
 					dto.setRideTime(ApplicationUtil.dateFormat4
@@ -811,7 +811,7 @@ public class MatchTripDAO {
 		sql2 += " ORDER BY rides_management.start_time DESC ";
 		query = new StringBuilder();
 		query.append(sql1);
-		System.out.println("query sql1 = " + sql1);
+		
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
 		while (rs.next()) {
@@ -842,7 +842,7 @@ public class MatchTripDAO {
 
 		query = new StringBuilder();
 		query.append(sql2);
-		System.out.println("query sql2 = " + sql2);
+		
 		pstmt = con.prepareStatement(query.toString());
 		rs = QueryExecuter.getResultSet(pstmt, query.toString());
 		while (rs.next()) {

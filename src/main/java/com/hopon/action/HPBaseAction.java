@@ -26,6 +26,7 @@ import com.hopon.dto.CompanyRegisterDTO;
 import com.hopon.dto.ContactusDTO;
 import com.hopon.dto.FavoritePlacesDTO;
 import com.hopon.dto.FrequencyDTO;
+import com.hopon.dto.GuestRideDTO;
 import com.hopon.dto.ManageRideDTO;
 import com.hopon.dto.ManageRideFormDTO;
 import com.hopon.dto.MatchedTripDTO;
@@ -81,6 +82,11 @@ public class HPBaseAction {
 	protected List<RideSeekerDTO> rideSeekerList = new ArrayList<RideSeekerDTO>();
 	protected List<RideSeekerDTO> recurringRideSeekerList = new ArrayList<RideSeekerDTO>();
 	protected List<RideSeekerDTO> dailyRideList = new ArrayList<RideSeekerDTO>();
+	//Guest Ride List
+	protected RideSeekerDTO showguestRide=new RideSeekerDTO();
+	
+	protected List<RideSeekerDTO> guestRideList=new ArrayList<RideSeekerDTO>();
+
 	protected List<PoolRequestsDTO> allCompleateRideList = new ArrayList<PoolRequestsDTO>();
 	protected List<PoolRequestsDTO> allCompleateRideSeekerList = new ArrayList<PoolRequestsDTO>();
 	protected List<PoolRequestsDTO> allMsgBoardCompleateRideList = new ArrayList<PoolRequestsDTO>();
@@ -150,25 +156,10 @@ public class HPBaseAction {
 	protected List<PaymentDTO> duePaymentList = new ArrayList<PaymentDTO>();
 	public boolean userCirclePaymentPending = false;
 	protected List<PaymentPlanDTO> userPaymentPlanList = new ArrayList<PaymentPlanDTO>();
-	/*
-	 * <!-- Code Changed by Kirty for selection Ride option with different User
-	 * Id-->
-	 */
+	
 	protected String circleType;
 
-	public String getCircleType() {
-		return circleType;
-	}
-
-	public void setCircleType(String circleType) {
-		this.circleType = circleType;
-	}
-
-	/*
-	 * <!-- Code Changed by Kirty for selection Ride option with different User
-	 * Id-->
-	 */
-
+	
 	protected List<SelectItem> allCompany;
 	protected List<SelectItem> companySector;
 	protected List<SelectItem> allCircleOption;
@@ -179,10 +170,40 @@ public class HPBaseAction {
 	protected String paymentSearchFrom;
 	protected String paymentSearchTo;
 
-	public String vehicleRegNoToDrop;
-	public String vehicleRegNoToTake;
+	protected int vehicleIdToDrop;
+	protected int vehicleIdToTake;
 	protected int rideIdToReassign;
+	// Start ContactUsDTO class
+	protected ContactusDTO contactusDTO = new ContactusDTO();
+	
+	//Guest VehicleDTO
+	protected GuestRideDTO guestRideDTO=new GuestRideDTO();	
+	
+	
+	public RideSeekerDTO getShowguestRide() {
+		return showguestRide;
+	}
 
+	public void setShowguestRide(RideSeekerDTO showguestRide) {
+		this.showguestRide = showguestRide;
+	}
+
+	public GuestRideDTO getGuestRideDTO() {
+		return guestRideDTO;
+	}
+
+	public void setGuestRideDTO(GuestRideDTO guestRideDTO) {
+		this.guestRideDTO = guestRideDTO;
+	}
+
+	public String getCircleType() {
+		return circleType;
+	}
+	
+	public void setCircleType(String circleType) {
+		this.circleType = circleType;
+	}
+	
 	public long getTransferAmount() {
 		return transferAmount;
 	}
@@ -231,20 +252,20 @@ public class HPBaseAction {
 		this.rideIdToReassign = rideIdToReassign;
 	}
 
-	public String getVehicleRegNoToDrop() {
-		return vehicleRegNoToDrop;
+	public int getVehicleIdToDrop() {
+		return vehicleIdToDrop;
 	}
 
-	public void setVehicleRegNoToDrop(String vehicleRegNoToDrop) {
-		this.vehicleRegNoToDrop = vehicleRegNoToDrop;
+	public void setVehicleIdToDrop(int vehicleIdToDrop) {
+		this.vehicleIdToDrop = vehicleIdToDrop;
 	}
 
-	public String getVehicleRegNoToTake() {
-		return vehicleRegNoToTake;
+	public int getVehicleIdToTake() {
+		return vehicleIdToTake;
 	}
 
-	public void setVehicleRegNoToTake(String vehicleRegNoToTake) {
-		this.vehicleRegNoToTake = vehicleRegNoToTake;
+	public void setVehicleIdToTake(int vehicleIdToTake) {
+		this.vehicleIdToTake = vehicleIdToTake;
 	}
 
 	// Start ContactUsDTO class
@@ -622,6 +643,14 @@ public class HPBaseAction {
 
 	public void setDailyRideList(List<RideSeekerDTO> dailyRideList) {
 		this.dailyRideList = dailyRideList;
+	}
+	
+	public List<RideSeekerDTO> getGuestRideList() {
+		return guestRideList;
+	}
+
+	public void setGuestRideList(List<RideSeekerDTO> guestRideList) {
+		this.guestRideList = guestRideList;
 	}
 
 	public void setTaxiCircleId(int taxiCircleId) {

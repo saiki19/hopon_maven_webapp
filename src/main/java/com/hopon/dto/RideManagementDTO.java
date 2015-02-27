@@ -74,6 +74,16 @@ public class RideManagementDTO {
 	private String pickup_time2;
 	private String startdateValue1;
 	private String groupId;
+	private String guest_id;
+	
+
+	public String getGuest_id() {
+		return guest_id;
+	}
+
+	public void setGuest_id(String guest_id) {
+		this.guest_id = guest_id;
+	}
 
 	public String getGroupId() {
 		return groupId;

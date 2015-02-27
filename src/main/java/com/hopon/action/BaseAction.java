@@ -148,6 +148,36 @@ public class BaseAction {
 	protected VehicleMasterDTO[] vehicleMasterDtos;
 	protected List<VehicleMasterDTO> vehicleMasterDTOList = new ArrayList<VehicleMasterDTO>();
 
+	protected int vehicleIdToDrop;
+	protected int vehicleIdToTake;
+	protected int rideIdToReassign;
+	
+	public int getVehicleIdToDrop() {
+		return vehicleIdToDrop;
+	}
+
+	public void setVehicleIdToDrop(int vehicleIdToDrop) {
+		this.vehicleIdToDrop = vehicleIdToDrop;
+	}
+
+	public int getVehicleIdToTake() {
+		return vehicleIdToTake;
+	}
+
+	public void setVehicleIdToTake(int vehicleIdToTake) {
+		this.vehicleIdToTake = vehicleIdToTake;
+	}
+
+	public int getRideIdToReassign() {
+		return rideIdToReassign;
+	}
+
+	public void setRideIdToReassign(int rideIdToReassign) {
+		this.rideIdToReassign = rideIdToReassign;
+	}
+
+	
+	
 	// ContactusDTO class
 	protected ContactusDTO dto = new ContactusDTO();
 
@@ -200,7 +230,7 @@ public class BaseAction {
 	}
 
 	// end ContactusDTO
-	
+
 	protected List<SelectItem> allCompany;
 	protected List<SelectItem> companySector;
 	protected List<SelectItem> allCircleOption;

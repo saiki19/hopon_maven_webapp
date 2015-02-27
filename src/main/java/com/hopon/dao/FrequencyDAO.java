@@ -39,7 +39,7 @@ public class FrequencyDAO {
 		pstmt.setInt(8, frequencyDTO.getCount());
 		pstmt.setString(9, frequencyDTO.getStatus());
 		
-		pstmt.executeUpdate();
+		int i=pstmt.executeUpdate();
 		// rideManagementDTO.setRideID(pstmt.getGeneratedKeys().getString(1));
 		ResultSet tableKeys = pstmt.getGeneratedKeys();
 		tableKeys.next();

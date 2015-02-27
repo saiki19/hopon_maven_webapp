@@ -57,17 +57,21 @@
 		<ul class="nav nav-list" id="left-panel-ul">
 			<li class="nav-header">Ride Section</li>
 
-			<!-- <pm:content rendered="#{sessionScope.user_role != 'T'}">
+			<pm:content rendered="#{sessionScope.user_role != 'T'}">
 				<li><a href="${url}/pages/rides/master_gr-new-ride.xhtml"><i
 						class="icon-edit"></i> New Ride</a></li>
-			</pm:content> -->
+			</pm:content>
 			
+			<pm:content rendered="#{sessionScope.user_role!='T'}">
+				<li><a href="${url}/pages/rides/guest_ride.xhtml"><i
+						class="icon-user"></i>Guest Ride</a></li>
+			</pm:content>
 			<pm:content
 				rendered="#{sessionScope.user_role=='B' || sessionScope.user_role=='C'}">
 				<li><a href="${url}/pages/rides/dailyride.xhtml" id="dailyride"><i
 						class="icon-edit"></i>Daily Rides</a></li>
 			</pm:content>
-	
+
 			<li><a href="${url}/pages/rides/master-gr-pending-trips.xhtml"><i
 					class="icon-share"></i> Pending Rides</a></li>
 			<li><a href="${url}/pages/rides/master-gr-completedride.xhtml"><i

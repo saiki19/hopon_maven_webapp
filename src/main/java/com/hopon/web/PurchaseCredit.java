@@ -38,8 +38,9 @@ public class PurchaseCredit extends HttpServlet {
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
-		System.out.println("Response:" + response.getContentType());
+		System.out.println("Response Data:" + response.getContentType());
 		String userId = (String) session.getAttribute("userId");
+
 		if (session != null && !Validator.isEmpty(userId)) {
 			float amount = 0;
 			String amtStr = request.getParameter("amount");
@@ -50,11 +51,12 @@ public class PurchaseCredit extends HttpServlet {
 				String orderId = "ORDS"
 						+ Math.round((Math.random() * 100000000));
 				try{
+					
 				// Add record into payment request table.
 
 				PaymentRequestDTO dto = new PaymentRequestDTO();
 				dto.setUserId(Integer.parseInt(userId));
-				dto.setOrderId(orderId);
+				dto.setOrder_id(orderId);
 				dto.setAmount(amount);
 				dto.setStatus("I");
 				dto.setCreditDebit("credit");
@@ -68,8 +70,7 @@ public class PurchaseCredit extends HttpServlet {
 				HoponAccountDTO hoponAccountDTO=new HoponAccountDTO();
 				int id = 101;
 				
-				hoponAccountDTO=ListOfValuesManager.fetchHoponAccountBalancebyId(hoponAccountDTO,id);
-				
+				hoponAccountDTO=ListOfValuesManager.fetchHoponAccountBalancebyId(hoponAccountDTO,id);	
 				float hoponAccount_balance=hoponAccountDTO.getBalance();
 				hoponAccount_balance=hoponAccount_balance+dto.getAmount();
 				hoponAccountDTO.setBalance(hoponAccount_balance);
@@ -86,6 +87,8 @@ public class PurchaseCredit extends HttpServlet {
 					if (rollbackTest) {
 						try {
 							con.rollback();
+							response.sendRedirect("/");
+							
 						} catch (SQLException e) {
 							LoggerSingleton.getInstance().error(
 									e.getStackTrace()[0].getClassName() + "->"
@@ -98,7 +101,73 @@ public class PurchaseCredit extends HttpServlet {
 					} else {
 						try {
 							con.commit();
-						} catch (SQLException e) {
+							
+							// redirecting to payment gateway
+							com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper
+									.getCheckSumServiceHelper();
+
+							ResourceBundle bundle = ResourceBundle
+									.getBundle("resource.paytm");
+
+							TreeMap<String, String> parameters = new TreeMap<String, String>();
+							String merchantKey = bundle.getString("paytm.merchantKey"); // Key
+																						// provided
+																						// by
+																						// Paytm
+							parameters.put("MID", bundle.getString("paytm.MID")); // Merchant
+																					// ID
+																					// (MID)
+																					// provided
+																					// by
+																					// Paytm
+							parameters.put("ORDER_ID", orderId); // Merchant’s order id
+							parameters.put("CUST_ID",
+									"CUST" + session.getAttribute("userId")); // Customer ID
+																				// registered
+																				// with
+																				// merchant
+							parameters.put("TXN_AMOUNT", String.valueOf(amount));
+
+							parameters.put("CHANNEL_ID",
+									bundle.getString("paytm.CHANNEL_ID"));
+							parameters.put("INDUSTRY_TYPE_ID",
+									bundle.getString("paytm.INDUSTRY_TYPE_ID")); // Provided
+																					// by
+																					// Paytm
+							parameters.put("WEBSITE", bundle.getString("paytm.WEBSITE")); // Provided
+																							// by
+																							// Paytm
+
+							String checkSum = "";
+							// Note: Above mentioned parameters are not complete list of
+							// parameters. Please refer integration document for additional
+							// parameters which need to be passed.
+							try {
+								checkSum = checkSumServiceHelper.genrateCheckSum(
+										merchantKey, parameters);
+							} catch (Exception e) {
+								
+								e.printStackTrace();
+							}
+
+							out.print("<html><head><title>Merchant Check Out Page</title></head><body><center><h1>Please do not refresh this page...</h1></center>");
+							out.print("<form method='post' action='"+bundle.getString("paytm.PAYTM_TXN_URL")+"' name='f1'>");
+							// out.print("<form method='post' action='http://localhost/hopdwld/captureImage/pgRedirect' name='f1'>");
+							out.print("<table><tbody>");
+
+							for (java.util.Map.Entry<String, String> entry : parameters
+									.entrySet()) {
+								String key = entry.getKey();
+								String value = entry.getValue();
+								out.print("<input type='hidden' name='" + key + "' value='"
+										+ value + "'>");
+							}
+							out.print("<input type='hidden' name='CHECKSUMHASH' value='"
+									+ checkSum + "'>");
+							out.print("</tbody></table><script type='text/javascript'>document.f1.submit();</script></form></body></html>");
+						
+						}
+						 catch (SQLException e) {
 							LoggerSingleton.getInstance().error(
 									e.getStackTrace()[0].getClassName() + "->"
 											+ e.getStackTrace()[0].getMethodName()
@@ -111,70 +180,7 @@ public class PurchaseCredit extends HttpServlet {
 					rollbackTest = false;
 				}
 				
-				com.paytm.merchant.CheckSumServiceHelper checkSumServiceHelper = com.paytm.merchant.CheckSumServiceHelper
-						.getCheckSumServiceHelper();
-
-				ResourceBundle bundle = ResourceBundle
-						.getBundle("resource.paytm");
-
-				TreeMap<String, String> parameters = new TreeMap<String, String>();
-				String merchantKey = bundle.getString("paytm.merchantKey"); // Key
-																			// provided
-																			// by
-																			// Paytm
-				parameters.put("MID", bundle.getString("paytm.MID")); // Merchant
-																		// ID
-																		// (MID)
-																		// provided
-																		// by
-																		// Paytm
-				parameters.put("ORDER_ID", orderId); // Merchant’s order id
-				parameters.put("CUST_ID",
-						"CUST" + session.getAttribute("userId")); // Customer ID
-																	// registered
-																	// with
-																	// merchant
-				parameters.put("TXN_AMOUNT", String.valueOf(amount));
-
-				parameters.put("CHANNEL_ID",
-						bundle.getString("paytm.CHANNEL_ID"));
-				parameters.put("INDUSTRY_TYPE_ID",
-						bundle.getString("paytm.INDUSTRY_TYPE_ID")); // Provided
-																		// by
-																		// Paytm
-				parameters.put("WEBSITE", bundle.getString("paytm.WEBSITE")); // Provided
-																				// by
-																				// Paytm
-
-				String checkSum = "";
-				// Note: Above mentioned parameters are not complete list of
-				// parameters. Please refer integration document for additional
-				// parameters which need to be passed.
-				try {
-					checkSum = checkSumServiceHelper.genrateCheckSum(
-							merchantKey, parameters);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				out.print("<html><head><title>Merchant Check Out Page</title></head><body><center><h1>Please do not refresh this page...</h1></center>");
-				out.print("<form method='post' action='"+bundle.getString("paytm.PAYTM_TXN_URL")+"' name='f1'>");
-				// out.print("<form method='post' action='http://localhost/hopdwld/captureImage/pgRedirect' name='f1'>");
-				out.print("<table><tbody>");
-
-				for (java.util.Map.Entry<String, String> entry : parameters
-						.entrySet()) {
-					String key = entry.getKey();
-					String value = entry.getValue();
-					out.print("<input type='hidden' name='" + key + "' value='"
-							+ value + "'>");
-				}
-				out.print("<input type='hidden' name='CHECKSUMHASH' value='"
-						+ checkSum + "'>");
-				out.print("</tbody></table><script type='text/javascript'>document.f1.submit();</script></form></body></html>");
-			
-			}
+			}		
 		} else {
 			response.sendRedirect("/");
 		}

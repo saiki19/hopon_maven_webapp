@@ -93,6 +93,7 @@ public class HoponAccountDAO {
 	
 	public HoponAccountDTO updateHoponAccountBalanceById(Connection con,
 			HoponAccountDTO dto, int id) throws SQLException {
+	
 		StringBuilder query = new StringBuilder();
 		query.append("UPDATE hoponaccounts SET balance = ?, updated_dt = ? WHERE idHoponAccounts ="+id);
 		PreparedStatement pstmt = con.prepareStatement(query.toString());

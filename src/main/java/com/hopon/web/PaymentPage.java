@@ -66,7 +66,7 @@ public class PaymentPage extends HttpServlet {
 				try {
 					checkSum = checkSumServiceHelper.genrateCheckSum(merchantKey, parameters);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 				

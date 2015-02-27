@@ -16,7 +16,7 @@ private static final long serialVersionUID = 1L;
 	public CombineVehicleDataModel(List<CombineRideDTO> list){
 		super(list);
 	}
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public CombineRideDTO getRowData(String arg0) {
 		// TODO Auto-generated method stub
@@ -24,11 +24,11 @@ private static final long serialVersionUID = 1L;
 		
 		  for (CombineRideDTO combineRideDTO : combineRideDTOs) {
 			if(combineRideDTO.getUserName().equals(arg0))
-				return combineRideDTO;
-			
+				return combineRideDTO;	
 		}
 		return null;
 	}
+	
 	@Override
 	public Object getRowKey(CombineRideDTO matchedTripDTO) {
 		// TODO Auto-generated method stub

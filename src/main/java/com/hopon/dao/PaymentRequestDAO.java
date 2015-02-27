@@ -20,19 +20,18 @@ public class PaymentRequestDAO {
 
 	public PaymentRequestDTO addPaymentRequestEntry(Connection con,PaymentRequestDTO dto) throws SQLException {
 		StringBuilder query = new StringBuilder();
-		query.append("INSERT INTO payment_request(`id`, `user_id`, `order_id`, `mode_org`, `amount`, `date_time`, `credit_debit`, `status`, `reason`, `created_date`, `created_by`) values(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		query.append("INSERT INTO payment_request(`id`, `user_id`, `order_id`, `amount`, `date_time`, `credit_debit`, `status`, `reason`, `created_date`, `created_by`) values(null, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		PreparedStatement pstmt = con.prepareStatement(query.toString(),
 				Statement.RETURN_GENERATED_KEYS);
 		pstmt.setInt(1, dto.getUserId());
-		pstmt.setString(2, dto.getOrderId());
-		pstmt.setString(3, dto.getModeOrg());
-		pstmt.setFloat(4, dto.getAmount());
-		pstmt.setString(5, ApplicationUtil.currentTimeStamp());
-		pstmt.setString(6, dto.getCreditDebit());
-		pstmt.setString(7, dto.getStatus());
-		pstmt.setString(8, dto.getReason());
-		pstmt.setString(9, ApplicationUtil.currentTimeStamp());
-		pstmt.setInt(10, dto.getCreatedBy());
+		pstmt.setString(2, dto.getOrder_id());
+		pstmt.setFloat(3, dto.getAmount());
+		pstmt.setString(4, ApplicationUtil.currentTimeStamp());
+		pstmt.setString(5, dto.getCreditDebit());
+		pstmt.setString(6, dto.getStatus());
+		pstmt.setString(7, dto.getReason());
+		pstmt.setString(8, ApplicationUtil.currentTimeStamp());
+		pstmt.setInt(9, dto.getCreatedBy());
 		pstmt.executeUpdate();
 		ResultSet tableKeys = pstmt.getGeneratedKeys();
 		tableKeys.next();
@@ -50,7 +49,7 @@ public class PaymentRequestDAO {
 		PreparedStatement pstmt = con.prepareStatement(query.toString(),
 				Statement.RETURN_GENERATED_KEYS);
 		pstmt.setInt(1, dto.getUserId());
-		pstmt.setString(2, dto.getOrderId());
+		pstmt.setString(2, dto.getOrder_id());
 		pstmt.setFloat(3, dto.getAmount());
 		pstmt.setString(4, dto.getCreditDebit());
 		pstmt.setString(5, dto.getStatus());
@@ -84,13 +83,14 @@ public class PaymentRequestDAO {
 	public void updatePaymentRequestEntryStatusByOrderId(Connection con,
 			PaymentRequestDTO dto) throws SQLException {
 		StringBuilder query = new StringBuilder();
-		query.append("UPDATE payment_request SET `status` = ?, `updated_date` = ?, `updated_by` = ? WHERE `order_id` = ?");
+		query.append("UPDATE payment_request SET `status` = ?, `updated_date` = ?, `updated_by` = ?,`transaction_id`=? WHERE `order_id` = ?");
 		PreparedStatement pstmt = con.prepareStatement(query.toString(),
 				Statement.RETURN_GENERATED_KEYS);
 		pstmt.setString(1, dto.getStatus());
 		pstmt.setString(2, ApplicationUtil.currentTimeStamp());
 		pstmt.setInt(3, dto.getUpdateBy());
-		pstmt.setString(4, dto.getOrderId());
+		pstmt.setString(4, dto.getOrder_id());
+		pstmt.setString(5, dto.getTransaction_id());
 		pstmt.executeUpdate();
 		pstmt.close();
 	}
@@ -119,7 +119,7 @@ public class PaymentRequestDAO {
 			Connection con, Date startDate, Date endDate) throws SQLException {
 		List<PaymentRequestDTO> dtos = new ArrayList<PaymentRequestDTO>();
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT p.`id`, p.`user_id`, p.`mode_org`, p.`amount`, p.`date_time`, p.`credit_debit`, p.`status`, p.`reason`, p.`created_date`, p.`created_by`, p.`updated_date`, p.`updated_by`, u.first_name from payment_request p LEFT OUTER JOIN users u ON p.user_id = u.id WHERE p.`date_time` between ? and ? ");
+		query.append("SELECT p.`id`, p.`user_id`, p.`amount`, p.`date_time`, p.`credit_debit`, p.`status`, p.`reason`, p.`created_date`, p.`created_by`, p.`updated_date`, p.`updated_by`, u.first_name from payment_request p LEFT OUTER JOIN users u ON p.user_id = u.id WHERE p.`date_time` between ? and ? ");
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		pstmt.setString(1, ApplicationUtil.dateFormat3.format(startDate));
 		pstmt.setString(2, ApplicationUtil.dateFormat3.format(endDate));
@@ -129,17 +129,16 @@ public class PaymentRequestDAO {
 
 			dto.setId(rs.getInt(1));
 			dto.setUserId(rs.getInt(2));
-			dto.setModeOrg(rs.getString(3));
-			dto.setAmount(rs.getFloat(4));
-			dto.setDateTime(rs.getString(5));
-			dto.setCreditDebit(rs.getString(6));
-			dto.setStatus(rs.getString(7));
-			dto.setReason(rs.getString(8));
-			dto.setCreatedDate(rs.getString(9));
-			dto.setCreatedBy(rs.getInt(10));
-			dto.setUpdatedDate(rs.getString(11));
-			dto.setUpdateBy(rs.getInt(12));
-			dto.setUserName(rs.getString(13));
+			dto.setAmount(rs.getFloat(3));
+			dto.setDateTime(rs.getString(4));
+			dto.setCreditDebit(rs.getString(5));
+			dto.setStatus(rs.getString(6));
+			dto.setReason(rs.getString(7));
+			dto.setCreatedDate(rs.getString(8));
+			dto.setCreatedBy(rs.getInt(9));
+			dto.setUpdatedDate(rs.getString(10));
+			dto.setUpdateBy(rs.getInt(11));
+			dto.setUserName(rs.getString(12));
 			dtos.add(dto);
 		}
 		return dtos;
@@ -151,7 +150,7 @@ public class PaymentRequestDAO {
 			throws SQLException {
 		List<PaymentRequestDTO> dtos = new ArrayList<PaymentRequestDTO>();
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT p.`id`, p.`user_id`, p.`mode_org`, p.`amount`, p.`date_time`, p.`credit_debit`, p.`status`, p.`reason`, p.`created_date`, p.`created_by`, p.`updated_date`, p.`updated_by`, u.first_name, p.order_id from payment_request p LEFT OUTER JOIN users u ON p.user_id = u.id WHERE 1 ");
+		query.append("SELECT p.`id`, p.`user_id`, p.`amount`, p.`date_time`, p.`credit_debit`, p.`status`, p.`reason`, p.`created_date`, p.`created_by`, p.`updated_date`, p.`updated_by`, u.first_name, p.order_id from payment_request p LEFT OUTER JOIN users u ON p.user_id = u.id WHERE 1 ");
 
 		if (!Validator.isEmpty(startDate))
 			query.append(" AND p.`date_time` > '"
@@ -180,18 +179,17 @@ public class PaymentRequestDAO {
 
 			dto.setId(rs.getInt(1));
 			dto.setUserId(rs.getInt(2));
-			dto.setModeOrg(rs.getString(3));
-			dto.setAmount(rs.getFloat(4));
-			dto.setDateTime(rs.getString(5));
-			dto.setCreditDebit(rs.getString(6));
-			dto.setStatus(rs.getString(7));
-			dto.setReason(rs.getString(8));
-			dto.setCreatedDate(rs.getString(9));
-			dto.setCreatedBy(rs.getInt(10));
-			dto.setUpdatedDate(rs.getString(11));
-			dto.setUpdateBy(rs.getInt(12));
-			dto.setUserName(rs.getString(13));
-			dto.setOrderId(rs.getString(14));
+			dto.setAmount(rs.getFloat(3));
+			dto.setDateTime(rs.getString(4));
+			dto.setCreditDebit(rs.getString(5));
+			dto.setStatus(rs.getString(6));
+			dto.setReason(rs.getString(7));
+			dto.setCreatedDate(rs.getString(8));
+			dto.setCreatedBy(rs.getInt(9));
+			dto.setUpdatedDate(rs.getString(10));
+			dto.setUpdateBy(rs.getInt(11));
+			dto.setUserName(rs.getString(12));
+			dto.setOrder_id(rs.getString(13));
 			dtos.add(dto);
 		}
 		return dtos;
@@ -200,27 +198,24 @@ public class PaymentRequestDAO {
 	public PaymentRequestDTO fetchPaymentRequestByOrderId(Connection con,
 			PaymentRequestDTO dto) throws SQLException {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT `id`, `user_id`, `mode_org`, `amount`, `date_time`, `credit_debit`, `status`, `reason`, `created_date`, `created_by`, `updated_date`, `updated_by` from payment_request WHERE `order_id` = ?");
+		query.append("SELECT `id`, `user_id`, `amount`, `date_time`, `credit_debit`, `status`, `reason`, `created_date`, `created_by`, `updated_date`, `updated_by` from payment_request WHERE `order_id` = ?");
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
-		pstmt.setString(1, dto.getOrderId());
+		pstmt.setString(1, dto.getOrder_id());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
 		if (rs.next()) {
 			dto.setId(rs.getInt(1));
 			dto.setUserId(rs.getInt(2));
-			dto.setModeOrg(rs.getString(3));
-			dto.setAmount(rs.getFloat(4));
-			dto.setDateTime(rs.getString(5));
-			dto.setCreditDebit(rs.getString(6));
-			dto.setStatus(rs.getString(7));
-			dto.setReason(rs.getString(8));
-			dto.setCreatedDate(rs.getString(9));
-			dto.setCreatedBy(rs.getInt(10));
-			dto.setUpdatedDate(rs.getString(11));
-			dto.setUpdateBy(rs.getInt(12));
+			dto.setAmount(rs.getFloat(3));
+			dto.setDateTime(rs.getString(4));
+			dto.setCreditDebit(rs.getString(5));
+			dto.setStatus(rs.getString(6));
+			dto.setReason(rs.getString(7));
+			dto.setCreatedDate(rs.getString(8));
+			dto.setCreatedBy(rs.getInt(9));
+			dto.setUpdatedDate(rs.getString(10));
+			dto.setUpdateBy(rs.getInt(11));
 		}
 		return dto;
 	}
-
-
-
+	
 }

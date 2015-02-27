@@ -19,25 +19,16 @@ function scroll(){
 	 window.scrollTo(0, 0);
 }
 
- function tablehidedisplay(){
-	$("#modalPanel-3").show();
 
-}
-function tablehide(){
-	$("#modalPanel-3").hide();
-
-}
  
 </script>
-			<h:head></h:head>
+		<h:head></h:head>
 			<h:body>
 				<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
 				<!-- Start: MAIN CONTENT -->
 				<div class="content">
 					<div class="container">
-						<!-- <div class="page-header">
-        <h1>The HopOn frequently asked questions</h1>
-      </div>  -->
+						
 						<div class="row">
 							<!-- <div class="span2"></div>  bs-docs-sidenav affix nav-tabs nav-stacked-->
 							<div class="span2">
@@ -52,31 +43,46 @@ function tablehide(){
 								<div class="page-header">
 									<h1>Combine Vehicles</h1>
 								</div>
-								<div>
+							<div>
 
-									<pm:content rendered="#{sessionScope.user_role == 'T' }">
-										<script type="text/javascript"
-											src="../../resources/js/bootstrap-tooltip.js"></script>
-										<script type="text/javascript">
-	jQuery(document).ready(function(){
-		updateToolTip();jQuery("#form2\\:noResult").hide()});
-	function updateToolTip(){
-		$("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}})
-		};
+	<pm:content rendered="#{sessionScope.user_role == 'T' }">
+	<script type="text/javascript" src="../../resources/js/bootstrap-tooltip.js"></script>
+	<script type="text/javascript">
+				jQuery(document).ready(function(){
+					$(".close").click(function(){ 
+						 $("#modalPanel-3").hide(); 
+					 });
+				updateToolTip();
+				jQuery("#form2\\:noResult").hide()
+			});
+				function updateToolTip(){
+				$("[data-toggle='tooltip']").tooltip({trigger:"hover focus",delay:{show:500,hide:100}})
+			};
 	</script>
-										<script type="text/javascript">
- 			
+										
+ <script type="text/javascript">
+ function triggerSearch(){ 
+	 $("#form1\\:combinesearch").trigger('click')
+ }
+ </script>		
 
-function validateDropTake(f,d,b)
+
+<script type="text/javascript">
+var flag=false;
+var flag1=false;
+		function validateDropTake(f,d,b)
  		{
- 				var c=new Array();
- 				if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":select1")
-			    	{
-	    	    	  alert("select1");
-			    		alert(b);
-		  				$("#form3\\:vehicleRegNoToTake").val(b);
+ 			var c=new Array();
+ 			if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":select1")
+			    {
+ 				if(d.is(":checked")){
+ 				flag1=true;
+ 				$("#form2\\:vehicleIdToTake").val(b);
+ 				}else{
+ 					flag1=false;
+ 				}
 		  		 		 
-		    		 }
+		    	}
  				else if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":drop")
  					{
  						if(d.is(":checked"))
@@ -97,19 +103,22 @@ function validateDropTake(f,d,b)
 								{
 									if(d.is(":checked"))
 										{
-										
-									alert(" : Ride has been selected to reassign :");
+										flag=true;
+									//alert(" : Ride has been selected to reassign :");
+										}else{
+											flag=false;
 										}
 								}
+									
  						 }
- 				var e=0;
- 				$("#form2\\:member").find("input[type=checkbox][id$=drop]").each(
+ 				 var e=0;
+ 				 $("#form2\\:member").find("input[type=checkbox][id$=drop]").each(
  								 					function(){
- 								 							if($(this).is(":checked"))
+ 								 						if($(this).is(":checked"))
  								 							{
  								 								e+=1
  								 							}
- 								 							 }
+ 								 						}
  								 					);
  						 var a=0;
  						 $("#form2\\:member").find("input[type=checkbox][id$=take]").each(
@@ -170,26 +179,25 @@ function validateDropTake(f,d,b)
  							    	        	if(d.is(":checked"))
  							    	        		 {
  							    	        			$("#form2\\:rideIdToTake").val(b);
- 							    	        			$("#form2\\:rideIdToTake1").val(b);
- 							    	        			alert(b);
+ 							    	        	
  							    	        		 }
  							    	         }
  							    	     else if(d.attr("id").substring(d.attr("id").lastIndexOf(":"))==":reassign")
  							    	    	 {
+ 							    		
  							    	    		if(d.is(":checked"))
 					    	        			 {
- 							    	    			alert(b);
- 							    	    			$("#form2\\:rideIdToReassign").val(b);
- 							    	    			$("#form2\\:rideIdToReassign1").val(b);
- 							    	    			alert(b);
+ 							    	    			
+ 							    	    		$("#modalPanel-3").show();
+ 							    	    	
+ 									  		 	$("#form2\\:rideIdToReassign").val(b);
 					    	        		 	 }
+ 							    	    	
  							    	    	 }
  							    	    
  				                      }
  							 }
- 		  }
- 		
- 		
+ 		}	
  		function validateCombine()
  			{ 
  			 if(parseInt($("#form2\\:rideIdToDrop").val())>0)
@@ -201,11 +209,32 @@ function validateDropTake(f,d,b)
  			 return false
  			};
  			
- 
- 	</script>
-        
-          	${userAction.clearScreenMessage()}	
-		<p:panel id="messagePanel" style="border:none;">
+ 			 
+ 			function tablehide(){
+ 				$("#modalPanel-3").hide();
+ 				return false;
+ 			}
+ 			
+ 			function reassignVehicle(){
+ 		 		if(flag==true){
+ 		 			if(flag1 == true){
+ 		 	 		 tablehide();	
+ 		 	 		 return true;
+ 		 	 		}else{
+ 		 		 		alert("Please select vehicle from vehicle list");
+ 		 		 	 return false;
+ 		 		 	  } 
+ 		 			flag=false;
+ 		 			flag1=false;
+ 		 			return true;
+ 		 		}else if(flag == false){
+ 			 		alert("Please select atleast one re-assign check box");
+ 			 	 return false;
+ 			 	  } 
+ 		 	}	
+ </script>
+          						${userAction.clearScreenMessage()}	
+								<p:panel id="messagePanel" style="border:none;">
 											<c:forEach var="sucMessage"
 												items="${userAction.successMessage}">
 												<div class="alert fade in alert-success"
@@ -221,24 +250,28 @@ function validateDropTake(f,d,b)
 													<span class="form-message">${errMessage}</span>
 												</div>
 											</c:forEach>	
-			${userAction.clearScreenMessage()}
-		</p:panel>
-										<pm:content>
-            	${userAction.clearCombineVehicleSearch()}
-              <h:form styleClass="form-inline" id="form1">
+							${userAction.clearScreenMessage()}
+								</p:panel>
+								
+									<pm:content>
+            							${userAction.clearCombineVehicleSearch()}
+             							 <h:form styleClass="form-inline" id="form1">
 												<h:inputText id="from"
 													value="#{userAction.rideManagementDTO.fromAddress1}"
-													style="width:180px;"></h:inputText> &nbsp;
-	               	<p:watermark for="from" value="From"></p:watermark>
+													style="width:180px;">
+												</h:inputText> &nbsp;
+	               						<p:watermark for="from" value="From"></p:watermark>
 												<h:inputText id="to"
 													value="#{userAction.rideManagementDTO.toAddress1}"
-													style="width:180px;"></h:inputText> &nbsp;
-	               	<p:watermark for="to" value="To"></p:watermark>
+													style="width:180px;">
+												</h:inputText> &nbsp;
+	               						<p:watermark for="to" value="To"></p:watermark>
 												<p:calendar id="calendar"
 													value="#{userAction.rideManagementDTO.startDate}"
 													pattern="dd MMM yyyy"></p:calendar>
 												<p:watermark for="calendar" value="Date"></p:watermark> &nbsp;
-	               	<h:selectOneMenu
+												
+	               								<h:selectOneMenu
 													rendered="#{not empty userAction.allAffiliateCircleForTaxiUser and sessionScope.user_role == 'T'}"
 													value="#{userAction.circleDTO.circleID}"
 													style="height: 30px;;width: 150px;">
@@ -246,15 +279,19 @@ function validateDropTake(f,d,b)
 													<f:selectItems
 														value="#{userAction.allAffiliateCircleForTaxiUser}" />
 												</h:selectOneMenu> &nbsp;
-	             	<h:commandLink styleClass="btn btn-info" value="Search">
-													<p:ajax process="@form"
+												
+	             						<h:commandLink onclick="if(!$(this).parent().find('select:last').val()>0){
+	             							alert('Please Select affiliated circle.'); 
+	             							return false;}" 
+	             							styleClass="btn btn-info" value="Search" id="combinesearch" >
+	             						 <p:ajax process="@form"
 														listener="#{userAction.combineVehicleSearch}"
 														update="@form,:form2,:messagePanel"
-														oncomplete="updateDataTable1();updateToolTip();" />
-												</h:commandLink>
-											</h:form>
-										</pm:content>
-
+														oncomplete="updateDataTable1();
+														updateToolTip();"/>
+										</h:commandLink>
+										</h:form>
+									</pm:content>
 										<pm:content>
 
 											<h:form styleClass="form-inline" id="form2">
@@ -262,7 +299,7 @@ function validateDropTake(f,d,b)
 													rendered="#{userAction.combineVehicleCondition.size() le 0}"
 													id="noResult"
 													style="border:none;background:#FCFCFC;margin-left: -15px;">No result is found.</p:panel>
-												<div id="ui-table-1">
+												<div id="ui-table-2">
 													<p:dataTable rowKey="#{tripList}" id="member"
 														styleClass="table table-bordered table-striped"
 														value="#{userAction.combineVehicleDataModel}"
@@ -283,7 +320,7 @@ function validateDropTake(f,d,b)
 														<p:column headerText="Re-Assign" width="11%">
 															<h:selectBooleanCheckbox value="#{tripList.reassign}"
 																onchange="validateDropTake(#{row}, $(this), #{tripList.rideId});"
-																id="reassign" />
+																id="reassign" class="reassignclass" />
 														</p:column>
 														<p:column headerText="Vehicle" width="8%">
 															<h:outputText value="#{tripList.vehicleRegNo}" />
@@ -296,6 +333,7 @@ function validateDropTake(f,d,b)
 																tripList.startPoint} ${(fn:length(tripList.startPoint) >
 																30) ? '...' : ''}</span>
 														</p:column>
+														
 														<p:column headerText="To" sortBy="endPoint"
 															style="width:29%">
 															<span data-toggle="tooltip" title="${tripList.endPoint}">${(fn:length(tripList.endPoint)
@@ -303,25 +341,37 @@ function validateDropTake(f,d,b)
 																tripList.endPoint} ${(fn:length(tripList.endPoint) > 30)
 																? '...' : ''}</span>
 														</p:column>
+														
 														<p:column headerText="Ride Time" width="17%">
 															<h:outputText value="#{tripList.rideTime}" />
 														</p:column>
+														
 														<p:column headerText="Capacity" width="7%">
 															<h:outputText
 																value="#{tripList.usedCapacity} / #{tripList.capacity}" />
 														</p:column>
+														
 													</p:dataTable>
 												</div>
-												<h:inputHidden value="#{userAction.rideIdToDrop}"
-													id="rideIdToDrop" />
+												<!-- <h:inputHidden value="#{userAction.rideIdToDrop}"
+													id="rideIdToDrop" /> -->
+													
 												<h:inputHidden value="#{userAction.rideIdToTake}"
 													id="rideIdToTake" />
+												
+												<h:inputHidden value="#{userAction.vehicleIdToDrop}"
+													id="vehicleIdToDrop" />
+												<h:inputHidden value="#{userAction.vehicleIdToTake}" id="vehicleIdToTake" />
+												
 												<h:inputHidden value="#{userAction.rideIdToReassign}"
 													id="rideIdToReassign" />
-												<!-- 	<h:outputText value="#{userAction.rideIdToReassign}"
-													id="rideIdToReassign1" /> -->
-												<!-- <h:outputText value="#{userAction.rideIdToTake}"
+											 	<!-- <h:outputText value="#{userAction.rideIdToReassign}" 
+													id="rideIdToReassign1" /> &nbsp;
+												 <h:outputText value="#{userAction.rideIdToTake}"
 													id="rideIdToTake1" /> -->
+													
+													<h:inputHidden value="#{userAction.rideIdToDrop}"
+													id="rideIdToDrop" />
 												<h:commandLink styleClass="btn btn-success"
 													value="Combine Vehicles"
 													rendered="#{not empty userAction.combineVehicleCondition}"
@@ -331,18 +381,22 @@ function validateDropTake(f,d,b)
 														update="@form,:form1,:messagePanel"
 														oncomplete="updateDataTable1();updateToolTip();" />
 												</h:commandLink>
-												&nbps;
+										&nbsp;&nbsp;
 
 												<h:commandLink styleClass="btn btn-success"
 													value="Re-Assign Vehicle"
 													rendered="#{not empty userAction.combineVehicleCondition}"
-													onclick="tablehidedisplay()">
-													<p:ajax update="@form,:form1,:form2,"
-														oncomplete="modalUpdate();updateDataTable1();updateToolTip();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html(''); "
-														listener="#{userAction.vehicleList}" process="@this" />
+													onclick="return reassignVehicle();">
+													<p:ajax update="@form,:form3"
+														oncomplete="modalUpdate();
+														updateDataTable1();
+														updateToolTip();
+														if($('#ui-table-1 tr th:first').length > 0) 
+														$('#ui-table-1 tr th:first').attr('class', '').html('');
+														triggerSearch(); "
+														listener="#{userAction.reassignVehicle}" process="@form,:form3" />
 												</h:commandLink>
-
-
+												
 											</h:form>
 										</pm:content>
 									</pm:content>
@@ -350,7 +404,7 @@ function validateDropTake(f,d,b)
 									<pm:content rendered="#{sessionScope.user_role != 'T' }">
 										<span class="span10 muted lead">
 											<h3>
-												<h:outputText value="${msgs['error.permissionDenied']}"></h:outputText>
+												<h:outputText value="${msgs['error.permissionDenied']}"/>
 											</h3>
 										</span>
 									</pm:content>
@@ -359,6 +413,7 @@ function validateDropTake(f,d,b)
 
 
 								<!-- table section ends here -->
+								<form>
 								<div id="modalPanel-3" class="modal hide fade in"
 									style="display: none;">
 
@@ -381,8 +436,7 @@ function validateDropTake(f,d,b)
 														rowIndexVar="row" widgetVar="matches">
 
 														<p:column headerText="" width="3%">
-															<h:selectBooleanCheckbox id="select1"
-																value="#{veh.select}"
+															<h:selectBooleanCheckbox id="select1" value="#{veh.select}"  
 																onchange="validateDropTake(#{row}, $(this), #{veh.vehicleID});" />
 														</p:column>
 
@@ -393,26 +447,16 @@ function validateDropTake(f,d,b)
 
 													</p:dataTable>
 												</div>
-												<h:inputHidden value="#{userAction.vehicleRegNoToTake}"
-													id="vehicleRegNoToTake" />
-												<h:inputHidden value="#{userAction.vehicleRegNoToDrop}"
-													id="vehicleRegNoToDrop" />
-												<h:outputText value="#{userAction.vehicleRegNoToTake}"></h:outputText>
+													
+											<!-- <h:outputText value="#{userAction.vehicleIdToTake}"></h:outputText> -->
 
-												<h:commandLink styleClass="btn btn-success" value="Save"
-													onclick="tablehide()">
-													<p:ajax listener="#{userAction.reassignVehicle}"
-														oncomplete="updateDataTable1();modalUpdate();scroll();"
-														process="@this" update="@form,:form2" />
-												</h:commandLink>
-
-
-
+												<h:button class="btn btn-success" value="Select" id="save"
+													onclick="return reassignVehicle();"></h:button>									
 											</h:form>
 										</pm:content>
 									</div>
 								</div>
-
+</form>
 
 							</div>
 

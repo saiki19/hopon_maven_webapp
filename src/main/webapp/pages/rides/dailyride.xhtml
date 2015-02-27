@@ -339,7 +339,7 @@
 								$("#tab1\\:dp2").focus().css({
 									"border-color" : "red",
 								});
-								aven
+								
 								return false;
 							}
 							$("#tab1\\:hiddenid").val(rd1);
@@ -609,7 +609,6 @@
 																				rendered="#{sessionScope.user_role == 'C' || (sessionScope.user_role == 'B' and userAction.ridePicker ==1)}"
 																				styleClass="btn btn-large btn-success"
 																				value="Register" id="submitBtn">
-																				<f:param value="takeRide" name="ride"></f:param>
 																				<p:ajax process="@form"
 																					listener="#{userAction.dailyRide}" update="@form"
 																					oncomplete="updatePart();googleLoc();"
