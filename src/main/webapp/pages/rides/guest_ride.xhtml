@@ -1,0 +1,597 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile" contentType="text/html"
+	renderKitId="PRIMEFACES_MOBILE">
+<f:view>
+	<pm:page>
+		<pm:view>
+			<ui:include src="../../pages/common/headerScript.xhtml"></ui:include>
+
+			<script type="text/javascript">
+				Date.prototype.format = function(b) {
+					var c = {
+						"M+" : this.getMonth() + 1,
+						"d+" : this.getDate(),
+						"h+" : this.getHours(),
+						"m+" : this.getMinutes(),
+						"s+" : this.getSeconds(),
+						"q+" : Math.floor((this.getMonth() + 3) / 3),
+						S : this.getMilliseconds()
+					};
+					if (/(y+)/.test(b)) {
+						b = b.replace(RegExp.$1, (this.getFullYear() + "")
+								.substr(4 - RegExp.$1.length))
+					}
+					for ( var a in c) {
+						if (new RegExp("(" + a + ")").test(b)) {
+							b = b
+									.replace(
+											RegExp.$1,
+											RegExp.$1.length == 1 ? c[a]
+													: ("00" + c[a])
+															.substr(("" + c[a]).length))
+						}
+					}
+					return b
+				};
+				jQuery(document).ready(function() {
+					updatePart();
+					googleLoc();
+				});
+				function updatePart() {
+					$("#tab1\\:curentDate").datetimepicker(
+							{
+								dateFormat : "dd M y,",
+								timeFormat : "hh:mm TT",
+								minDate : new Date(),
+								onSelect : function() {
+									var d = $("#tab1\\:curentDate").datepicker(
+											"getDate");
+									d.setDate(d.getDate() + 1);
+									var c = $("#tab1\\:curentDate").datepicker(
+											"getDate");
+									c.setDate(c.getDate() + 61);
+									$("#tab1\\:curentDate2").datepicker(
+											"option", "minDate", d);
+									$("#tab1\\:curentDate2").datepicker(
+											"option", "maxDate", c)
+								}
+							});
+					$("#tab1\\:curentDate2").datetimepicker(
+							{
+								dateFormat : "dd M y,",
+								timeFormat : "hh:mm TT",
+								minDate : Date.parseString(
+										"#{userAction.minDate}",
+										"dd NNN yy, HH:mm a")
+							});
+					var a = new Date();
+					a.setDate(a.getDate() + 1);
+					var b = new Date();
+					b.setDate(b.getDate() + 60);
+					$("#tab1\\:curentDate2").datepicker("option", "minDate", a);
+					$("#tab1\\:curentDate2").datepicker("option", "maxDate", b);
+					$("#tab1\\:fromcity, #tab1\\:frompin, #tab1\\:tocity, #tab1\\:topin").prop("readonly", true);
+				}
+				function check() {
+					document.getElementById("form:takeride").className += " btn btn-small btn-success"
+				};
+				
+			</script>
+			<c:set
+				value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}"
+				property="url" var="url" />
+
+			<link rel="stylesheet"
+				href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+
+			<script src="../../resources/js/checkbox_hide.js"></script>
+
+			<script src="../../resources/js/jquery.min.js"></script>
+
+			<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+			
+			<script>
+				var x = jQuery.noConflict();
+				function googleLoc() {
+					x(function() {
+						x("#tab1\\:fromaddress")
+								.autocomplete(
+										{
+											source : function(b, a) {
+												$("#tab1\\:fromcity").val("");
+												$("#tab1\\:frompin").val("");
+												$("#tab1\\:startPoinLat").val(
+														"");
+												$("#tab1\\:startPoinLng").val("");
+												x
+														.ajax({
+															url : "http://maps.googleapis.com/maps/api/geocode/json",
+															data : {
+																sensor : false,
+																address : b.term,
+																components : "country:IN"
+															},
+															success : function(
+																	f) {
+																var l = new Array();
+																for ( var e in f.results) {
+																	var h = "";
+																	var g = "";
+																	for ( var d in f.results[e]["address_components"]) {
+																		for ( var c in f.results[e]["address_components"][d]["types"]) {
+																			if (f.results[e]["address_components"][d]["types"][c] == "locality") {
+																				h = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																			if (f.results[e]["address_components"][d]["types"][c] == "postal_code") {
+																				g = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																		}
+																	}
+																	l
+																			.push({
+																				formatted_address : f.results[e]["formatted_address"],
+																				lat : f.results[e]["geometry"]["location"]["lat"],
+																				lng : f.results[e]["geometry"]["location"]["lng"],
+																				city : h,
+																				postal_code : g
+																			})
+																}
+																a($
+																		.map(
+																				l,
+																				function(
+																						i) {
+																					return {
+																						label : i.formatted_address,
+																						value : i.formatted_address,
+																						lat : i.lat,
+																						lng : i.lng,
+																						city : i.city,
+																						postal_code : i.postal_code
+																					}
+																				}))
+															}
+														})
+											},
+											minLength : 2,
+											select : function(a, b) {
+												$("#tab1\\:fromcity").val(
+														b.item.city);
+												$("#tab1\\:frompin").val(
+														b.item.postal_code);
+												$("#tab1\\:startPoinLat").val(
+														b.item.lat);
+												$("#tab1\\:startPoinLng").val(
+														b.item.lng)
+											}
+										});
+						x("#tab1\\:toaddress")
+								.autocomplete(
+										{
+											source : function(b, a) {
+												$("#tab1\\:tocity").val("");
+												$("#tab1\\:topin").val("");
+												$("#tab1\\:endPoinLat").val("");
+												$("#tab1\\:endPoinLng").val("");
+												x
+														.ajax({
+															url : "http://maps.googleapis.com/maps/api/geocode/json",
+															data : {
+																sensor : false,
+																address : b.term,
+																components : "country:IN"
+															},
+															success : function(
+																	f) {
+																var l = new Array();
+																for ( var e in f.results) {
+																	var h = "";
+																	var g = "";
+																	for ( var d in f.results[e]["address_components"]) {
+																		for ( var c in f.results[e]["address_components"][d]["types"]) {
+																			if (f.results[e]["address_components"][d]["types"][c] == "locality") {
+																				h = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																			if (f.results[e]["address_components"][d]["types"][c] == "postal_code") {
+																				g = f.results[e]["address_components"][d]["long_name"];
+																				break
+																			}
+																		}
+																	}
+																	l
+																			.push({
+																				formatted_address : f.results[e]["formatted_address"],
+																				lat : f.results[e]["geometry"]["location"]["lat"],
+																				lng : f.results[e]["geometry"]["location"]["lng"],
+																				city : h,
+																				postal_code : g
+																			})
+																}
+																a($
+																		.map(
+																				l,
+																				function(
+																						i) {
+																					return {
+																						label : i.formatted_address,
+																						value : i.formatted_address,
+																						lat : i.lat,
+																						lng : i.lng,
+																						city : i.city,
+																						postal_code : i.postal_code
+																					}
+																				}))
+															}
+														})
+											},
+											minLength : 2,
+											select : function(a, b) {
+												$("#tab1\\:tocity").val(
+														b.item.city);
+												$("#tab1\\:topin").val(
+														b.item.postal_code);
+												$("#tab1\\:endPoinLat").val(
+														b.item.lat);
+												$("#tab1\\:endPoinLng").val(
+														b.item.lng)
+											}
+										})
+					})
+				};
+			</script>
+			<script type="text/javascript">
+				function validate_rideSeeker() {
+					var guestdata=$("#guest\\:fname").val();
+				
+					var a = Date.parseString($("#tab1\\:curentDate").val(),
+							"dd NNN yy, HH:mm a");
+					var f = Date.parseString($("#tab1\\:curentDate2").val(),
+							"dd NNN yy, HH:mm a");
+					var e = $("#tab1\\:fromaddress").val();
+					var d = $("#tab1\\:toaddress").val();
+					var b = new Array();
+					if (guestdata=="") {
+						b.push("Please select guest page.");	
+					} 
+					else if (a == null) {
+						b.push("Please select Start Date.");
+					} 
+					else if ($.trim(e).length == 0) {
+						b.push("Please enter source address.");
+					} 
+					else if ($.trim(d).length == 0){
+						b.push("Please enter destination address.");
+					} 	
+					if (b.length > 0) {
+						$("#errorMessage").show();
+						window.scrollTo(0, 0);
+						$("#errorMessage").find(".form-message").html("");
+						for ( var c in b) {
+							$("#errorMessage").find(".form-message").append(
+									b[c] + "&lt;br>");
+							window.scrollTo(0, 0);
+						}
+					} else {
+						$("#errorMessage").hide();
+						$("#errorMessage").find(".form-message").html("");
+						return true
+					}
+					return false
+				}
+			</script>
+		
+		<script type="text/javascript">
+						function validateGuest(){
+						 var fname=$("#guest\\:fname").val();
+						 var lname=$("#guest\\:lname").val();
+						 var mobno=$("#guest\\:mobno").val();
+						 var email=$("#guest\\:email").val();
+							if(fname ==""){
+								$("#guest\\:fname").focus().css({"border-color":"red",});
+								return false;
+							}else if(lname==""){
+								//alert("lname con't be empty..");
+								$("#guest\\:lname").focus().css({"border-color":"red",});
+								return false;
+							}else if(mobno==""){
+								//alert("Mobile number con't be empty.");
+								$("#guest\\:mobno").focus().css({"border-color":"red",});
+								return false;
+							}else if(email==""){
+								//alert("Email id con't be empty.");
+								$("#guest\\:email").focus().css({"border-color":"red",});	
+								return false;
+							}else
+							 $("#modalPanel-2").hide(); 	
+					};//End of the click function
+			
+			</script> 
+	<h:head></h:head>
+<h:body>
+	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
+	<div class="content">
+		<div class="container">
+			<div class="row">
+				<div class="span2">
+                     <div class="smv-leftnav">
+									<!-- Include leftPanel.xhtml -->
+							<ui:include src="../../pages/common/leftPanel.xhtml"></ui:include>
+						</div>
+				</div>
+							<!-- table section -->
+		<c:choose>
+			<c:when var="test" test="#{sessionScope.user_role == 'C' || sessionScope.user_role == 'P' || sessionScope.user_role == 'B'}">
+			<pm:content>
+				<span style="display: none">
+					${userAction.clearNewRide()}
+					${userAction.validateUserPayment()} </span>
+	<h:form id="tab1" styleClass="form-horizontal">
+		<div class="span10">
+				<div class="page-header">
+					 <h1>New Ride</h1>
+				</div>
+				<p:messages id="messages" showDetail="false" autoUpdate="true" />
+					<c:forEach var="errMessage" items="${userAction.errorMessage}">
+					    <div class="alert fade in alert-error" style="display: none;">
+						    <button class="close" data-dismiss="alert" type="button">×</button>
+							  <span class="form-message">${errMessage}</span>
+						</div>
+					</c:forEach>
+											<div id="x3">
+			<p:panel id="messagePanel" style="border:none;background:#FCFCFC;">
+				<c:forEach var="sucMessage" items="${userAction.successMessage}">
+					<div class="alert fade in alert-success" syle="display:none;">
+						<button class="close" data-dismiss="alert" type="button">×</button>
+						<span class="form-message">${sucMessage}</span>
+					</div>
+			</c:forEach>
+			<c:forEach var="errMessage" items="${userAction.errorMessage}">
+					<div class="alert fade in alert-error" syle="display:none;">
+						<button class="close" data-dismiss="alert" type="button">×</button>
+						<span class="form-message">${errMessage}</span>
+					</div>
+			</c:forEach>	
+										${userAction.clearScreenMessage()}
+		</p:panel>
+</div>
+										<span style="display: none">
+													${userAction.clearScreenMessage()} </span>
+												<div class="row">
+													<div class="span8">
+														<div class="alert fade in alert-error"
+															style="display: none;" id="errorMessage">
+															<span class="form-message"></span>
+														</div>
+													</div>
+												</div>
+											
+	<div>
+		 <div class="row">
+				<div class="span4 ">
+						<div class="well changer" style="height: 125px;">
+ 							<div class="control-group">
+ 							<label class="control-label" for="inputPassword"><b>Trip date/time</b></label>
+ 							<div class="controls">
+									<h:inputText id="curentDate" value="#{userAction.rideRegistered.startDate1}" />
+							</div>
+					        </div>
+				<div class="control-group">
+					<label class="control-label" for="custom"><b>
+					<h:outputLabel value="Custom" rendered="#{sessionScope.user_role == 'C' || sessionScope.user_role == 'B'}" />
+					</b></label>
+					
+					<div class="controls" style="display: inline-block; margin-left: 8px;">
+						&nbsp;<h:inputText id="custom" value="#{userAction.rideRegistered.custom}" rendered="#{sessionScope.user_role == 'C' || sessionScope.user_role == 'B'}" />
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="inputPassword"><b>
+					<h:outputLabel value="My Vehicles" rendered="#{(userAction.ridePicker ==2 and userAction.userRegistrationDTO.travel eq 'B') or (userAction.userRegistrationDTO.travel eq 'P')}" />
+					</b></label>
+		
+				 <div class="controls" style="display: inline-block; margin-left: 8px;"> &nbsp;
+					<h:selectOneMenu id="vehicleId" rendered="#{(userAction.ridePicker ==2 and userAction.userRegistrationDTO.travel eq 'B') or (userAction.userRegistrationDTO.travel eq 'P')}" value="#{userAction.rideRegistered.vehicleID}">
+						<f:selectItems value="#{userAction.allVehicleList}"></f:selectItems>
+					</h:selectOneMenu>
+			  </div>
+	
+			</div>
+ 	</div>
+ 			<div class="well changer">
+				<p>
+				<strong>Address From</strong>
+				</p>
+			<div class="control-group">
+				<label class="control-label" for="inputEmail">Address Tag</label>
+				<div class="controls">
+					<h:selectOneMenu id="from" value="#{userAction.rideRegistered.fromAddressTag}">
+					<f:selectItem itemLabel="New" itemValue="new"></f:selectItem>
+					<f:selectItems value="#{userAction.allPlacesList}" />
+					<p:ajax listener="#{userAction.processValueChange}" process="@this,from"
+					update="fromaddress,fromcity,frompin,startPoinLat,startPoinLng"
+					oncomplete="googleLoc();updatePart();" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+														
+			<div class="control-group">
+				<label class="control-label" for="inputPassword">Address1</label>
+				<div class="controls">
+					<h:inputText id="fromaddress" value="#{userAction.rideRegistered.fromAddress1}" />
+				</div>
+			</div>
+		<h:inputHidden id="fromcity" value="#{userAction.rideRegistered.fromAddressCity}" />
+		<h:inputHidden id="frompin" value="#{userAction.rideRegistered.fromAddressPin}" />
+		<h:inputHidden id="startPoinLat" value="#{userAction.rideRegistered.startPointLatitude}" />
+		<h:inputHidden id="startPoinLng" value="#{userAction.rideRegistered.startPointLongitude}" />
+		<div class="control-group">
+			<label class="control-label" for="inputPassword">Tag (20 limit)</label>
+			<div class="controls">
+				<h:inputText value="#{userAction.rideRegistered.fromAddressTagLimit}" />
+			</div>
+		</div>
+	</div>	
+</div>
+	<!-- Guest Modal -->
+	<div class="span4 ">
+ 			${userAction.clearScreenMessage()}
+				<div class="well changer" style="height: 125px;">
+					<div class="control-group">
+							<strong>Guest Form</strong>
+							<div style="margin-bottom: 22px; padding: 7px 1px;">
+       							
+       		 					<div class="spa" style="margin-top:15px;">
+									<span class="modal-link-span-2" style="margin-left: 3px;">
+									<h:commandLink styleClass="btn btn-success" onclick="$('#guest table input[type=text]').val(''); return false;" 
+									value="Guest">
+									</h:commandLink>
+									&nbsp;
+									</span>
+								</div>
+	 						 
+  							</div>
+  					  </div>
+				</div>	
+
+	<!-- start ToAddress Section -->
+		<div class="well changer">
+			<p>
+			<strong>Address To</strong> &nbsp;
+			</p>
+				<div class="control-group">
+						<label class="control-label" for="inputEmail">Address Tag</label>
+				<div class="controls">
+					<h:selectOneMenu id="to" value="#{userAction.rideRegistered.toAddressTag}">
+						<f:selectItem itemLabel="New" itemValue="new"></f:selectItem>
+						<f:selectItems value="#{userAction.allPlacesList}" />
+						<p:ajax listener="#{userAction.processValueChange1}" process="@this,to" update="toaddress,tocity,topin,endPoinLat,endPoinLng"
+						oncomplete="googleLoc();updatePart();" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+		<div class="control-group">
+				<label class="control-label" for="inputEmail">Address1</label>
+					<div class="controls">
+						<h:inputText id="toaddress" value="#{userAction.rideRegistered.toAddress1}" />
+					</div>
+		</div>
+					<h:inputHidden id="tocity" value="#{userAction.rideRegistered.toAddressCity}" />
+					<h:inputHidden id="topin" value="#{userAction.rideRegistered.toAddressPin}" />
+					<h:inputHidden id="endPoinLat" value="#{userAction.rideRegistered.endPointLatitude}" />
+					<h:inputHidden id="endPoinLng" value="#{userAction.rideRegistered.endPointLongitude}" />
+
+				<div class="control-group">
+					<label class="control-label" for="inputPassword">Tag(20 limit)</label>
+					<div class="controls">
+						<h:inputText value="#{userAction.rideRegistered.toAddressTagLimit}" />
+					</div>
+			   </div>
+	</div>
+	<!-- End of the ToAddress Section -->
+															
+	<div class="well changer" style="height: 150px; display: none;">
+		<p> <strong>Flexibility (Time) </strong></p>
+				${userAction.userRatingUpdate()}
+			<script type="text/javascript">
+					jQuery(document).ready(function() {
+					var a = "#{userAction.userRegistrationDTO.defaultTimeSlice}";
+						if (a.length > 5) {
+						a = a.substring(0,5)
+					}
+					$("#tab1\\:before_input").val(a);
+					$("#tab1\\:after_input").val(a)
+				});
+			</script>
+		<div class="control-group">
+			<label class="control-label" for="inputPassword">Time before</label>
+				<div class="controls">
+					<p:calendar id="before" value="#{userAction.rideRegistered.flexiTimeBefore}"
+							pattern="HH:mm" timeOnly="true" label="00:30">
+					</p:calendar>
+				</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="inputPassword">Time After</label>
+				<div class="controls">
+					<p:calendar id="after" value="#{userAction.rideRegistered.flexiTimeAfter}"
+								pattern="HH:mm" timeOnly="true">
+					</p:calendar>
+					</div>
+	  			</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+	<p>		
+		<h:commandButton  styleClass="btn btn-large btn-success" action = "#{userAction.guestRideInfo}"  
+			value="Register" onclick="return validate_rideSeeker();" >
+			<p:ajax process="@this,tab1" update=":tab1" oncomplete="updatePart();googleLoc();" 
+			onsuccess="window.location ='${url}/pages/rides/master-gr-pending-trips.xhtml'"/>
+		</h:commandButton>
+		&nbsp;&nbsp;
+		 <h:commandButton styleClass="btn btn-large btn-danger" value="Clear">
+		    <p:ajax listener="#{userAction.clearNewRide}" update="@form"/>
+		 </h:commandButton> &nbsp;
+		</p>
+</div>
+</h:form>
+	<div id="modalPanel-2" class="modal hide fade in" style="display: none;">
+        	<div class="modal-header">
+        		<a class="close" data-dismiss="modal">×</a>
+        		<h3>Enter the Guest Page Details</h3>
+           </div>
+			<div class="modal-body"> 
+			<p:panel style="border: medium none;" id="modalPanel-2-panel">
+			<h:form id="guest">				
+				<h:panelGrid columns="2">
+					<h:outputText value="First Name" for= "fname"></h:outputText>
+					<h:inputText  id="fname" name = "fname" value="#{userAction.guestRideDTO.guest_fname}" ></h:inputText>
+					<h:outputText value="Last Name"></h:outputText>
+					<h:inputText  id="lname" value="#{userAction.guestRideDTO.guest_lname}"></h:inputText> 
+					<h:outputText value="Mobile No"></h:outputText>
+					<h:inputText  id="mobno" value="#{userAction.guestRideDTO.guest_mobile_no}" >
+					<f:validateLength maximum="10"></f:validateLength>
+					</h:inputText>	
+					<h:outputText value="Email"></h:outputText>
+					<h:inputText id="email" value="#{userAction.guestRideDTO.guest_email_id}"/>  
+		           <h:commandButton onclick="return validateGuest();" styleClass="btn btn-success" value="select">
+		          	<p:ajax oncomplete="updateDataTable1(); modalUpdate(); scroll();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html('');" process="@this,guest" 
+		          	update=":guest"/>
+		            </h:commandButton>
+				</h:panelGrid>
+			</h:form>
+			</p:panel>         
+			</div>  	
+        </div>
+	</pm:content>
+</c:when>
+			<c:otherwise>
+				<span class="span10 muted lead"><h3>
+					<h:outputText value="${msgs['error.permissionDenied']}"></h:outputText>
+						</h3>
+				</span>
+			</c:otherwise>
+		</c:choose>
+	</div>
+</div>
+</div>
+				<!-- End: MAIN CONTENT -->
+				<ui:include src="../../pages/common/footer-content.xhtml"></ui:include>
+
+			</h:body>
+		</pm:view>
+	</pm:page>
+</f:view>
+
+</html>

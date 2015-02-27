@@ -4153,5 +4153,6 @@ public class ListOfValuesManager {
 		}
 		return dto;
 	}
+}
 
 

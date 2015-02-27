@@ -173,8 +173,8 @@ public class HPBaseAction {
 	protected int vehicleIdToDrop;
 	protected int vehicleIdToTake;
 	protected int rideIdToReassign;
-	// Start ContactUsDTO class
-	protected ContactusDTO contactusDTO = new ContactusDTO();
+	/*// Start ContactUsDTO class
+	protected ContactusDTO contactusDTO = new ContactusDTO();*/
 	
 	//Guest VehicleDTO
 	protected GuestRideDTO guestRideDTO=new GuestRideDTO();	
