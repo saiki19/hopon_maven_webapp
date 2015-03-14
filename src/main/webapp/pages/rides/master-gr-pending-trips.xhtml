@@ -41,7 +41,7 @@
 							$(this).tab('show');
 						}
 					});
-				</script>  -->
+				</script> -->
 				<script type="text/javascript">
 				$(document).ready(function(){ 
     				$("#myTab li:eq(0) a").tab('show');
@@ -57,6 +57,8 @@
 	   		    $("#myTab li:eq(2) a").tab('show');
 			}else if(url2=="recurring"){
 		   		$("#myTab li:eq(1) a").tab('show');	
+			}else if(url2=="guest"){
+				$("#myTab li:eq(3) a").tab('show');
 			}else{
 				$("#myTab li:eq(0) a").tab('show');	
 			}
@@ -321,77 +323,9 @@
 												
 											</div>
 										</div>
-									<!-- End DailyRide for Consumer Section -->			
-									
-										<div class="tab-pane fade" id="guestride_consume">
-											<div id="ui-table-4">
-													<pm:content rendered="#{empty userAction.rideSeekerList}">
-														<p class="alert alert-info">You have no pending rides.</p>
-													</pm:content>
-													<p:dataTable
-														styleClass="table table-bordered table-striped"
-														value="#{userAction.rideSeekerList}" var="rideSeeker"
-														rendered="#{not empty userAction.rideSeekerList}">
-														<!--  if want to revert back use classes table  table-striped -->
-														<p:column headerText="Req-id" width="8%">
-															<h:outputText value="#{rideSeeker.seekerID}"></h:outputText>
-														</p:column>
-														<p:column headerText="Name" width="8%">
-														<span class="modal-link-span-2" id="modalid2"
-															style="display: none;"> 
-														<p:commandLink id="one"
-															value="Name"
-															onclick="return false;" update="modalPanel-2-panel">
-														</p:commandLink>
-																	</span>
-														</p:column>
-														<p:column headerText="From" width="20%">
-															<span data-toggle="tooltip"
-																title="${rideSeeker.fromAddress1}">${(fn:length(rideSeeker.fromAddress1)
-																> 20) ? fn:substring(rideSeeker.fromAddress1, 0, 20) :
-																rideSeeker.fromAddress1}
-																${(fn:length(rideSeeker.fromAddress1) > 20) ? '...' :
-																''}</span>
-														</p:column>
-														<p:column headerText="To" width="20%">
-															<pm:content
-																rendered="#{not empty rideSeeker.fullDay and rideSeeker.fullDay eq 'N'}">
-																<span data-toggle="tooltip"
-																	title="${rideSeeker.toAddress1}">${(fn:length(rideSeeker.toAddress1)
-																	> 20) ? fn:substring(rideSeeker.toAddress1, 0, 20) :
-																	rideSeeker.toAddress1}
-																	${(fn:length(rideSeeker.toAddress1) > 20) ? '...' : ''}</span>
-															</pm:content>
-														</p:column>
-														<p:column headerText="Date" width="16%">
-															<h:outputText value="#{rideSeeker.startdateValue}" />
-														</p:column>
-														
-														<p:column headerText="Frequency" width="9%">
-															<h:outputText value="#{rideSeeker.frequencyinweek}"></h:outputText>
-														</p:column>
-														<p:column width="8%">
-															<span class="modal-link-span-2"> <p:commandLink
-																	id="modalDialogButton" value="Duplicate"
-																	oncomplete="return false;" update=":modalPanel-2-panel">
-																	<f:setPropertyActionListener
-																		target="#{userAction.rideSeekerDTO}"
-																		value="#{rideSeeker}"></f:setPropertyActionListener>
-																</p:commandLink>
-															</span>
-														</p:column>
-														<p:column width="7%">
-															<h:commandLink value="Cancel"
-																onclick="return confirm('Are You sure want to cancel the ride.');"
-																action="#{userAction.cancleRideSeeker}">
-																<f:setPropertyActionListener
-																	target="#{userAction.rideSeekerDTO}"
-																	value="#{rideSeeker}"></f:setPropertyActionListener>
-															</h:commandLink>
-														</p:column>
-													</p:dataTable>
-												</div>
-										</div>
+									<!-- End DailyRide for Consumer Section -->
+												
+								
 								</div>
 							</h:form>
 			<div id="modalPanel-1" class="modal hide fade in" style="display: none; ">
@@ -416,7 +350,7 @@
         	</div>
         </div> 
        
-        
+      
         <div id="modalPanel-2" class="modal hide fade in" style="display: none; ">
         	<div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Copy Ride</h3></div>
         	<div class="modal-body">
@@ -447,8 +381,8 @@
         		<p:panel style="border: medium none;" id="modalPanel-3-panel"> </p:panel>
         	</div>
         </div> 
-										</pm:content>
-										<!-- End DailyRide for Consumer Section -->
+ </pm:content>
+<!-- End DailyRide for Consumer Section -->
 								<pm:content
 									rendered="#{sessionScope.user_role == 'P' || sessionScope.user_role == 'B'}">
 									<div class="bs-docs-example">
@@ -517,11 +451,13 @@
 															<h:outputText value="#{ride.frequencyinweek}"></h:outputText>
 														</p:column>
 														<p:column width="8%">
-															<span class="modal-link-span-8"> <p:commandLink
+															<span class="modal-link-span-8"> 
+															<p:commandLink
 																	id="modalDialogButton" value="Duplicate"
 																	oncomplete="return false;" update=":modalPanel-8-panel">
 																	<f:setPropertyActionListener
-																		target="#{userAction.rideRegistered}" value="#{ride}"></f:setPropertyActionListener>
+																		target="#{userAction.rideRegistered}" value="#{ride}">
+																		</f:setPropertyActionListener>
 																</p:commandLink>
 															</span>
 														</p:column>
@@ -781,7 +717,7 @@
 										
 										<!-- Start Guest Ride section -->
 										<div class="tab-pane fade" id="guestride_consume">
-											<div id="ui-table-guest">
+											<div id="ui-table-4">
 													<pm:content rendered="#{empty userAction.guestRideList}">
 														<p class="alert alert-info">You have no Guest rides.</p>
 													</pm:content>
@@ -794,11 +730,11 @@
 															<h:outputText value="#{rideSeeker.seekerID}"></h:outputText>
 														</p:column>
 															<p:column headerText="Name" width="10%">
-															<span class="modal-link-span-4">
+															<span class="modal-link-span-7">
 															<p:commandLink value="Name"
 																	oncomplete="updateDataTable(); return false;"
 																	action="#{userAction.GuestRidePopup}"
-																	update=":modalPanel-guest-panel">
+																	update=":modalPanel-7-panel">
 																	<f:param name="seekerId"
 																		value="#{rideSeeker.seekerID}" />
 																	<f:param name="isResult"
@@ -850,9 +786,9 @@
 													</p:dataTable>
 												</div>
 										</div>
-										</div>
-										</h:form>
-										
+									</div>
+								</h:form>
+								
 										<!-- End of modal -->
 
 									<div id="modalPanel-8" class="modal hide fade in"
@@ -887,9 +823,35 @@
 										</div>
 									</div>
  
-			<div id="modalPanel-9" class="modal hide fade in" style="display: none; ">
-        	<div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Copy Ride</h3></div>
+   <!-- Start GuestRide Panel -->  
+       	<div id="modalPanel-7" class="modal hide fade in" style="display:none">
+        	<div class="modal-header">
+        	<a class="close" data-dismiss="modal">×</a><h3> Guest Seekers Details</h3></div>
         	<div class="modal-body">
+        		<p:panel style="border: medium none;" id="modalPanel-7-panel">
+             	<div id="ui-table-4">
+	               <p:dataTable value="#{userAction.showguestRide}" var="ride">
+	               <p:column headerText="First Name" width="15%">
+	               <h:outputText value="#{ride.guest_fname}"></h:outputText>
+	               </p:column>
+	               <p:column headerText="Last Name" width="30%">
+	               <h:outputText value="#{ride.guest_lname}"></h:outputText>
+	               </p:column>
+	               <p:column headerText="Mobile No" width="30%">
+	               <h:outputText value="#{ride.guest_mobile_no}"></h:outputText>
+	               </p:column>
+	               <p:column headerText="Email" width="23%">
+	               <h:outputText value="#{ride.guest_email_id}"></h:outputText>
+	               </p:column>	               
+	               </p:dataTable>
+	     		</div>
+	     		</p:panel>
+        	</div>
+        </div> 
+     <!-- End of the GuestRide Section --> 
+			<div id="modalPanel-9" class="modal hide fade in" style="display: none; ">
+        	 <div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Copy Ride</h3></div>
+        	 <div class="modal-body">
         		<p:panel style="border: medium none;" id="modalPanel-9-panel">
         		<h:form>
         		<table>
@@ -912,32 +874,7 @@
 	</pm:content>
 <!-- Ends for Both P and C section  -->
 
-<!-- Start GuestRide Panel -->  
-       	<div id="modalPanel-4" class="modal hide fade in" style="display:none">
-        	<div class="modal-header">
-        	<a class="close" data-dismiss="modal">×</a><h3> Guest Seekers Details</h3></div>
-        	<div class="modal-body">
-        		<p:panel style="border: medium none;" id="modalPanel-guest-panel">
-             	<div id="ui-table-3">
-	               <p:dataTable value="#{userAction.showguestRide}" var="ride">
-	               <p:column headerText="First Name" width="15%">
-	               <h:outputText value="#{ride.guest_fname}"></h:outputText>
-	               </p:column>
-	               <p:column headerText="Last Name" width="30%">
-	               <h:outputText value="#{ride.guest_lname}"></h:outputText>
-	               </p:column>
-	               <p:column headerText="Mobile No" width="30%">
-	               <h:outputText value="#{ride.guest_mobile_no}"></h:outputText>
-	               </p:column>
-	               <p:column headerText="Email" width="23%">
-	               <h:outputText value="#{ride.guest_email_id}"></h:outputText>
-	               </p:column>	               
-	               </p:dataTable>
-	     		</div>
-	     		</p:panel>
-        	</div>
-        </div> 
-     <!-- End of the GuestRide Section --> 
+
 
 	<!-- Starts for Taxi section -->
 	<pm:content rendered="#{sessionScope.user_role == 'T' }">
@@ -991,7 +928,8 @@
           		<span class="muted lead">You have no Pending rides</span>
           </pm:content>
           <div id="ui-table-2">
-          <p:dataTable styleClass="table table-bordered table-striped" value="#{userAction.rideSeekerList}" var="rideSeeker" rendered="#{not empty userAction.rideSeekerList and false}"> <!--  if want to revert back use classes table  table-striped -->
+          <p:dataTable styleClass="table table-bordered table-striped" value="#{userAction.rideSeekerList}" var="rideSeeker" rendered="#{not empty userAction.rideSeekerList and false}">
+           <!--  if want to revert back use classes table  table-striped -->
                 <p:column headerText="Match" width="12%">
                 <span class="modal-link-span-4">
                		<p:commandLink  value="#{ride.vehicleID}"  onclick="return false;" update=":modalPanel-4-panel"  rendered="#{rideSeeker.status eq 'I' or rideSeeker.isResult eq 'Y'}"/>
@@ -1073,7 +1011,7 @@
         </div> 
         
 		</pm:content>	
-			<!-- Ends forTaxi C section -->
+	
 		 <div id="modalPanel-4" class="modal hide fade in" style="display:none">
         	<div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3> Ride Seekers Details</h3></div>
         	<div class="modal-body">
@@ -1108,7 +1046,7 @@
 	     		</div>
 	     		</p:panel>
         	</div>
-        </div> 
+        </div>  
 
         <div id="modalPanel-10" class="modal hide fade in" style="display: none; ">
         	<div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3> Ride Manager Details</h3></div>

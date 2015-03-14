@@ -258,13 +258,29 @@
 							"dd NNN yy, HH:mm a");
 					var e = $("#tab1\\:fromaddress").val();
 					var d = $("#tab1\\:toaddress").val();
+					var fname= $("#tab1\\:fname").val();
+					var lname = $("#tab1\\:lname").val();
+					var mobno= $("#tab1\\:mobno").val();
+					var email = $("#tab1\\:email").val();
 					var b = new Array();
-					if (guestdata=="") {
+					 if (guestdata=="") {
 						b.push("Please select guest page.");	
-					} 
+					}  
 					else if (a == null) {
 						b.push("Please select Start Date.");
 					} 
+					else if (fname == "") {
+						b.push("Please enter first name.");
+					}
+					else if (lname == "") {
+						b.push("Please enter last name.");
+					}
+					else if (mobno == "") {
+						b.push("Please enter mobile no.");
+					}
+					else if (email == "") {
+						b.push("Please enter email id.");
+					}
 					else if ($.trim(e).length == 0) {
 						b.push("Please enter source address.");
 					} 
@@ -277,7 +293,7 @@
 						$("#errorMessage").find(".form-message").html("");
 						for ( var c in b) {
 							$("#errorMessage").find(".form-message").append(
-									b[c] + "&lt;br>");
+									b[c]);
 							window.scrollTo(0, 0);
 						}
 					} else {
@@ -289,7 +305,7 @@
 				}
 			</script>
 		
-		<script type="text/javascript">
+	<!-- 	<script type="text/javascript">
 						function validateGuest(){
 						 var fname=$("#guest\\:fname").val();
 						 var lname=$("#guest\\:lname").val();
@@ -315,6 +331,7 @@
 					};//End of the click function
 			
 			</script> 
+		 -->
 	<h:head></h:head>
 <h:body>
 	<ui:include src="../../pages/common/headerContent.xhtml"></ui:include>
@@ -346,12 +363,14 @@
 							  <span class="form-message">${errMessage}</span>
 						</div>
 					</c:forEach>
-											<div id="x3">
-			<p:panel id="messagePanel" style="border:none;background:#FCFCFC;">
-				<c:forEach var="sucMessage" items="${userAction.successMessage}">
-					<div class="alert fade in alert-success" syle="display:none;">
-						<button class="close" data-dismiss="alert" type="button">×</button>
-						<span class="form-message">${sucMessage}</span>
+				<span style="display: none"> ${userAction.clearScreenMessage()} </span>
+					<div class="row">
+					  <div class="span8">
+						 <div class="alert fade in alert-error" style="display: none;" id="errorMessage">
+						    <button class="close" type="button" onclick="$('#errorMessage').hide();">×</button>
+							  <span class="form-message"></span>
+						</div>
+					  </div>
 					</div>
 			</c:forEach>
 			<c:forEach var="errMessage" items="${userAction.errorMessage}">
@@ -375,15 +394,15 @@
 												</div>
 											
 	<div>
-		 <div class="row">
-				<div class="span4 ">
-						<div class="well changer" style="height: 125px;">
- 							<div class="control-group">
+		<div class="row">
+			<div class="span4 ">
+				<div class="well changer" style="height: 125px;">
+ 						  <div class="control-group">
  							<label class="control-label" for="inputPassword"><b>Trip date/time</b></label>
  							<div class="controls">
 									<h:inputText id="curentDate" value="#{userAction.rideRegistered.startDate1}" />
 							</div>
-					        </div>
+					     </div>
 				<div class="control-group">
 					<label class="control-label" for="custom"><b>
 					<h:outputLabel value="Custom" rendered="#{sessionScope.user_role == 'C' || sessionScope.user_role == 'B'}" />
@@ -399,14 +418,13 @@
 					<h:outputLabel value="My Vehicles" rendered="#{(userAction.ridePicker ==2 and userAction.userRegistrationDTO.travel eq 'B') or (userAction.userRegistrationDTO.travel eq 'P')}" />
 					</b></label>
 		
-				 <div class="controls" style="display: inline-block; margin-left: 8px;"> &nbsp;
-					<h:selectOneMenu id="vehicleId" rendered="#{(userAction.ridePicker ==2 and userAction.userRegistrationDTO.travel eq 'B') or (userAction.userRegistrationDTO.travel eq 'P')}" value="#{userAction.rideRegistered.vehicleID}">
+				 	<div class="controls" style="display: inline-block; margin-left: 8px;"> &nbsp;
+						<h:selectOneMenu id="vehicleId" rendered="#{(userAction.ridePicker ==2 and userAction.userRegistrationDTO.travel eq 'B') or (userAction.userRegistrationDTO.travel eq 'P')}" value="#{userAction.rideRegistered.vehicleID}">
 						<f:selectItems value="#{userAction.allVehicleList}"></f:selectItems>
-					</h:selectOneMenu>
-			  </div>
-	
-			</div>
- 	</div>
+						</h:selectOneMenu>
+			  		</div>
+				</div>
+ 			</div>
  			<div class="well changer">
 				<p>
 				<strong>Address From</strong>
@@ -425,43 +443,58 @@
 			</div>
 														
 			<div class="control-group">
-				<label class="control-label" for="inputPassword">Address1</label>
+				<label class="control-label" for="inputPassword">Address</label>
 				<div class="controls">
 					<h:inputText id="fromaddress" value="#{userAction.rideRegistered.fromAddress1}" />
 				</div>
 			</div>
-		<h:inputHidden id="fromcity" value="#{userAction.rideRegistered.fromAddressCity}" />
-		<h:inputHidden id="frompin" value="#{userAction.rideRegistered.fromAddressPin}" />
-		<h:inputHidden id="startPoinLat" value="#{userAction.rideRegistered.startPointLatitude}" />
-		<h:inputHidden id="startPoinLng" value="#{userAction.rideRegistered.startPointLongitude}" />
-		<div class="control-group">
-			<label class="control-label" for="inputPassword">Tag (20 limit)</label>
-			<div class="controls">
-				<h:inputText value="#{userAction.rideRegistered.fromAddressTagLimit}" />
+			
+			<div class="control-group">
+				<label class="control-label" for="inputPassword">Tag (20 limit)</label>
+				<div class="controls">
+					<h:inputText value="#{userAction.rideRegistered.fromAddressTagLimit}" />
+				</div>
 			</div>
-		</div>
-	</div>	
-</div>
+				<h:inputHidden id="fromcity" value="#{userAction.rideRegistered.fromAddressCity}" />
+				<h:inputHidden id="frompin" value="#{userAction.rideRegistered.fromAddressPin}" />
+				<h:inputHidden id="startPoinLat" value="#{userAction.rideRegistered.startPointLatitude}" />
+				<h:inputHidden id="startPoinLng" value="#{userAction.rideRegistered.startPointLongitude}" />
+	   </div>	
+ </div>
+ 
 	<!-- Guest Modal -->
 	<div class="span4 ">
  			${userAction.clearScreenMessage()}
-				<div class="well changer" style="height: 125px;">
-					<div class="control-group">
-							<strong>Guest Form</strong>
-							<div style="margin-bottom: 22px; padding: 7px 1px;">
-       							
-       		 					<div class="spa" style="margin-top:15px;">
-									<span class="modal-link-span-2" style="margin-left: 3px;">
-									<h:commandLink styleClass="btn btn-success" onclick="$('#guest table input[type=text]').val(''); return false;" 
-									value="Guest">
-									</h:commandLink>
-									&nbsp;
-									</span>
-								</div>
-	 						 
-  							</div>
-  					  </div>
-				</div>	
+ 				<div class="well changer">
+			<p>
+				<strong>Guest Form</strong>
+				</p>
+			<div class="control-group">
+				<label class="control-label" for="inputPassword">First Name</label>
+				<div class="controls">
+					<h:inputText  id="fname" name = "fname" value="#{userAction.guestRideDTO.guest_fname}" ></h:inputText>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputPassword">Last Name</label>
+				<div class="controls">
+					<h:inputText  id="lname" name = "lname" value="#{userAction.guestRideDTO.guest_lname}" ></h:inputText>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputPassword">Mobile No</label>
+				<div class="controls">
+					<h:inputText  id="mobno" value="#{userAction.guestRideDTO.guest_mobile_no}" />
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputPassword">Email id</label>
+				<div class="controls">
+					<h:inputText id="email" value="#{userAction.guestRideDTO.guest_email_id}"/>  
+				</div>
+			</div>
+				
+	   </div>	
 
 	<!-- start ToAddress Section -->
 		<div class="well changer">
@@ -480,7 +513,7 @@
 				</div>
 			</div>
 		<div class="control-group">
-				<label class="control-label" for="inputEmail">Address1</label>
+				<label class="control-label" for="inputEmail">Address</label>
 					<div class="controls">
 						<h:inputText id="toaddress" value="#{userAction.rideRegistered.toAddress1}" />
 					</div>
@@ -497,54 +530,56 @@
 					</div>
 			   </div>
 	</div>
-	<!-- End of the ToAddress Section -->
-															
-	<div class="well changer" style="height: 150px; display: none;">
-		<p> <strong>Flexibility (Time) </strong></p>
-				${userAction.userRatingUpdate()}
-			<script type="text/javascript">
-					jQuery(document).ready(function() {
-					var a = "#{userAction.userRegistrationDTO.defaultTimeSlice}";
-						if (a.length > 5) {
-						a = a.substring(0,5)
-					}
-					$("#tab1\\:before_input").val(a);
-					$("#tab1\\:after_input").val(a)
-				});
-			</script>
-		<div class="control-group">
-			<label class="control-label" for="inputPassword">Time before</label>
-				<div class="controls">
-					<p:calendar id="before" value="#{userAction.rideRegistered.flexiTimeBefore}"
-							pattern="HH:mm" timeOnly="true" label="00:30">
-					</p:calendar>
-				</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label" for="inputPassword">Time After</label>
-				<div class="controls">
-					<p:calendar id="after" value="#{userAction.rideRegistered.flexiTimeAfter}"
-								pattern="HH:mm" timeOnly="true">
-					</p:calendar>
-					</div>
-	  			</div>
-			</div>
+	
+				<!-- End of the ToAddress Section -->														
+					<div class="well changer" style="height: 150px; display: none;">
+						<p> <strong>Flexibility (Time) </strong></p>
+							${userAction.userRatingUpdate()}
+						<script type="text/javascript">
+							jQuery(document).ready(function() {
+							var a = "#{userAction.userRegistrationDTO.defaultTimeSlice}";
+							if (a.length > 5) {
+							a = a.substring(0,5)
+							}
+							$("#tab1\\:before_input").val(a);
+							$("#tab1\\:after_input").val(a)
+						});
+						</script>
+						<div class="control-group">
+							<label class="control-label" for="inputPassword">Time before</label>
+							<div class="controls">
+								<p:calendar id="before" value="#{userAction.rideRegistered.flexiTimeBefore}"
+									pattern="HH:mm" timeOnly="true" label="00:30">
+								</p:calendar>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="inputPassword">Time After</label>
+							<div class="controls">
+								<p:calendar id="after" value="#{userAction.rideRegistered.flexiTimeAfter}"
+									pattern="HH:mm" timeOnly="true">
+								</p:calendar>
+							</div>
+	  					</div>
+ 				 </div>
+			<!-- End of the Destination Address -->
 		</div>
 	</div>
 </div>
-
-	<p>		
-		<h:commandButton  styleClass="btn btn-large btn-success" action = "#{userAction.guestRideInfo}"  
-			value="Register" onclick="return validate_rideSeeker();" >
-			<p:ajax process="@this,tab1" update=":tab1" oncomplete="updatePart();googleLoc();" 
-			onsuccess="window.location ='${url}/pages/rides/master-gr-pending-trips.xhtml'"/>
-		</h:commandButton>
-		&nbsp;&nbsp;
-		 <h:commandButton styleClass="btn btn-large btn-danger" value="Clear">
-		    <p:ajax listener="#{userAction.clearNewRide}" update="@form"/>
-		 </h:commandButton> &nbsp;
-		</p>
-</div>
+			<!-- Starts the Button Section -->
+			<p>		
+				<h:commandButton  styleClass="btn btn-large btn-success" action = "#{userAction.guestRideInfo}"  
+					value="Register" onclick="return validate_rideSeeker();" >
+					<p:ajax process="@this,tab1" update=":tab1" oncomplete="updatePart();googleLoc();"
+					onsuccess="window.location ='${url}/pages/rides/master-gr-pending-trips.xhtml?page=guest'"/>
+				</h:commandButton>
+				&nbsp;&nbsp;
+				 <h:commandButton styleClass="btn btn-large btn-danger" value="Clear">
+		 	  	 <p:ajax listener="#{userAction.clearNewRide}" update="@form"/>
+				 </h:commandButton> &nbsp;
+			</p>
+			<!-- End of the Button Section -->
+	</div>
 </h:form>
 	<div id="modalPanel-2" class="modal hide fade in" style="display: none;">
         	<div class="modal-header">
@@ -577,12 +612,14 @@
 	</pm:content>
 </c:when>
 			<c:otherwise>
-				<span class="span10 muted lead"><h3>
-					<h:outputText value="${msgs['error.permissionDenied']}"></h:outputText>
+					<span class="span10 muted lead">
+						<h3>
+							<h:outputText value="${msgs['error.permissionDenied']}"/>
 						</h3>
-				</span>
-			</c:otherwise>
-		</c:choose>
+					</span>
+				</c:otherwise>
+			</c:choose>
+		</div>
 	</div>
 </div>
 </div>

@@ -311,7 +311,8 @@ function scroll(){
 															<a class="close" data-dismiss="modal">×</a>
 															<h3>
 																<h:outputText
-																	value="#{(empty userAction.listofCompanyForLoginUser) ? 'Add Company' : 'Edit Company'}"></h:outputText>
+																	value="#{(empty userAction.listofCompanyForLoginUser) ? 'Add Company' : 'Edit Company'}">
+																</h:outputText>
 															</h3>
 														</div>
 														<div class="modal-body">
@@ -436,8 +437,8 @@ function scroll(){
 															${userAction.clearScreenMessage()}
 															<p:panel style="border: medium none;"
 																id="modalPanel-2-panel">
-        		${userAction.populateApprover()}
-        		<c:if test="#{userAction.approverdtoList.size() eq 0}">
+        											${userAction.populateApprover()}
+        											<c:if test="#{userAction.approverdtoList.size() eq 0}">
 																	<span class="muted lead">NO Approver</span>
 																</c:if>
 																<c:if test="#{userAction.approverdtoList.size() gt 0}">
@@ -451,7 +452,7 @@ function scroll(){
 																			<th>Hopon ID 2</th>
 																		</tr>
 																		<c:forEach var="approver"
-																			items="#{userAction.approverdtoList}"
+															 					items="#{userAction.approverdtoList}"
 																			varStatus="loop">
 																			<tr>
 																				<td>${loop.index + 1}</td>

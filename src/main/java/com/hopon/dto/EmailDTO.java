@@ -10,7 +10,7 @@ public class EmailDTO {
 	
 	public final static String smtpHost = "smtpout.secureserver.net";
 	public final static String smtpPort = "80";	
-	
+
 	//imap.secureserver.net:143	
 	//smtpout.secureserver.net:80
 	private String senderEmailId;

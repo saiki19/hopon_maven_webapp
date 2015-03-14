@@ -317,8 +317,7 @@ public class ListOfValuesManager {
 			try {
 				rideSeekerDTO = getTripService().loadRideSeeker(con, category,
 						rideSeekerDTO);
-				System.out.println("Inside the list of values manager:"
-						+ rideSeekerDTO);
+		
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -2187,9 +2186,9 @@ public class ListOfValuesManager {
 		// Here we are using 10 to show 10 message.
 	}
 
-	public static List<MessageBoardDTO> getAllEmailSendingMessage() {
+	public static List<List<MessageBoardDTO>> getAllEmailSendingMessage() {
 		Connection con = getLocalConnection();
-		List<MessageBoardDTO> dto = new ArrayList<MessageBoardDTO>();
+		List<List<MessageBoardDTO>> dto = new ArrayList<List<MessageBoardDTO>>();
 		try {
 			dto = getTripService().loadEmailSendingMessage(con);
 		} catch (ConfigurationException e) {
@@ -3620,7 +3619,7 @@ public class ListOfValuesManager {
 		RideManagementDTO dtos = new RideManagementDTO();
 		try {
 			dtos = getTripService().getDailyRideData(con, userId);
-			System.out.println("dtos is:" + dtos);
+		
 		} catch (ConfigurationException e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"
@@ -4153,6 +4152,40 @@ public class ListOfValuesManager {
 		}
 		return dto;
 	}
+
+	public static GuestRideDTO fetchGuestRideData(Connection con,MatchedTripDTO dto) throws ConfigurationException{
+		GuestRideDTO guestdto=new GuestRideDTO();
+		try{
+		guestdto=getTripService().fetchGuestRideInfo(con, dto);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName()
+							+ "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+		return guestdto;
+	}
+	
+
+	public static ApproverDTO fetchApproverBcode(Connection con,String bcode) throws ConfigurationException{
+	ApproverDTO dto=new ApproverDTO();
+		try{
+		dto=getTripService().findApproverId(con, bcode);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName()
+							+ "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+		return dto;
+	}
+
 }
+
+	
 
 

@@ -120,11 +120,8 @@ public class FrequencyDAO {
 
 	public boolean updateFrequency(Connection con, FrequencyDTO frequencyDTO,
 			String rideId) {
-		System.out.println("RideManagementDTO in FrequencyDAO:" + frequencyDTO.getCount()
-				+ "status:" + frequencyDTO.getStatus() + "id:" + rideId);
 		StringBuilder query = new StringBuilder();
-		query.append("UPDATE trip_frequency SET status = '"
-				+ frequencyDTO.getStatus() + "', count = "
+		query.append("UPDATE trip_frequency SET status = '"+ frequencyDTO.getStatus() + "', count = "
 				+ frequencyDTO.getCount() + " WHERE ride_seeker_id = '"
 				+ rideId + "'");
 
@@ -134,7 +131,6 @@ public class FrequencyDAO {
 			int i = pstmt.executeUpdate();
 			if (i != 0) {
 				pstmt.close();
-				System.out.println("executeupdate:" + i);
 			}
 			return true;
 

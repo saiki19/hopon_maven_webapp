@@ -15,6 +15,7 @@ import java.util.List;
 
 import com.hopon.dto.CircleDTO;
 import com.hopon.dto.GuestRideDTO;
+import com.hopon.dto.MatchedTripDTO;
 import com.hopon.dto.RideManagementDTO;
 import com.hopon.dto.RideSeekerDTO;
 import com.hopon.dto.SummaryMessageDTO;
@@ -487,7 +488,7 @@ public class RideSeekerDAO {
 				+ "ride_seeker_details.status, trip_frequency.Trip_Freq_P,trip_frequency.Days, "
 				+ "ride_seeker_details.custom, ride_seeker_details.ride_match_rideid, "
 				+ "ride_seeker_details.is_result, ride_seeker_details.recurring,trip_frequency.End_date, "
-				+ "ride_seeker_details.fullDay,ride_seeker_details.daily_rides,ride_seeker_details.ride_distance,ride_seeker_details.start_time2,ride_seeker_details.trip_type FROM ride_seeker_details, trip_frequency where ride_seeker_details.user_id = '"
+				+ "ride_seeker_details.fullDay,ride_seeker_details.daily_rides,ride_seeker_details.ride_distance,ride_seeker_details.start_time2,ride_seeker_details.trip_type, ride_seeker_details.guest_id FROM ride_seeker_details, trip_frequency where ride_seeker_details.user_id = '"
 				+ userID
 				+ "' and ride_seeker_details.seeker_id = trip_frequency.ride_seeker_id and ride_seeker_details.status IN('A', 'T', 'O') AND TIMESTAMPDIFF(SECOND,ride_seeker_details.start_tw_early,'"
 				+ ApplicationUtil.currentTimeStamp() + "') < 0 ");
@@ -1082,7 +1083,7 @@ public class RideSeekerDAO {
 		return rideManagementDTOList;
 	}
 
-	public RideManagementDTO getRideIDByUserID(int user_id, Connection con) {
+  public RideManagementDTO getRideIDByUserID(int user_id, Connection con) {
 		StringBuilder query = new StringBuilder();
 		RideManagementDTO dto = new RideManagementDTO();
 		query.append("SELECT seeker_id FROM ride_seeker_details WHERE user_id='"
@@ -1144,4 +1145,27 @@ public class RideSeekerDAO {
 		}
 		return dto;	
 	}
+
+	public GuestRideDTO fetchGuestDetails(Connection con, MatchedTripDTO matchedTripDTO) {
+		StringBuilder query = new StringBuilder();
+		GuestRideDTO dto = new GuestRideDTO();
+		query.append("SELECT first_name,last_name,mobile_no,email_id FROM guests WHERE id='"
+				+matchedTripDTO.getGuest_id() + "'");
+		try {
+			PreparedStatement psmt = con.prepareStatement(query.toString());
+			ResultSet rs = QueryExecuter.getResultSet(psmt, query.toString());
+			while (rs.next()) {
+				dto.setGuest_fname(rs.getString(1));
+				dto.setGuest_lname(rs.getString(2));
+				dto.setGuest_mobile_no(rs.getString(3));
+				dto.setGuest_email_id(rs.getString(4));
+			}
+			psmt.close();
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dto;
+	}
 }
+

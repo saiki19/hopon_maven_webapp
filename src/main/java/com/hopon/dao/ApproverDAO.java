@@ -219,4 +219,20 @@ public class ApproverDAO {
 		pstmt.close();
 		return list;
 	}
+	public ApproverDTO findApproverBcode(Connection con, String bcode) throws SQLException {
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT  bCode, name, hoponId, circleId from approver WHERE bCode=?");
+		PreparedStatement pstmt = con.prepareStatement(query.toString());
+		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
+		ApproverDTO dto = new ApproverDTO();
+		while(rs.next()) {
+			dto.setbCode(rs.getString(1));
+			dto.setName(rs.getString(2));
+			dto.setHoponId(rs.getString(3));
+			dto.setCircleId(rs.getInt(4));
+		}
+		rs.close();
+		pstmt.close();
+		return dto;
+	} 
 }

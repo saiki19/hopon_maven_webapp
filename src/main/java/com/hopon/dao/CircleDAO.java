@@ -479,9 +479,8 @@ public class CircleDAO {
 		StringBuilder query = new StringBuilder();
 		// query.append(" SELECT  Circle_Id,  Name, Description,Date_of_creation,CircleOwner_Member_Id_P,AutoEnroll_YN,Affiliations FROM circles where Circle_Id IN (select CircleId from circle_members where MemberId = '"
 		// + userid + "') and  status='1' ");
-		query.append("SELECT c.Circle_Id,  c.Name, c.Description,c.Date_of_creation,c.CircleOwner_Member_Id_P,c.AutoEnroll_YN,c.Affiliations,h.first_name, c.circle_type FROM circles c left outer join users h on c.CircleOwner_Member_Id_P = h.id where c.CircleOwner_Member_Id_P != "
-				+ userid
-				+ " AND c.Circle_Id IN (select CircleId from circle_members where MemberId = '"
+		query.append("SELECT c.Circle_Id,  c.Name, c.Description,c.Date_of_creation,c.CircleOwner_Member_Id_P,c.AutoEnroll_YN,c.Affiliations,h.first_name, c.circle_type FROM circles c left outer join users h on c.CircleOwner_Member_Id_P = h.id where "
+				+ " c.Circle_Id IN (select CircleId from circle_members where MemberId = '"
 				+ userid + "' AND Status = '1') and c.status='1'");
 		List<CircleDTO> circleDTO = new ArrayList<CircleDTO>();
 		PreparedStatement pstmt = con.prepareStatement(query.toString());

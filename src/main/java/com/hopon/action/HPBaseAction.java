@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.faces.model.SelectItem;
@@ -92,6 +94,8 @@ public class HPBaseAction {
 	protected List<PoolRequestsDTO> allMsgBoardCompleateRideList = new ArrayList<PoolRequestsDTO>();
 	protected List<PoolRequestsDTO> allMsgBoardCompleateRideSeekerList = new ArrayList<PoolRequestsDTO>();
 	protected ApproverDTO approverdto = new ApproverDTO();
+	protected Map<String, String> approver=new HashMap<String, String>();
+	protected Map<String, String> name=new HashMap<String, String>();
 	protected List<ApproverDTO> approverdtoList = new ArrayList<ApproverDTO>();
 	protected PoolRequestsDTO poolRequestsDTO = new PoolRequestsDTO();
 	protected List<MatchedTripDTO> matchedTripByConditionList = new ArrayList<MatchedTripDTO>();
@@ -176,6 +180,16 @@ public class HPBaseAction {
 	/*// Start ContactUsDTO class
 	protected ContactusDTO contactusDTO = new ContactusDTO();*/
 	
+	protected ApproverDTO approverDTO = new ApproverDTO();
+	
+	public ApproverDTO getApproverDTO() {
+		return approverDTO;
+	}
+
+	public void setApproverDTO(ApproverDTO approverDTO) {
+		this.approverDTO = approverDTO;
+	}
+
 	//Guest VehicleDTO
 	protected GuestRideDTO guestRideDTO=new GuestRideDTO();	
 	
@@ -1149,6 +1163,22 @@ public class HPBaseAction {
 
 	public void setApproverRideDTO(ApproverRideDTO approverRideDTO) {
 		this.approverRideDTO = approverRideDTO;
+	}
+
+	public Map<String, String> getApprover() {
+		return approver;
+	}
+
+	public void setApprover(Map<String, String> approver) {
+		this.approver = approver;
+	}
+
+	public Map<String, String> getName() {
+		return name;
+	}
+
+	public void setName(Map<String, String> name) {
+		this.name = name;
 	}
 
 	protected VerifyUser verifyuser = new VerifyUser();

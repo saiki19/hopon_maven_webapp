@@ -29,7 +29,7 @@ public class MatchTripDAO {
 			throws SQLException {
 		final List<MatchedTripDTO> tripList = new ArrayList<MatchedTripDTO>();
 		final StringBuilder query = new StringBuilder();
-		query.append("select ride_seeker_details.seeker_id, ride_seeker_details.start_point,ride_seeker_details.destination_point,ride_seeker_details.start_tw_early,ride_seeker_details.user_id,users.first_name,trip_frequency.Days, ride_seeker_details.group_id, ride_seeker_details.recurring, ride_seeker_details.fullDay from users,trip_frequency");
+		query.append("select ride_seeker_details.seeker_id, ride_seeker_details.start_point,ride_seeker_details.destination_point,ride_seeker_details.start_tw_early,ride_seeker_details.user_id,users.first_name,trip_frequency.Days, ride_seeker_details.group_id, ride_seeker_details.recurring, ride_seeker_details.fullDay,ride_seeker_details.guest_id from users,trip_frequency");
 		if (circleId > 0) {
 			query.append(",circle_members ");
 		}
@@ -98,6 +98,7 @@ public class MatchTripDAO {
 					dto.setRecurring(true);
 				if (rs.getString(10).equalsIgnoreCase("Y"))
 					dto.setFullDay(true);
+			    dto.setGuest_id(rs.getInt(11));
 				tripList.add(dto);
 			}
 		}
@@ -124,7 +125,6 @@ public class MatchTripDAO {
 			throws SQLException {
 		final List<CombineRideDTO> tripList = new ArrayList<CombineRideDTO>();
 		final StringBuilder query = new StringBuilder();
-		System.out.println("circle id:" + circleId);
 		if (circleId > 0) {
 			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name, v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id INNER JOIN users u ON r1.user_id = u.id INNER JOIN vehicles_master v ON r1.vehicleID = v.id INNER JOIN circle_members cm ON r1.user_id = cm.MemberId WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
 					+ ApplicationUtil.currentTimeStamp()
@@ -135,7 +135,6 @@ public class MatchTripDAO {
 					+ "' AND p.request_status = 'A' ");
 		}
 
-		System.out.println("ride date :" + rideDate);
 		if (startPoint != null && !startPoint.trim().equals(""))
 			query.append(" AND r1.start_point like '%" + startPoint + "%' ");
 		if (rideDate != null && !rideDate.trim().equals(""))
@@ -152,7 +151,6 @@ public class MatchTripDAO {
 		final ResultSet rs = QueryExecuter
 				.getResultSet(pstmt, query.toString());
 		while (rs.next()) {
-			System.out.println("inside rs :" + rs.getString(4));
 			if (rs.getString(4) != null
 					&& rs.getString(4).split(" ")[0]
 							.equals(rideDate.split(" ")[0])) {
@@ -161,7 +159,6 @@ public class MatchTripDAO {
 				dto.setRideId(rs.getString(1));
 				dto.setStartPoint(rs.getString(2));
 				dto.setEndPoint(rs.getString(3));
-				System.out.println("date:" + rs.getString(4));
 				if (rs.getString(4) != null) {
 					try {
 						dto.setRideTime(ApplicationUtil.dateFormat4
@@ -192,20 +189,22 @@ public class MatchTripDAO {
 
 		if (circleId > 0) {
 			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name,"
-					+ " v.id, v.registration_no, v.Capacity, p.request_by,count(*) as capacity_used from pool_requests p "
+					+ " v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p "
 					+ "INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id "
 					+ "INNER JOIN users u ON r1.user_id = u.id "
 					+ "INNER JOIN vehicles_master v ON r1.vehicleID = v.id "
 					+ "INNER JOIN circle_members cm ON p.request_by = cm.MemberId WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
 					+ ApplicationUtil.currentTimeStamp()
 					+ "' AND p.request_status = 'A' ");
+	
 		} else {
 			query.append("select p.ride_id, r1.start_point, r1.destination_point, r1.start_time, u.id, u.first_name, "
-					+ "v.id, v.registration_no, v.Capacity, p.request_by, count(*) as capacity_used from pool_requests p "
+					+ "v.id, v.registration_no, v.Capacity, count(*) as capacity_used from pool_requests p "
 					+ "INNER JOIN rides_management r1 ON p.ride_id = r1.ride_id INNER JOIN users u ON r1.user_id = u.id"
 					+ " INNER JOIN vehicles_master v ON r1.vehicleID = v.id WHERE r1.`status` IN('A', 'T') AND r1.start_time > '"
 					+ ApplicationUtil.currentTimeStamp()
 					+ "' AND p.request_status = 'A' ");
+			
 		}
 
 		
@@ -243,6 +242,7 @@ public class MatchTripDAO {
 			dto.setVehicleID(rs.getInt(7));
 			dto.setVehicleRegNo(rs.getString(8));
 			dto.setCapacity(rs.getInt(9));
+		
 			dto.setUsedCapacity(rs.getInt(10));
 			tripList.add(dto);
 		}
@@ -370,9 +370,10 @@ public class MatchTripDAO {
 			String circleId) throws SQLException {
 		List<MatchedTripDTO> tripList = new ArrayList<MatchedTripDTO>();
 		StringBuilder query = new StringBuilder();
-		query.append("select ride_seeker_details.seeker_id, ride_seeker_details.start_point,ride_seeker_details.destination_point,ride_seeker_details.start_tw_early,ride_seeker_details.user_id,users.first_name,trip_frequency.Days from circle_members,users,ride_seeker_details,trip_frequency where circle_members.CircleId='"
+		query.append("SELECT ride_seeker_details.seeker_id, ride_seeker_details.start_point,ride_seeker_details.destination_point,ride_seeker_details.start_tw_early,ride_seeker_details.user_id,users.first_name,trip_frequency.Days "
+				+ "FROM circle_members,users,ride_seeker_details,trip_frequency WHERE circle_members.CircleId='"
 				+ circleId
-				+ "' AND circle_members.Status = '1' and ride_seeker_details.user_id=circle_members.MemberId and ride_seeker_details.`status`= 'A' and ride_seeker_details.user_id = users.id and trip_frequency.ride_seeker_id=ride_seeker_details.seeker_id AND DATEDIFF(ride_seeker_details.start_tw_early, '"
+				+ "' AND circle_members.Status = '1' AND ride_seeker_details.user_id=circle_members.MemberId AND ride_seeker_details.`status`= 'A' AND ride_seeker_details.user_id = users.id AND trip_frequency.ride_seeker_id=ride_seeker_details.seeker_id AND DATEDIFF(ride_seeker_details.start_tw_early, '"
 				+ ApplicationUtil.currentDate()
 				+ "') >= 0 AND ride_seeker_details.recurring != 'Y'");
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
@@ -872,10 +873,6 @@ public class MatchTripDAO {
 		return rideList;
 	}
 
-	/*
-	 * <!-- Code Changed by Kirty for selection Ride option with different User
-	 * Id-->
-	 */
 
 	public List<MatchedTripDTO> findMatchTripByGroupId(final Connection con,
 			final List<String> groupId) throws SQLException {

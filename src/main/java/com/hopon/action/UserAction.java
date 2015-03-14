@@ -32,6 +32,7 @@ import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -1030,11 +1031,9 @@ public class UserAction extends HPBaseAction {
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 		String ride = null;
 		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext()
-				.getRequestParameterMap(); // In java class, you can get back
-											// the parameter value with
-											// component (submit-command buton)
-											// like this :
+		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); 
+		// In java class, you can get back the parameter value with component (submit-command buton) like this :
+		
 		ride = (String) requestMap.get("ride");
 		clearScreenMessage();
 
@@ -2659,7 +2658,7 @@ public class UserAction extends HPBaseAction {
 					e1.printStackTrace();
 				}		
 		// Update vehicleId in Rides_Management
-		// connection to be given in useraction not in listofvaluemanager
+		// connection to be given in userAction not in listofValuemanager
 			ListOfValuesManager.updateVehicleReassign(rideIdToReassign,
 					vehicleIdToTake);
 			
@@ -5763,19 +5762,16 @@ public class UserAction extends HPBaseAction {
 
 		// check concurrency here.
 		List<Integer> seekerIdForConcurrency = new ArrayList<Integer>();
-		// Map<String, String> seekerArrayForConcurrency = new HashMap<String,
-		// String>();
+		// Map<String, String> seekerArrayForConcurrency = new HashMap<String, String>();
 		for (MatchedTripDTO dtoTemp1 : matchedTripDTOs) {
-			seekerIdForConcurrency
-					.add(Integer.parseInt(dtoTemp1.getSeekerID()));
+			seekerIdForConcurrency.add(Integer.parseInt(dtoTemp1.getSeekerID()));
 			// seekerArrayForConcurrency.put(dtoTemp1.getSeekerID(), );
 		}
 		List<RideSeekerDTO> seekerDtoForConcurrency = ListOfValuesManager
 				.findRideSeekerDataByIds(seekerIdForConcurrency);
 
 		boolean test = true;
-		if (seekerDtoForConcurrency == null
-				|| seekerDtoForConcurrency.size() != matchedTripDTOs.length) {
+		if (seekerDtoForConcurrency == null || seekerDtoForConcurrency.size() != matchedTripDTOs.length) {
 			test = false;
 		} else {
 			for (RideSeekerDTO dtoTest : seekerDtoForConcurrency) {
@@ -5799,20 +5795,24 @@ public class UserAction extends HPBaseAction {
 			// uncomment for sending mail in combined way.
 			// Map<Integer, List<Integer>> driverMessageList = new
 			// HashMap<Integer, List<Integer>>();
-			Connection con = (Connection) ListOfValuesManager
-					.getBroadConnection();
+			
+			Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 			try {
+			
 				for (int i = 0; i < matchedTripDTOs.length; i++) {
-					matchedTripDTOs[i].setCount(matchedTripDTOs[i]
-							.getCountTemp());
+				
+					matchedTripDTOs[i].setCount(matchedTripDTOs[i].getCountTemp());
 					MatchedTripDTO dto = new MatchedTripDTO();
 					RideManagementDTO rideManagementDTO = new RideManagementDTO();
 					PoolRequestsDTO poolDTO = new PoolRequestsDTO();
 					FrequencyDTO freqDTO = new FrequencyDTO();
 					// FrequencyDTO frequencyDTO = new FrequencyDTO();
 					dto = matchedTripDTOs[i];
-					MatchedTripDTO dtoNew = groupMatchTrip
-							.get(dto.getGroupId());
+					
+					GuestRideDTO guestdto=new GuestRideDTO();
+					guestdto=ListOfValuesManager.fetchGuestRideData(con, dto);
+					
+					MatchedTripDTO dtoNew = groupMatchTrip.get(dto.getGroupId());
 					if (dto.getRideId().equalsIgnoreCase("NEW")) {
 
 						rideManagementDTO.setFromAddress1(dtoNew
@@ -5882,7 +5882,8 @@ public class UserAction extends HPBaseAction {
 							return null;
 						} else {
 							rideManagementDTO.setRideID(dto.getRideId());
-							rideManagementDTO.setStatus("A");// rideManagementDTO.setStatus("2");rideManagementDTO.setStatus("I");
+							rideManagementDTO.setStatus("A");
+							// rideManagementDTO.setStatus("2");rideManagementDTO.setStatus("I");
 							/*
 							 * rideManagementDTO = ListOfValuesManager
 							 * .getCancleRide(rideManagementDTO, con);
@@ -5892,30 +5893,7 @@ public class UserAction extends HPBaseAction {
 											.getRideId());
 						}
 					}
-
-					/*
-					 * //uncomment for sending mail in combined way.
-					 * if(driverMessageList
-					 * .containsKey(poolDTO.getRidemanagerID())) {
-					 * driverMessageList
-					 * .get(poolDTO.getRidemanagerID()).add(Integer
-					 * .parseInt(poolDTO.getRideSeekerID())); }
-					 */
-
-					/*
-					 * ride_seeker_id is the passenger's ride id. ride_seeker_id
-					 * -> ride_seeker_details -> seeker_id -> ride_seeker_id ->
-					 * user_id ride_id is the ride id for driver. ride_id ->
-					 * ride_management -> ride_id -> user_id
-					 */
-					RideSeekerDTO seekerDtoTemp = ListOfValuesManager
-							.getRideSeekerData(Integer.parseInt(dto
-									.getSeekerID()));
-					// RideManagementDTO managementDtoTemp =
-					// ListOfValuesManager.getRideManagerPopupData(rideManagementDTO.getRideID());
-					// RideManagementDTO managementDtoTemp2 =
-					// ListOfValuesManager.getRideManagerPopupData(dto.getSeekerID());
-
+					RideSeekerDTO seekerDtoTemp = ListOfValuesManager.getRideSeekerData(Integer.parseInt(dto.getSeekerID()));
 					poolDTO.setRidemanagerID(rideManagementDTO.getRideID());
 					poolDTO.setRideSeekerID(dto.getSeekerID());
 					poolDTO.setPoolRequestToId(Integer
@@ -5955,7 +5933,7 @@ public class UserAction extends HPBaseAction {
 							managerUserDto = di;
 						}
 					}
-
+					
 					UserRegistrationDTO userDto = new UserRegistrationDTO();
 					VehicleMasterDTO vehicleDto1 = new VehicleMasterDTO();
 					if (Validator.isEmpty(rideManagementDTO.getVehicleID())
@@ -5976,18 +5954,33 @@ public class UserAction extends HPBaseAction {
 					userMessageDTO.setEmailSubject(Messages.getValue(
 							"subject.match",
 							new Object[] { dto.getStartDate() }));
+					if (dto.getGuest_id()==0){
 					userMessageDTO.setMessage(Messages.getValue(
 							"ridematched.seeker",
-							new Object[] { seekerUserDto.getFirst_name(),
+							new Object[] { 
+									seekerUserDto.getFirst_name(),
 									userDto.getFirst_name(),
 									rideManagementDTO.getRideID(),
 									dto.getStartPoint(), dto.getEndPoint(),
 									dto.getStartDate(),
 									vehicleDto1.getReg_NO(),
 									userDto.getMobile_no() }));
+					userMessageDTO.setGuest_id(0);
+					}else if(dto.getGuest_id()!=0){
+						userMessageDTO.setMessage(Messages.getValue(
+								"ridematched.seeker",
+								new Object[] { 
+										guestdto.getGuest_fname(),
+										userDto.getFirst_name(),
+										rideManagementDTO.getRideID(),
+										dto.getStartPoint(), dto.getEndPoint(),
+										dto.getStartDate(),
+										vehicleDto1.getReg_NO(),
+										userDto.getMobile_no() }));
+						userMessageDTO.setGuest_id(dto.getGuest_id());
+					}
 					userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp
 							.getUserID()));
-					
 					userMessageDTO.setMessageChannel("E");
 					userMessageDTO = ListOfValuesManager
 							.getInsertedMessage(userMessageDTO);
@@ -5996,27 +5989,38 @@ public class UserAction extends HPBaseAction {
 					userMessageDTO.setEmailSubject(Messages.getValue(
 							"subject.match",
 							new Object[] { dto.getStartDate() }));
-
-					userMessageDTO.setMessage(Messages.getValue(
-							"ridematched.driver",
+					if (dto.getGuest_id()==0){
+					userMessageDTO.setMessage(Messages.getValue("ridematched.driver",
 							new Object[] {
 									userDto.getFirst_name(),
 									rideManagementDTO.getRideID(),
 									dto.getStartPoint(),
 									dto.getEndPoint(),
 									dto.getStartDate(),
-									seekerUserDto.getFirst_name() + " - "
-											+ seekerUserDto.getMobile_no() }));
+									seekerUserDto.getFirst_name()+ " - "
+								+ seekerUserDto.getMobile_no()}));
+					}else if(dto.getGuest_id()!=0){
+						userMessageDTO.setMessage(Messages.getValue("ridematched.driver",
+								new Object[] {
+										userDto.getFirst_name(),
+										rideManagementDTO.getRideID(),
+										dto.getStartPoint(),
+										dto.getEndPoint(),
+										dto.getStartDate(),
+										guestdto.getGuest_fname()+ " - "
+									+ guestdto.getGuest_mobile_no() }));
+					}
 					userMessageDTO
 							.setToMember(Integer.parseInt(userDto.getId()));
+					userMessageDTO.setGuest_id(0);
 					userMessageDTO.setMessageChannel("E");
 					userMessageDTO = ListOfValuesManager
 							.getInsertedMessage(userMessageDTO);
 
+					
 					userMessageDTO = new MessageBoardDTO();
-					userMessageDTO
-							.setMessage(Messages
-									.getValue(
+					if (dto.getGuest_id()==0){
+					userMessageDTO.setMessage(Messages.getValue(
 											"sms.match",
 											new Object[] {
 													(dto.getStartPoint()
@@ -6035,22 +6039,48 @@ public class UserAction extends HPBaseAction {
 													userDto.getMobile_no(),
 													managementDtoTemp
 															.getRideID(),
-
-													seekerDtoTemp.getUserName(),
+												//use guest name
+													seekerUserDto.getFirst_name(),
 													vehicleDto1.getReg_NO(),
 													dto.getSeekerID() }));
+					userMessageDTO.setGuest_id(0);
+					}else if(dto.getGuest_id()!=0){
+						userMessageDTO.setMessage(Messages.getValue(
+								"sms.match",
+								new Object[] {
+										(dto.getStartPoint()
+												.length() > 25) ? dto
+												.getStartPoint()
+												.substring(0, 25)
+												: dto.getStartPoint(),
+
+										(dto.getEndPoint().length() > 25) ? dto
+												.getEndPoint()
+												.substring(0, 25)
+												: dto.getEndPoint(),
+
+										userDto.getFirst_name(),
+										dto.getStartDate(),
+										userDto.getMobile_no(),
+										managementDtoTemp
+												.getRideID(),
+									//use guest name
+										guestdto.getGuest_fname(),
+										vehicleDto1.getReg_NO(),
+										dto.getSeekerID() }));
+						userMessageDTO.setGuest_id(dto.getGuest_id());
+					}
 					userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp
 							.getUserID()));
-				
 					userMessageDTO.setMessageChannel("S");
 					userMessageDTO = ListOfValuesManager
 							.getInsertedMessage(userMessageDTO);
 
 					// Required: ride summary Message Creation for Driver
 					userMessageDTO = new MessageBoardDTO();
+					if (dto.getGuest_id()==0){
 					userMessageDTO
-							.setMessage(Messages
-									.getValue(
+							.setMessage(Messages.getValue(
 											"sms.match.driver",
 											new Object[] {
 													(seekerDtoTemp
@@ -6065,23 +6095,49 @@ public class UserAction extends HPBaseAction {
 															.length() > 25) ? seekerDtoTemp
 															.getToAddress1()
 															.substring(0, 25)
-															: seekerDtoTemp
-																	.getToAddress1(),
-													seekerUserDto
-															.getFirst_name(),
+															: seekerDtoTemp.getToAddress1(),
+															//use guest name
+													seekerUserDto.getFirst_name(),
 													seekerDtoTemp
 															.getStartdateValue(),
-													seekerUserDto
-															.getMobile_no(),
+													seekerUserDto.getMobile_no(),
 													managementDtoTemp
 															.getRideID(),
 													userDto.getFirst_name(),
 													vehicleDto1.getReg_NO() }));
+					}else if(dto.getGuest_id()!=0){
+						userMessageDTO
+						.setMessage(Messages.getValue(
+										"sms.match.driver",
+										new Object[] {
+												(seekerDtoTemp
+														.getFromAddress1()
+														.length() > 25) ? seekerDtoTemp
+														.getFromAddress1()
+														.substring(0, 25)
+														: seekerDtoTemp
+																.getFromAddress1(),
+												(seekerDtoTemp
+														.getToAddress1()
+														.length() > 25) ? seekerDtoTemp
+														.getToAddress1()
+														.substring(0, 25)
+														: seekerDtoTemp.getToAddress1(),
+														//use guest name
+												guestdto.getGuest_fname(),
+												seekerDtoTemp
+														.getStartdateValue(),
+												guestdto.getGuest_mobile_no(),
+												managementDtoTemp
+														.getRideID(),
+												userDto.getFirst_name(),
+												vehicleDto1.getReg_NO() }));
+					}
 					userMessageDTO
 							.setToMember(Integer.parseInt(userDto.getId()));
+					userMessageDTO.setGuest_id(0);
 					userMessageDTO.setMessageChannel("S");
-					userMessageDTO = ListOfValuesManager
-							.getInsertedMessage(userMessageDTO);
+					userMessageDTO = ListOfValuesManager.getInsertedMessage(userMessageDTO);
 					// vehicleMasterDTO=ListOfValuesManager.getUpdateSeat(vehicleMasterDTO);
 					/*
 					 * RideSeekerDTO dtoSeeker = new RideSeekerDTO();
@@ -6095,7 +6151,8 @@ public class UserAction extends HPBaseAction {
 					dtoSeeker.setRideMatchRideId(rideManagementDTO.getRideID());
 					dtoSeeker.setIsResult("Y");
 					dtoSeeker = ListOfValuesManager.changeField(dtoSeeker, con);
-				}
+			}
+		
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -6149,8 +6206,7 @@ public class UserAction extends HPBaseAction {
 	public void processValue(AjaxBehaviorEvent event)
 			throws AbortProcessingException {
 		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext()
-				.getRequestParameterMap(); // In java class, you can get back
+		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); // In java class, you can get back
 											// the parameter value with
 											// component (submit-command buton)
 											// like this :
@@ -6263,7 +6319,7 @@ public class UserAction extends HPBaseAction {
 		Map<String, String> requestMap = context.getExternalContext()
 				.getRequestParameterMap(); // In java class, you can get back
 											// the parameter value with
-											// component (submit-command buton)
+											// component (submit-command button)
 											// like this :
 		String rideID = (String) requestMap.get("rideID");
 		// String rowIndex = (String)requestMap.get("row");
@@ -6315,11 +6371,7 @@ public class UserAction extends HPBaseAction {
 	
 	public String showRideSeekerPopup() {
 		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext()
-				.getRequestParameterMap(); // In java class, you can get back
-											// the parameter value with
-											// component (submit-command buton)
-											// like this :
+		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); 
 		String rideID = (String) requestMap.get("rideId");
 		
 		rideManagerInfoForRideSeeker = ListOfValuesManager
@@ -6361,9 +6413,7 @@ public class UserAction extends HPBaseAction {
 		int finalCapacity;
 		vehicleMasterDTO = ListOfValuesManager
 				.getUpdateVehicle(vehicleMasterDTO);
-		finalCapacity = Integer.parseInt(vehicleMasterDTO.getCapacity());
-		System.out.println(initialCapacity);
-		System.out.println(finalCapacity);
+		finalCapacity = Integer.parseInt(vehicleMasterDTO.getCapacity());		
 		if (initialCapacity == finalCapacity) {
 			successMessage.add(Messages.getValue("success.update",
 					new Object[] { "Vehicle" }));
@@ -6802,7 +6852,13 @@ public class UserAction extends HPBaseAction {
 							forregistrationOnly.setIsVerified('1');
 							forregistrationOnly.setVerificationCode("C");
 							forregistrationOnly.setSignupType(3);
-							forregistrationOnly.setTotalCredit(0); // earlier 50, platform users start with zero balance
+							forregistrationOnly.setTotalCredit(0); // earlier
+																	// 50,
+																	// platform
+																	// users
+																	// start
+																	// with zero
+																	// balance
 							forregistrationOnly.setTotalGreenMiles(0);
 
 							forregistrationOnly = ListOfValuesManager
@@ -7042,10 +7098,10 @@ public class UserAction extends HPBaseAction {
 	public void cronMessage() {
 		List<Integer> messageId = new ArrayList<Integer>();
 		try {
-			List<MessageBoardDTO> messagedto = ListOfValuesManager
+			List<List<MessageBoardDTO>> messagedto = ListOfValuesManager
 					.getAllEmailSendingMessage();
-			System.out.println("This is from emailCron:" + messagedto);
-			for (MessageBoardDTO dto : messagedto) {
+			for(List<MessageBoardDTO> dtos:messagedto ){
+				for (MessageBoardDTO dto : dtos) {
 				EmailDTO emaildto = new EmailDTO();
 				emaildto.setReceiverEmailId(dto.getToMemberEmail());
 				emaildto.setSenderEmailId(dto.getCreatedByEmail());
@@ -7055,7 +7111,8 @@ public class UserAction extends HPBaseAction {
 				// emaildto.setEmailBody(dto.getMessage());
 				emaildto.setEmailTemplateBody(Messages.getValue(
 						"email.template2", new Object[] {
-								emaildto.getSubject(), dto.getMessage() }));
+								emaildto.getSubject(), 
+								dto.getMessage() }));
 
 				if (dto.getAttachements() != null
 						&& dto.getAttachements().size() > 0) {
@@ -7064,6 +7121,7 @@ public class UserAction extends HPBaseAction {
 
 				MailService.sendMail(emaildto);
 				messageId.add(dto.getMessageId());
+			}
 			}
 		} finally {
 
@@ -7113,6 +7171,7 @@ public class UserAction extends HPBaseAction {
 		}
 		userMessageDTO = new MessageBoardDTO();
 	}
+	
 
 	public void clearScreenMessage() {
 		successMessage.clear();
@@ -7120,11 +7179,14 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public void listOfRideForACircle() {
-		matchedTripByConditionList = ListOfValuesManager
-				.getRideSekerForCircle(String.valueOf(circleDTO.getCircleID()));
-
-		matchedTripDataModel = new MatchedTripDataModel(
-				matchedTripByConditionList);
+	
+		matchedTripByConditionList = ListOfValuesManager.getRideSekerForCircle(String.valueOf(circleDTO.getCircleID()));
+		FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); 
+		// In java class, you can get back the parameter value with component (submit-command button)
+        // like this :
+		String rideID = (String) requestMap.get("rideID");
+		matchedTripDataModel = new MatchedTripDataModel(matchedTripByConditionList);
 	}
 
 	public List<SelectItem> getVehicleListForDriver() {
@@ -7177,10 +7239,8 @@ public class UserAction extends HPBaseAction {
 		String delink = null;
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> requestMap = context.getExternalContext()
-				.getRequestParameterMap(); // In java class, you can get back
-											// the parameter value with
-											// component (submit-command buton)
-											// like this :
+				.getRequestParameterMap(); 
+		// In java class, you can get back the parameter value with component (submit-command button) like this :
 		link = (String) requestMap.get("link");
 		delink = (String) requestMap.get("delink");
 		if (link != null) {
@@ -7225,7 +7285,8 @@ public class UserAction extends HPBaseAction {
 			int rideId = 0;
 			try {
 				rideId = Integer.parseInt(bodyPart[1]);
-				if (msg.equalsIgnoreCase("CAN") || msg.equalsIgnoreCase("CANCEL")) {
+				if (msg.equalsIgnoreCase("CAN")
+						|| msg.equalsIgnoreCase("CANCEL")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -7720,7 +7781,8 @@ public class UserAction extends HPBaseAction {
 										+ e1.getStackTrace()[0].getLineNumber()
 										+ " :: " + e1.getMessage());
 					}
-				} else if (msg.equalsIgnoreCase("APR") || msg.equalsIgnoreCase("APPROVE")) {
+				} else if (msg.equalsIgnoreCase("APR")
+						|| msg.equalsIgnoreCase("APPROVE")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -8148,8 +8210,24 @@ public class UserAction extends HPBaseAction {
 
 	}
 
+	public void bcodeMethod() {
+		ApproverDTO dto=new ApproverDTO();
+		System.out.println(approverdto.getbCode());
+		Connection con = ListOfValuesManager.getBroadConnection();
+		System.out.println("Get Bcode:" + approverdto.getbCode());
+		name.put(approverdto.getbCode(), approverdto.getbCode());
+		/*try {
+		dto=	ListOfValuesManager.fetchApproverBcode(con, approverdto.getbCode());
+		System.out.println((dto.getName()));
+		} catch (ConfigurationException e) {
+
+			e.printStackTrace();
+		}*/
+		
+	}
 	public void populateApprover() {
 		approverdtoList.clear();
+		
 		/*
 		 * HttpSession currentSession = ServerUtility.getSession();
 		 * if(currentSession.getAttribute("approverdtoList") != null &&
@@ -8158,8 +8236,14 @@ public class UserAction extends HPBaseAction {
 		 * approverdtoList.addAll((List<ApproverDTO>)
 		 * currentSession.getAttribute("approverdtoList")); } else { try {
 		 */
+		
 		approverdtoList.addAll(ListOfValuesManager.findApproverForUser(Integer
 				.parseInt(userRegistrationDTO.getId())));
+		for(ApproverDTO dto:approverdtoList){
+			approver.put(dto.getbCode(), dto.getName());
+
+		}
+		
 		/*
 		 * currentSession.setAttribute("approverdtoList", approverdtoList); }
 		 * catch (NumberFormatException e) {
@@ -8177,21 +8261,23 @@ public class UserAction extends HPBaseAction {
 				circleId = dto.getCircleID();
 		}
 		if (circleId > 0) {
-			if ((approverdto.getHoponId() == null || approverdto.getHoponId()
-					.trim().length() == 0)) {
-				errorMessage.add("Please enter first approver hopon iD.");
+			if(approverdto.getbCode()=="" || approverdto.getbCode() == null){
+				errorMessage.add("Please enter Project code.");
 			}
-			if (approverdto.getHoponId() != null
-					&& approverdto.getHoponId2() != null
-					&& approverdto.getHoponId().equalsIgnoreCase(
-							approverdto.getHoponId2())) {
-				errorMessage
-						.add("Second approver HopOn ID should be different from First HopOn ID.");
-			}
-			if (errorMessage.size() == 0) {
+			/*else if ((approverdto.getHoponId() == null || approverdto.getHoponId().trim().length() == 0)) {
+				errorMessage.add("Please enter first approver hoponID.");
+			}*/
+			else if (approverdto.getbCode() != null && approverdto.getbCode()=="" && ((approverdto.getHoponId() != null && approverdto.getHoponId2() != null)
+					&& approverdto.getHoponId().equalsIgnoreCase(approverdto.getHoponId2()))) {
+				errorMessage.add("Second approver HopOn ID should be different from First HopOn ID.");
+			}else {
+			 if (errorMessage.size() == 0) {
 				approverdto.setCircleId(circleId);
 				approverdto.setCreatedBy(userRegistrationDTO.getId());
+				if (approverdto.getHoponId() != null
+						&& approverdto.getHoponId().length() > 0) {
 				approverdto.setVerificationCode(ServerUtility.randomString(15));
+				}
 				if (approverdto.getHoponId2() != null
 						&& approverdto.getHoponId2().length() > 0) {
 					approverdto.setVerificationCode2(ServerUtility
@@ -8202,9 +8288,11 @@ public class UserAction extends HPBaseAction {
 				currentSession.removeAttribute("approverdtoList");
 				successMessage.add("Approver added successfully!");
 			}
+		}
 		} else {
 			errorMessage.add("Please register circle First.");
 		}
+		
 		approverdto = new ApproverDTO();
 		populateApprover();
 	}
@@ -12025,9 +12113,9 @@ public class UserAction extends HPBaseAction {
 						rideRegistered.setCircleId(allMemberCircleList.get(0)
 								.getCircleID());
 					}	
-				rideRegistered.setTripType(0);
+				   rideRegistered.setTripType(0);
 				
-					//this is for Normal one time ride insertion data
+					//this is for Normal one time ride insertion data into ride_seeker_details table
 					rideRegistered = ListOfValuesManager.getRideSeekerEntery("findByDTO", rideRegistered, con);
 					List<String> value = new ArrayList<String>();
 					String putValue = "Once";
@@ -12109,9 +12197,9 @@ public class UserAction extends HPBaseAction {
 			rollbackTest = false;
 		}
 		rideRegistered.setSharedTaxi(false);
-
 		rideRegistered = new RideManagementDTO();
 		frequencyDTO = new FrequencyDTO();
+		guestRideDTO=new GuestRideDTO();
 		return "guestRideInfo";
 		
 	}

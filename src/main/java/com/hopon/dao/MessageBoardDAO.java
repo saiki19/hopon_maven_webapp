@@ -18,7 +18,6 @@ import com.hopon.utils.QueryExecuter;
 
 public class MessageBoardDAO {
 	public MessageBoardDTO insertMessage(Connection con, MessageBoardDTO dto) throws SQLException {
-		System.out.println("Inserting the Messages into MessageBoardDTO");
 		List<String> msgStatus = new ArrayList<String>();
 		if(dto.getMessageChannel() != null && !dto.getMessageChannel().equals("")) {
 			if(dto.getMessageChannel().equalsIgnoreCase("A")) {
@@ -32,9 +31,8 @@ public class MessageBoardDAO {
 		
 		for(String statusTemp:msgStatus) {
 			StringBuilder query = new StringBuilder();
-			query.append("INSERT into messageboard (Submittedby, Message, MessageChannel, MessageStatus, To_Member, CircleId, MessageType, CreatedbyDT, CreatedBy, UpdatedDT, UpdatedBy, Pool_Request_id, emailSubject, ride_id, attachements) value (?,?,?,?,?,?,?,'" +ApplicationUtil.currentTimeStamp()+"',?, '" +ApplicationUtil.currentTimeStamp()+"',?,?,?,?,?)");
+			query.append("INSERT into messageboard (Submittedby, Message, MessageChannel, MessageStatus, To_Member, CircleId, MessageType, CreatedbyDT, CreatedBy, UpdatedDT, UpdatedBy, Pool_Request_id, emailSubject, ride_id, attachements,guest_id) value (?,?,?,?,?,?,?,'" +ApplicationUtil.currentTimeStamp()+"',?, '" +ApplicationUtil.currentTimeStamp()+"',?,?,?,?,?,?)");
 			PreparedStatement pstmt = con.prepareStatement(query.toString(),Statement.RETURN_GENERATED_KEYS);
-			System.out.println("Query Is Printing:"+query);
 			pstmt.setInt(1, dto.getSubmittedBy());
 			pstmt.setString(2, dto.getMessage());
 			//A- all, S-SMS, E-Email, M-message board
@@ -70,6 +68,8 @@ public class MessageBoardDAO {
 	  		if(dto.getAttachements() != null && dto.getAttachements().size() > 0) {
 	  			pstmt.setString(13, dto.getAttachements().toString());
 	  		}
+
+	  		pstmt.setInt(14, dto.getGuest_id());
 	  		pstmt.executeUpdate();
 	  		ResultSet tableKeys = pstmt.getGeneratedKeys();
 	  		tableKeys.next();
@@ -88,7 +88,7 @@ public class MessageBoardDAO {
 		return dto;
 	}
 	
-	public void makeMessaeRead(Connection con, List<Integer> messageId) throws SQLException {
+	public void makeMessageRead(Connection con, List<Integer> messageId) throws SQLException {
 		StringBuilder query = new StringBuilder();
 		String inClause = "";
 		for(int i:messageId) {
@@ -101,6 +101,8 @@ public class MessageBoardDAO {
 		pstmt.executeUpdate();
   		pstmt.close();
 	}
+	
+
 	public void makePopupMessageRead(Connection con, List<Integer> messageId) throws SQLException {
 		StringBuilder query = new StringBuilder();
 		String inClause = "";
@@ -166,19 +168,29 @@ public class MessageBoardDAO {
 		}
 		rs.close();
 		pstmt.close();
-		makeMessaeRead(con, messageId);
+		makeMessageRead(con, messageId);
 		return dtos;
 	}
 
-	public List<MessageBoardDTO> fetchEmailMesage(Connection con) throws SQLException {
+	public List<List<MessageBoardDTO>> fetchEmailMesage(Connection con) throws SQLException {
 		List<MessageBoardDTO> dtos = new ArrayList<MessageBoardDTO>();
+		//This is for the Guest Declarations.
+		List<MessageBoardDTO> glist=new ArrayList<MessageBoardDTO>();
+		List<Integer> guestId = new ArrayList<Integer>();
+		List<Integer> guestlist = new ArrayList<Integer>();
+		
+		//Return Multiple Values like this
+		List<List<MessageBoardDTO>> dtosandGlist=new ArrayList<List<MessageBoardDTO>>(); 
+		
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT MessageId, Submittedby, Message, MessageChannel, MessageStatus, To_Member, CircleId, MessageType, CreatedbyDT, CreatedBy, UpdatedDT, UpdatedBy, Pool_Request_id, emailSubject, ride_id, attachements from messageboard WHERE (MessageChannel = 'E' OR MessageChannel = 'A') AND MessageStatus = 'U'");
+		query.append("SELECT MessageId, Submittedby, Message, MessageChannel, MessageStatus, To_Member, CircleId, MessageType, CreatedbyDT, CreatedBy, UpdatedDT, UpdatedBy, Pool_Request_id, emailSubject, ride_id, attachements, guest_id from messageboard WHERE (MessageChannel = 'E' OR MessageChannel = 'A') AND MessageStatus = 'U'");
+		System.out.println("Query 1:"+query);
 		PreparedStatement pstmt = con.prepareStatement(query.toString());		
 		ResultSet rs = pstmt.executeQuery();
 		List<Integer> messageId = new ArrayList<Integer>();
 		List<Integer> list = new ArrayList<Integer>();
-		while(rs.next()) {			
+		while(rs.next()) {
+			if(rs.getInt(17)==0){
 			if(!list.contains(rs.getInt(6))) {
 				list.add(rs.getInt(6));
 			}		
@@ -212,9 +224,47 @@ public class MessageBoardDAO {
 			 
 			messageDto.setAttachements(attachMap);
 			dtos.add(messageDto);
-		}
+			dtosandGlist.add(dtos);
+		}else{
+			if(!guestlist.contains(rs.getInt(17))) {
+				guestlist.add(rs.getInt(17));
+			}		
+			if(!guestlist.contains(rs.getInt(10))) {
+				guestlist.add(rs.getInt(10));
+			}
+			messageId.add(rs.getInt(1));
+			MessageBoardDTO messageDto = new MessageBoardDTO();
+			messageDto.setMessageId(rs.getInt(1));
+			messageDto.setSubmittedBy(rs.getInt(2));
+			messageDto.setMessage(rs.getString(3));
+			messageDto.setMessageChannel(rs.getString(4));
+			messageDto.setMessageStatus(rs.getString(5));
+			messageDto.setToMember(rs.getInt(6));
+			messageDto.setCircleId(rs.getInt(7));
+			messageDto.setMessageType(rs.getString(8));
+			messageDto.setCreatedByDt(rs.getString(9));
+			messageDto.setCreatedBy(rs.getInt(10));
+			messageDto.setUpdatedDt(rs.getString(11));
+			messageDto.setUpdatedBy(rs.getInt(12));
+			messageDto.setPoolRequestId(rs.getInt(13));
+			messageDto.setEmailSubject(rs.getString(14));
+			messageDto.setRideId(rs.getInt(15));
+			messageDto.setGuest_id(rs.getInt(17));
+			
+			Map<String, String> attachMap = new HashMap<String, String>();
+			String[] elements = rs.getString(16).replace("{", "").replace("}", "").split(",");
+			for(String s1: elements) {
+				String[] keyValue = s1.split("=");
+				if(keyValue.length >= 2) attachMap.put(keyValue[0], keyValue[1]);
+			}	 
+			messageDto.setAttachements(attachMap);
+			glist.add(messageDto);
+			dtosandGlist.add(glist);
+		}	
+	}
 		rs.close();
 		pstmt.close();
+		
 		if(list.size() > 0) {
 			String inClause = "";
 			for (int i : list) {
@@ -223,8 +273,7 @@ public class MessageBoardDAO {
 			inClause = inClause.substring(0, inClause.length() - 1);
 			query = new StringBuilder("SELECT id, email_id from users WHERE id IN("+inClause+")");
 			pstmt = con.prepareStatement(query.toString());
-			ResultSet rs2 = QueryExecuter.getResultSet(pstmt, query.toString());
-						
+			ResultSet rs2 = QueryExecuter.getResultSet(pstmt, query.toString());			
 			while(rs2.next()) {	
 				for(MessageBoardDTO dtoTemp:dtos) {
 					if(rs2.getInt(1) == dtoTemp.getToMember()) {
@@ -238,8 +287,33 @@ public class MessageBoardDAO {
 			rs2.close();
 			pstmt.close();
 		}
-		makeMessaeRead(con, messageId);
-		return dtos;
+	
+		if(guestlist.size() > 0) {
+			String guestinClause = "";
+			for (int i : guestlist) {
+				guestinClause += i + ",";
+			}
+			guestinClause = guestinClause.substring(0, guestinClause.length() - 1);
+			query = new StringBuilder("SELECT id, email_id from guests WHERE id IN("+guestinClause+")");
+			pstmt = con.prepareStatement(query.toString());
+			ResultSet guestrs = QueryExecuter.getResultSet(pstmt, query.toString());
+						
+			while(guestrs.next()) {	
+				for(MessageBoardDTO dtoTemp:glist) {
+					if(guestrs.getInt(1) == dtoTemp.getGuest_id()) {
+						dtoTemp.setToMemberEmail(guestrs.getString(2));
+					}
+					if(guestrs.getInt(1) == dtoTemp.getCreatedBy()) {
+						dtoTemp.setCreatedByEmail(guestrs.getString(2));
+					}
+				}
+			}
+			guestrs.close();
+			pstmt.close();
+	
+		}
+		makeMessageRead(con, messageId);
+		return dtosandGlist;	
 	}
 	public List<MessageBoardDTO> fetchSmsMesage(Connection con) throws SQLException {
 		List<MessageBoardDTO> dtos = new ArrayList<MessageBoardDTO>();
@@ -269,7 +343,7 @@ public class MessageBoardDAO {
 		}
 		rs.close();
 		pstmt.close();
-		makeMessaeRead(con, messageId);
+		makeMessageRead(con, messageId);
 		return dtos;
 	}
 	
@@ -301,7 +375,7 @@ public class MessageBoardDAO {
 		}
 		rs.close();
 		pstmt.close();
-		makeMessaeRead(con, messageId);
+		makeMessageRead(con, messageId);
 		return dtos;
 	}
 	
@@ -376,7 +450,7 @@ public class MessageBoardDAO {
 		}
 		rs.close();
 		pstmt.close();
-		makeMessaeRead(con, messageId);
+		makeMessageRead(con, messageId);
 		return dtos;
 	}
 
@@ -411,5 +485,78 @@ public class MessageBoardDAO {
   		pstmt.close();
   		dto.setId(autoGeneratedID);
   		return dto;
+	}
+	public List<MessageBoardDTO> fetchEmailMesage1(Connection con) throws SQLException {
+		List<MessageBoardDTO> dtos = new ArrayList<MessageBoardDTO>();
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT MessageId, Submittedby, Message, MessageChannel, MessageStatus, To_Member, CircleId, MessageType, CreatedbyDT, CreatedBy, UpdatedDT, UpdatedBy, Pool_Request_id, emailSubject, ride_id, attachements from messageboard WHERE (MessageChannel = 'E' OR MessageChannel = 'A') AND MessageStatus = 'U'");
+		PreparedStatement pstmt = con.prepareStatement(query.toString());		
+		ResultSet rs = pstmt.executeQuery();
+		List<Integer> messageId = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<Integer>();
+		while(rs.next()) {			
+			if(!list.contains(rs.getInt(6))) {
+				list.add(rs.getInt(6));
+			}		
+			if(!list.contains(rs.getInt(10))) {
+				list.add(rs.getInt(10));
+			}
+			messageId.add(rs.getInt(1));
+			MessageBoardDTO messageDto = new MessageBoardDTO();
+			messageDto.setMessageId(rs.getInt(1));
+			messageDto.setSubmittedBy(rs.getInt(2));
+			messageDto.setMessage(rs.getString(3));
+			messageDto.setMessageChannel(rs.getString(4));
+			messageDto.setMessageStatus(rs.getString(5));
+			messageDto.setToMember(rs.getInt(6));
+			messageDto.setCircleId(rs.getInt(7));
+			messageDto.setMessageType(rs.getString(8));
+			messageDto.setCreatedByDt(rs.getString(9));
+			messageDto.setCreatedBy(rs.getInt(10));
+			messageDto.setUpdatedDt(rs.getString(11));
+			messageDto.setUpdatedBy(rs.getInt(12));
+			messageDto.setPoolRequestId(rs.getInt(13));
+			messageDto.setEmailSubject(rs.getString(14));
+			messageDto.setRideId(rs.getInt(15));
+			
+			Map<String, String> attachMap = new HashMap<String, String>();
+			String[] elements = rs.getString(16).replace("{", "").replace("}", "").split(",");
+			for(String s1: elements) {
+				String[] keyValue = s1.split("=");
+				if(keyValue.length >= 2) attachMap.put(keyValue[0], keyValue[1]);
+			}
+			 
+			messageDto.setAttachements(attachMap);
+			dtos.add(messageDto);
+		}
+		rs.close();
+		pstmt.close();
+		if(list.size() > 0) {
+			String inClause = "";
+			for (int i : list) {
+				inClause += i + ",";
+			}
+			inClause = inClause.substring(0, inClause.length() - 1);
+			query = new StringBuilder("SELECT id, email_id from users WHERE id IN("+inClause+")");
+			pstmt = con.prepareStatement(query.toString());
+			ResultSet rs2 = QueryExecuter.getResultSet(pstmt, query.toString());
+						
+			while(rs2.next()) {	
+				for(MessageBoardDTO dtoTemp:dtos) {
+					if(rs2.getInt(1) == dtoTemp.getToMember()) {
+						dtoTemp.setToMemberEmail(rs2.getString(2));
+					}
+					
+					System.out.println("CreatedBy:"+dtoTemp.getCreatedBy()+"setCreatedByEmail:"+dtoTemp.getCreatedByEmail());
+					if(rs2.getInt(1) == dtoTemp.getCreatedBy()) {
+						dtoTemp.setCreatedByEmail(rs2.getString(2));
+					}
+				}
+			}
+			rs2.close();
+			pstmt.close();
+		}
+		makeMessageRead(con, messageId);
+		return dtos;
 	}
 }

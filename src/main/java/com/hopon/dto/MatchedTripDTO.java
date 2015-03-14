@@ -22,6 +22,16 @@ public class MatchedTripDTO {
 	private boolean fullDay;
 
 	private String groupCount;
+	private int guest_id;
+	
+
+	public int getGuest_id() {
+		return guest_id;
+	}
+
+	public void setGuest_id(int guest_id) {
+		this.guest_id = guest_id;
+	}
 
 	public String getGroupCount() {
 		return groupCount;

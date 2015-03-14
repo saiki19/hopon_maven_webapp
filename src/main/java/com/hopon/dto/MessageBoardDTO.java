@@ -20,8 +20,15 @@ public class MessageBoardDTO {
 	private int poolRequestId; //ride id from pool_request_table
 	public String emailSubject;
 	public int rideId;
+	private int guest_id;
 	private Map<String, String> attachements;
 	
+	public int getGuest_id() {
+		return guest_id;
+	}
+	public void setGuest_id(int guest_id) {
+		this.guest_id = guest_id;
+	}
 	public int getMessageId() {
 		return messageId;
 	}

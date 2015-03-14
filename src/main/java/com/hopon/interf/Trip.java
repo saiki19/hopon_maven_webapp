@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.hopon.dao.MatchTripDAO;
 import com.hopon.dto.*;
 import com.hopon.utils.ConfigurationException;
 
@@ -193,7 +194,7 @@ public interface Trip {
 	MessageBoardDTO loadInsertedMessage(Connection con,
 			MessageBoardDTO messagedto) throws ConfigurationException;
 
-	List<MessageBoardDTO> loadEmailSendingMessage(Connection con)
+	List<List<MessageBoardDTO>> loadEmailSendingMessage(Connection con)
 			throws ConfigurationException;
 
 	List<MessageBoardDTO> loadSmsSendingMessage(Connection con)
@@ -582,4 +583,9 @@ public interface Trip {
 	
 	RideSeekerDTO showGuestRidePopup(Connection con,String seeker_id)throws ConfigurationException;
 
+	GuestRideDTO fetchGuestRideInfo(Connection con,MatchedTripDTO dto)throws ConfigurationException;
+
+
+	public ApproverDTO findApproverId(Connection con, String bcode)throws ConfigurationException;
+	
 }

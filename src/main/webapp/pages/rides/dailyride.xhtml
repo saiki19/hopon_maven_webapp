@@ -38,8 +38,7 @@
 				var x = jQuery.noConflict();
 				function googleLoc() {
 					x(function() {
-						x("#tab1\\:fromaddress")
-								.autocomplete(
+						x("#tab1\\:fromaddress").autocomplete(
 										{
 											source : function(b, a) {
 												$("#tab1\\:fromcity").val("");
@@ -112,8 +111,7 @@
 														b.item.lng)
 											}
 										});
-						x("#tab1\\:toaddress")
-								.autocomplete(
+						x("#tab1\\:toaddress").autocomplete(
 										{
 											source : function(b, a) {
 												$("#tab1\\:tocity").val("");
@@ -625,7 +623,8 @@
 																				value="Cancel" id="EditBtn">
 																				<p:ajax process="@form"
 																					listener="#{userAction.cancelDailyRide}"
-																					update="@form" oncomplete="googleLoc();"  onsuccess="window.location ='${url}/pages/rides/dailyride.xhtml'"
+																					update="@form" oncomplete="googleLoc();"  
+																					onsuccess="window.location ='${url}/pages/rides/dailyride.xhtml'"
 																					/>
 																			</h:commandButton>
 																			<script type="text/javascript">
