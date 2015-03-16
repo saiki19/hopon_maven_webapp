@@ -51,7 +51,7 @@ function scroll(){
 			<script type="text/javascript">$(document).ready(function(){$("#ui-table-1").find("div[id*='_paginator_']").attr("style","background: none repeat scroll 0 0 #D9EDF7;border: 1px solid #55AA55;border-radius: 5px;height: 28px;padding-bottom: 2px;padding-top: 4px;");$("#ui-table-1").find("div[id*='_paginator_']").find(".ui-paginator-current").attr("style","margin-top: 2px;vertical-align: top;");$("#ui-table-1").find("div[id*='_paginator_']").bind("click",function(){setTimeout(function(){modalUpdate();updateDataTable()},1000)})});</script>
 			<pm:content rendered="#{sessionScope.user_role == 'C' }">
 			<pm:content rendered="#{empty userAction.allCompleateRideSeekerList}">
-          		<span class="muted lead">You have no completed rides.</span>
+          		<p class="alert alert-info">You have no completed rides.</p>
           	</pm:content>
           <h:form id="form1">                    
           	<div id="ui-table-1">
@@ -100,7 +100,7 @@ function scroll(){
 			<pm:content rendered="#{sessionScope.user_role == 'P' || sessionScope.user_role == 'B'}">
 			
 			<pm:content rendered="#{(userAction.ridePicker == 1 and empty userAction.allCompleateRideSeekerList) or (userAction.ridePicker == 2 and empty userAction.allCompleateRideList)}">
-          		<span class="muted lead">You have no completed rides.</span>
+          		<p class="alert alert-info">You have no completed rides.</p>
           	</pm:content>
           	
           	
@@ -204,7 +204,7 @@ function scroll(){
 			
 			
 			<pm:content rendered="#{empty userAction.allCompleateRideSeekerList and empty userAction.allCompleateRideList}">
-          		<span class="muted lead">You have no completed rides.</span>
+          		<p class="alert alert-info">You have no completed rides.</p>
           	</pm:content>
           	
           <h:form id="form3">

@@ -242,7 +242,6 @@ public class MatchTripDAO {
 			dto.setVehicleID(rs.getInt(7));
 			dto.setVehicleRegNo(rs.getString(8));
 			dto.setCapacity(rs.getInt(9));
-		
 			dto.setUsedCapacity(rs.getInt(10));
 			tripList.add(dto);
 		}

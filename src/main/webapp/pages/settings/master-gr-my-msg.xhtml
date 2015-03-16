@@ -269,9 +269,8 @@
 																	</p:column>
 																	<p:column headerText="Taxi Circle Description" width="">
 																		<span data-toggle="tooltip"
-																			title="${affList.affilicatedCircleDescription}">
-																			${(fn:length(affList.affilicatedCircleDescription) >
-																			20) ?
+																			title="${affList.affilicatedCircleDescription}">${(fn:length(affList.affilicatedCircleDescription)
+																			> 20) ?
 																			fn:substring(affList.affilicatedCircleDescription, 0,
 																			20) : affList.affilicatedCircleDescription}
 																			${(fn:length(affList.affilicatedCircleDescription) >

@@ -59,7 +59,7 @@
 															<p:column headerText="Circle Name" style="width:160px;">
 																<h:outputText value="#{circle.name}" />
 															</p:column>
-															<p:column headerText="Creater" style="width:150px;">
+															<p:column headerText="Creator" style="width:150px;">
 																<h:outputText value="#{circle.ownerName}" />
 															</p:column>
 
@@ -91,7 +91,7 @@
 														</p:dataTable>
 													</div>
 												</h:form>
-
+												<pm:content rendered="#{not empty userAction.allCilcleForLoginUserDropDownList}">
 												<h3 class="muted">
 													List of Circles created by
 													<h:outputText
@@ -106,7 +106,7 @@
 															<p:column headerText="Circle Name" style="width:160px;">
 																<h:outputText value="#{circle.name}" />
 															</p:column>
-															<p:column headerText="Creater" style="width:150px;">
+															<p:column headerText="Creator" style="width:150px;">
 																<h:outputText
 																	value="#{userAction.userRegistrationDTO.first_name}" />
 															</p:column>
@@ -129,6 +129,7 @@
 														</p:dataTable>
 													</div>
 												</h:form>
+												</pm:content>
 											</pm:content>
 
 											<!-- section for search -->

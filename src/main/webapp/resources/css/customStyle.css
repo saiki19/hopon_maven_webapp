@@ -1,0 +1,28 @@
+@CHARSET "UTF-8";
+
+/*employee rides table*/
+
+img{
+	max-width: 100%; 
+	max-height: auto
+}
+
+.actionButtons{
+	width:25px;
+	height: 25px;	
+}
+
+.cancelButton{
+	background-image: url('img/cancelImg.png');	 
+	
+}
+
+.critical{
+	background: red !important;
+}
+
+.icon{
+	max-width: 35px;
+	max-heignt: 35px;
+	
+}

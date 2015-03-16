@@ -1,0 +1,61 @@
+.logo{
+max-width: 22%;
+height: auto;
+
+position: absolute;
+margin-right:0px;
+margin-left: 10px;
+margin-top: 10px;
+z-index: 1000;
+}
+
+img{
+max-width: 100%;
+height: auto;
+display: block;
+border-style: none;
+}
+
+.on-top{
+z-index:100000;
+display: block;
+position:absolute;
+}
+
+.on-top-modal{
+z-index:200000;
+display: block;
+position:absolute;
+}
+
+.bottom-right{
+position: absolute;
+right:0.5%;
+bottom:5%;
+}
+
+.pos-center{
+margin-left:auto;
+margin-right:auto;
+}
+
+/*@override*/
+
+.cab_icon{
+background: none;
+border: none;
+border-style: none;
+max-width:15%;
+max-height:auto;
+
+}
+
+a:visited{
+border-style: none;
+}
+
+button:focus{
+background: none;
+border-style: none;
+outline-style: none;
+}

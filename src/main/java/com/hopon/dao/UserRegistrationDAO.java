@@ -480,7 +480,6 @@ public class UserRegistrationDAO {
 		// In the case when driver is linked with a user.
 		query.append("select u.id, u.email_id, u.mobile_no, u.gender, u.birthdate, u.address, u.first_name from rides_management r LEFT OUTER JOIN vehicles_master v ON r.vehicleID = v.id LEFT OUTER JOIN users u ON v.driverid = u.id where r.ride_id = '"
 				+ rideId + "'");
-		System.out.println("1st query:"+query);
 		PreparedStatement pstmt = con.prepareStatement(query.toString());
 		ResultSet rs = QueryExecuter.getResultSet(pstmt, query.toString());
 		if (rs.next()) {
@@ -500,7 +499,6 @@ public class UserRegistrationDAO {
 			// In the case when driver is not linked with any user.
 			query.append("select u.id, u.email_id, u.mobile_no, u.gender, u.birthdate, u.address, u.first_name from rides_management r LEFT OUTER JOIN vehicles_master v ON r.vehicleID = v.id LEFT OUTER JOIN users u ON v.user_id = u.id where r.ride_id = '"
 					+ rideId + "'");
-			System.out.println("2nd query"+query);
 			pstmt = con.prepareStatement(query.toString());
 			rs = QueryExecuter.getResultSet(pstmt, query.toString());
 			if (rs.next()) {
@@ -526,7 +524,6 @@ public class UserRegistrationDAO {
 		pstmt.setFloat(1, dto.getTotalCredit());
 		pstmt.setString(2, dto.getId());
 		pstmt.executeUpdate();
-		System.out.println("Excute update:" + pstmt.executeUpdate());
 		pstmt.close();
 		return dto;
 	}
@@ -579,7 +576,7 @@ public class UserRegistrationDAO {
 	public GuestRideDTO insertGuestInfo(Connection con, GuestRideDTO dto)
 				throws SQLException {
 			StringBuilder query = new StringBuilder();
-			query.append("INSERT INTO guests(id,first_name, last_name, mobile_no, email_id,seeker_id) VALUES(?,?,?,?,?,?)");
+			query.append("INSERT INTO guests(id,first_name, last_name, mobile_no, email_id,seeker_id,created_dt,updated_dt,created_by,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?)");
 			PreparedStatement pstmt;
 			try {
 				pstmt = con.prepareStatement(query.toString(),Statement.RETURN_GENERATED_KEYS);
@@ -589,6 +586,10 @@ public class UserRegistrationDAO {
 				pstmt.setString(4, dto.getGuest_mobile_no());
 				pstmt.setString(5, dto.getGuest_email_id());
 				pstmt.setString(6, dto.getSeekerID());
+				pstmt.setString(7, ApplicationUtil.currentTimeStamp());
+				pstmt.setString(8, ApplicationUtil.currentTimeStamp());		
+				pstmt.setString(9, dto.getCreated_by());
+				pstmt.setString(10, dto.getCreated_by());
 				int i=pstmt.executeUpdate();
 				ResultSet rs = pstmt.getGeneratedKeys();
 				rs.next();

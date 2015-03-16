@@ -16,7 +16,8 @@ private static final long serialVersionUID = 1L;
 	public CombineVehicleDataModel(List<CombineRideDTO> list){
 		super(list);
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public CombineRideDTO getRowData(String arg0) {
 		// TODO Auto-generated method stub

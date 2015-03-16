@@ -42,7 +42,7 @@
 			
 			<pm:content rendered="${empty userAction.allCilcleForLoginUserDropDownList}">
 				<div class="span10">
-					<h3 class="muted">Please create your Circle First.</h3>
+					<p class="alert alert-info">Please create your Circle First.</p>
 				</div>
 			</pm:content>
 			
@@ -83,9 +83,7 @@
 				<f:selectItems value="#{userAction.allCilcleForLoginUserDropDownList}"></f:selectItems>
 				<p:ajax  listener="#{userAction.processValueChange2}" process="@this,mycircles" update="member,pendingMember,pendingMemberLabel" oncomplete="memberDataModal();"/>
 			</p:selectOneListbox>
-			<h:commandButton  styleClass="btn btn-info ui-corner-all" value="De-Activate Circle" style="display:inline;margin-left: 228px;margin-top: -32px;">
-				<p:ajax process="@this,mycircles" listener="#{userAction.deActivateCircle}" update="@form,:messagePanel"></p:ajax>
-			</h:commandButton>
+			<!-- Commented De-Activate Circle for corporate -->
 		</div>
 	</div>
 

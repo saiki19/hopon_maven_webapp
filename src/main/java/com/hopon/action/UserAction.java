@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
@@ -55,6 +56,13 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.json.JSONException;
 import org.primefaces.model.UploadedFile;
 
+import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.GeocoderRequestBuilder;
+import com.google.code.geocoder.model.GeocodeResponse;
+import com.google.code.geocoder.model.GeocoderRequest;
+import com.google.code.geocoder.model.GeocoderResult;
+import com.google.code.geocoder.model.GeocoderStatus;
+import com.google.code.geocoder.model.LatLng;
 import com.hopon.dao.ApproverDAO;
 import com.hopon.dao.FrequencyDAO;
 import com.hopon.dao.HoponAccountDAO;
@@ -776,6 +784,20 @@ public class UserAction extends HPBaseAction {
 		messageForLoginUser();
 		vehicleList();
 		findListofCompanyForLoginUser();
+		// uerrole definition in session. 
+		// use allCorpCircleForLoginUserList for Admin and allTaxiCircleForLoginUserList for vendor for future use
+		System.out.println(allCircleForLoginUserList);
+		if ((!allCircleForLoginUserList.isEmpty()) && (!userRegistrationDTO.getTravel().matches("T"))){
+			currentSession.setAttribute("userrole","Admin");
+		} else if ((!allCircleForLoginUserList.isEmpty()) && (userRegistrationDTO.getTravel().matches("T"))){
+			currentSession.setAttribute("userrole","Vendor");
+		} else if ((userRegistrationDTO.getTravel().matches("T"))){
+			currentSession.setAttribute("userrole","Driver");
+		} else if ((!userRegistrationDTO.getTravel().matches("T"))){
+			currentSession.setAttribute("userrole","Employee");
+		}
+		System.out.println(currentSession.getAttribute("userrole"));
+		System.out.println(userRegistrationDTO.getTravel());
 		currentSession.setAttribute("unreadMessageRowNo", 1);
 		allLoginUserMessageList();
 		populatePopupMessage();
@@ -885,9 +907,6 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public String rideManagementList() {
-		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); 
-		String rideID = (String) requestMap.get("rideID");
 		rideManagementList = ListOfValuesManager
 				.getRideManagementList(userRegistrationDTO.getId());
 
@@ -1031,9 +1050,11 @@ public class UserAction extends HPBaseAction {
 		Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 		String ride = null;
 		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); 
-		// In java class, you can get back the parameter value with component (submit-command buton) like this :
-		
+		Map<String, String> requestMap = context.getExternalContext()
+				.getRequestParameterMap(); // In java class, you can get back
+											// the parameter value with
+											// component (submit-command buton)
+											// like this :
 		ride = (String) requestMap.get("ride");
 		clearScreenMessage();
 
@@ -5798,7 +5819,6 @@ public class UserAction extends HPBaseAction {
 			
 			Connection con = (Connection) ListOfValuesManager.getBroadConnection();
 			try {
-			
 				for (int i = 0; i < matchedTripDTOs.length; i++) {
 				
 					matchedTripDTOs[i].setCount(matchedTripDTOs[i].getCountTemp());
@@ -5933,7 +5953,7 @@ public class UserAction extends HPBaseAction {
 							managerUserDto = di;
 						}
 					}
-					
+
 					UserRegistrationDTO userDto = new UserRegistrationDTO();
 					VehicleMasterDTO vehicleDto1 = new VehicleMasterDTO();
 					if (Validator.isEmpty(rideManagementDTO.getVehicleID())
@@ -5955,32 +5975,30 @@ public class UserAction extends HPBaseAction {
 							"subject.match",
 							new Object[] { dto.getStartDate() }));
 					if (dto.getGuest_id()==0){
-					userMessageDTO.setMessage(Messages.getValue(
-							"ridematched.seeker",
-							new Object[] { 
-									seekerUserDto.getFirst_name(),
-									userDto.getFirst_name(),
-									rideManagementDTO.getRideID(),
-									dto.getStartPoint(), dto.getEndPoint(),
-									dto.getStartDate(),
-									vehicleDto1.getReg_NO(),
-									userDto.getMobile_no() }));
-					userMessageDTO.setGuest_id(0);
-					}else if(dto.getGuest_id()!=0){
 						userMessageDTO.setMessage(Messages.getValue(
 								"ridematched.seeker",
 								new Object[] { 
-										guestdto.getGuest_fname(),
+										seekerUserDto.getFirst_name(),
 										userDto.getFirst_name(),
 										rideManagementDTO.getRideID(),
 										dto.getStartPoint(), dto.getEndPoint(),
 										dto.getStartDate(),
 										vehicleDto1.getReg_NO(),
 										userDto.getMobile_no() }));
-						userMessageDTO.setGuest_id(dto.getGuest_id());
-					}
-					userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp
-							.getUserID()));
+						userMessageDTO.setGuest_id(0);
+						}else if(dto.getGuest_id()!=0){
+							userMessageDTO.setMessage(Messages.getValue(
+									"ridematched.seeker",
+									new Object[] { 
+											guestdto.getGuest_fname(),
+											userDto.getFirst_name(),
+											rideManagementDTO.getRideID(),
+											dto.getStartPoint(), dto.getEndPoint(),
+											dto.getStartDate(),
+											vehicleDto1.getReg_NO(),
+											userDto.getMobile_no() }));
+							userMessageDTO.setGuest_id(dto.getGuest_id());
+						}					
 					userMessageDTO.setMessageChannel("E");
 					userMessageDTO = ListOfValuesManager
 							.getInsertedMessage(userMessageDTO);
@@ -6072,6 +6090,7 @@ public class UserAction extends HPBaseAction {
 					}
 					userMessageDTO.setToMember(Integer.parseInt(seekerDtoTemp
 							.getUserID()));
+				
 					userMessageDTO.setMessageChannel("S");
 					userMessageDTO = ListOfValuesManager
 							.getInsertedMessage(userMessageDTO);
@@ -6151,9 +6170,9 @@ public class UserAction extends HPBaseAction {
 					dtoSeeker.setRideMatchRideId(rideManagementDTO.getRideID());
 					dtoSeeker.setIsResult("Y");
 					dtoSeeker = ListOfValuesManager.changeField(dtoSeeker, con);
-			}
 		
-			} catch (ConfigurationException e) {
+			} 
+				} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
 								+ e.getStackTrace()[0].getMethodName()
@@ -6206,7 +6225,8 @@ public class UserAction extends HPBaseAction {
 	public void processValue(AjaxBehaviorEvent event)
 			throws AbortProcessingException {
 		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); // In java class, you can get back
+		Map<String, String> requestMap = context.getExternalContext()
+				.getRequestParameterMap(); // In java class, you can get back
 											// the parameter value with
 											// component (submit-command buton)
 											// like this :
@@ -6371,7 +6391,11 @@ public class UserAction extends HPBaseAction {
 	
 	public String showRideSeekerPopup() {
 		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); 
+		Map<String, String> requestMap = context.getExternalContext()
+				.getRequestParameterMap(); // In java class, you can get back
+											// the parameter value with
+											// component (submit-command button)
+											// like this :
 		String rideID = (String) requestMap.get("rideId");
 		
 		rideManagerInfoForRideSeeker = ListOfValuesManager
@@ -6713,7 +6737,7 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public void handleUserUpload(FileUploadEvent event) {
-		UploadedFile item = event.getFile();
+		UploadedFile item = event.getFile();	
 		String tomcatDirectoryPath = ApplicationUtil.catalinaDirectoryPath;
 		String extension = ServerUtility.getExtension(item);
 		String path = null;
@@ -6775,13 +6799,15 @@ public class UserAction extends HPBaseAction {
 					String lastName = sheet.getCell(4, i).getContents();
 					// String travel = sheet.getCell(5,i).getContents();
 					String travel = "C"; // earlier "B" -- change as needed
+					String error = "";
 					if (userRegistrationDTO.getTravel().equalsIgnoreCase("T")) {
 						travel = "T";
 					}
 					if (email.trim() == null || email.trim().isEmpty()) {
+						error += Messages.getValue("error.blank");
 						break;
 					}
-					String error = "";
+					
 					if (Validator.isEmpty(email))
 						error += Messages.getValue("error.required",
 								new Object[] { "Email" });
@@ -6829,7 +6855,7 @@ public class UserAction extends HPBaseAction {
 					else if (testUserExistense.equalsIgnoreCase("A"))
 						error += Messages.getValue("error.alreadyexist",
 								new Object[] { "Email" });
-
+					
 					try {
 						if (error.length() == 0) {
 							forregistrationOnly = new UserRegistrationDTO();
@@ -6852,13 +6878,7 @@ public class UserAction extends HPBaseAction {
 							forregistrationOnly.setIsVerified('1');
 							forregistrationOnly.setVerificationCode("C");
 							forregistrationOnly.setSignupType(3);
-							forregistrationOnly.setTotalCredit(0); // earlier
-																	// 50,
-																	// platform
-																	// users
-																	// start
-																	// with zero
-																	// balance
+							forregistrationOnly.setTotalCredit(0); // earlier 50, platform users start with zero balance
 							forregistrationOnly.setTotalGreenMiles(0);
 
 							forregistrationOnly = ListOfValuesManager
@@ -7179,14 +7199,11 @@ public class UserAction extends HPBaseAction {
 	}
 
 	public void listOfRideForACircle() {
-	
-		matchedTripByConditionList = ListOfValuesManager.getRideSekerForCircle(String.valueOf(circleDTO.getCircleID()));
-		FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap(); 
-		// In java class, you can get back the parameter value with component (submit-command button)
-        // like this :
-		String rideID = (String) requestMap.get("rideID");
-		matchedTripDataModel = new MatchedTripDataModel(matchedTripByConditionList);
+		matchedTripByConditionList = ListOfValuesManager
+				.getRideSekerForCircle(String.valueOf(circleDTO.getCircleID()));
+
+		matchedTripDataModel = new MatchedTripDataModel(
+				matchedTripByConditionList);
 	}
 
 	public List<SelectItem> getVehicleListForDriver() {
@@ -7239,8 +7256,10 @@ public class UserAction extends HPBaseAction {
 		String delink = null;
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> requestMap = context.getExternalContext()
-				.getRequestParameterMap(); 
-		// In java class, you can get back the parameter value with component (submit-command button) like this :
+				.getRequestParameterMap(); // In java class, you can get back
+											// the parameter value with
+											// component (submit-command buton)
+											// like this :
 		link = (String) requestMap.get("link");
 		delink = (String) requestMap.get("delink");
 		if (link != null) {
@@ -7285,8 +7304,7 @@ public class UserAction extends HPBaseAction {
 			int rideId = 0;
 			try {
 				rideId = Integer.parseInt(bodyPart[1]);
-				if (msg.equalsIgnoreCase("CAN")
-						|| msg.equalsIgnoreCase("CANCEL")) {
+				if (msg.equalsIgnoreCase("CAN") || msg.equalsIgnoreCase("CANCEL")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -7781,8 +7799,7 @@ public class UserAction extends HPBaseAction {
 										+ e1.getStackTrace()[0].getLineNumber()
 										+ " :: " + e1.getMessage());
 					}
-				} else if (msg.equalsIgnoreCase("APR")
-						|| msg.equalsIgnoreCase("APPROVE")) {
+				} else if (msg.equalsIgnoreCase("APR") || msg.equalsIgnoreCase("APPROVE")) {
 					RideSeekerDTO seekerDto = new RideSeekerDTO();
 					try {
 						seekerDto = ListOfValuesManager
@@ -8210,24 +8227,8 @@ public class UserAction extends HPBaseAction {
 
 	}
 
-	public void bcodeMethod() {
-		ApproverDTO dto=new ApproverDTO();
-		System.out.println(approverdto.getbCode());
-		Connection con = ListOfValuesManager.getBroadConnection();
-		System.out.println("Get Bcode:" + approverdto.getbCode());
-		name.put(approverdto.getbCode(), approverdto.getbCode());
-		/*try {
-		dto=	ListOfValuesManager.fetchApproverBcode(con, approverdto.getbCode());
-		System.out.println((dto.getName()));
-		} catch (ConfigurationException e) {
-
-			e.printStackTrace();
-		}*/
-		
-	}
 	public void populateApprover() {
 		approverdtoList.clear();
-		
 		/*
 		 * HttpSession currentSession = ServerUtility.getSession();
 		 * if(currentSession.getAttribute("approverdtoList") != null &&
@@ -8236,7 +8237,6 @@ public class UserAction extends HPBaseAction {
 		 * approverdtoList.addAll((List<ApproverDTO>)
 		 * currentSession.getAttribute("approverdtoList")); } else { try {
 		 */
-		
 		approverdtoList.addAll(ListOfValuesManager.findApproverForUser(Integer
 				.parseInt(userRegistrationDTO.getId())));
 		for(ApproverDTO dto:approverdtoList){
@@ -12137,17 +12137,14 @@ public class UserAction extends HPBaseAction {
 				guestRideDTO.getGuest_mobile_no();
 				guestRideDTO.getGuest_email_id();
 				guestRideDTO.setSeekerID(rideRegistered.getRideID());
+				guestRideDTO.setCreated_by(rideRegistered.getCreatedBy());
 				try {
 					dto=ListOfValuesManager.GuestInfo(con, guestRideDTO);
 				} catch (ConfigurationException e) {
 					e.printStackTrace();
 				}					
-			/*if (dto != null) {
-				System.out.println("Successs...");
-			} else {
-				System.out.println("Failure!!!!");
-			}	*/
-			//Here updating guestId using ride seekerId into ride_seeker_details table
+			
+			//Updating guestId using ride seekerId into ride_seeker_details table
 			try {
 				ListOfValuesManager.updateGuestIdBySeekerId(con,dto.getGuest_id(),guestRideDTO.getSeekerID());
 			} catch (ConfigurationException e) {
@@ -12197,13 +12194,272 @@ public class UserAction extends HPBaseAction {
 			rollbackTest = false;
 		}
 		rideRegistered.setSharedTaxi(false);
+
 		rideRegistered = new RideManagementDTO();
 		frequencyDTO = new FrequencyDTO();
-		guestRideDTO=new GuestRideDTO();
+		guestRideDTO = new GuestRideDTO();
 		return "guestRideInfo";
 		
 	}
+
+	public void sendEmail(int toMember, int fromMember, String subject, String emailBody, String successmessage ){
+		userMessageDTO = new MessageBoardDTO();
+		userMessageDTO.setToMember(toMember);
+		userMessageDTO.setCreatedBy(fromMember);
+		userMessageDTO.setSubmittedBy(fromMember);
+		userMessageDTO.setEmailSubject(subject);
+		userMessageDTO.setMessageChannel("E");
+		userMessageDTO.setMessage(emailBody);
+		userMessageDTO = ListOfValuesManager
+				.getInsertedMessage(userMessageDTO);
+		successMessage
+				.add(successmessage);
+	}
+	public void sendSMS(int toMember, int fromMember,String msgBody, String successmessage ){
+		userMessageDTO = new MessageBoardDTO();
+		userMessageDTO.setToMember(toMember);
+		userMessageDTO.setCreatedBy(fromMember);
+		userMessageDTO.setSubmittedBy(fromMember);
+		userMessageDTO.setMessageChannel("S");
+		userMessageDTO.setMessage(msgBody);
+		userMessageDTO = ListOfValuesManager
+				.getInsertedMessage(userMessageDTO);
+		successMessage
+				.add(successmessage);
+	}
+	
+	
+	 public String sendBreakDownAlert(){
+		
+		Connection con = (Connection) ListOfValuesManager.getBroadConnection();	
+		List<Integer> breakdownAlertMembers = new ArrayList<Integer>();
+		
+		//update ride status as B = broken down 
+		rideRegistered.setStatus("B");// rideRegistered.setStatus("0");rideRegistered.setStatus("I");
+		try {
+			System.out.println(rideRegistered.getRideID());
+			rideRegistered = ListOfValuesManager.getCancleRide(rideRegistered,
+								con);
+			ListOfValuesManager.changePoolRequestStatusForRideGiver(con,
+					Integer.parseInt(rideRegistered.getRideID()));
+			rideRegistered = ListOfValuesManager
+					.getRideManagerPopupDataDirect(rideRegistered.getRideID());
+
+			//get driver details
+			UserRegistrationDTO driverDTO = new UserRegistrationDTO();
+			driverDTO = ListOfValuesManager.findDriverDtoByRideId(
+					rideRegistered.getRideID(), con);
+			
+			//get vendor details
+			UserRegistrationDTO vendorDTO = new UserRegistrationDTO();
+			vendorDTO = ListOfValuesManager.getUserById(Integer
+					.parseInt(rideRegistered.getUserID()));
+			
+			//get admin details
+			
+			
+			//get passenger details
+			allSeekerForGivenRide = ListOfValuesManager
+					.getAllRideSeekerForAGivenRide(rideRegistered.getRideID());
+			
+			//extract driverID, vendorID and adminID
+			int driverID= Integer.parseInt(driverDTO.getId());
+			int vendorID= Integer.parseInt(vendorDTO.getId());
+			System.out.println("driverid in string"+driverDTO.getId());
+			System.out.println("vendorid in string"+vendorDTO.getId());
+			// int adminID = Interger.parseInt(adminDTO.getId());
+			
+			//extract message body, subject and success message for breakdown alert
+			String breakdownMessageBody= Messages.getValue("breakdownMsg");
+			String breakdownMessageSub= Messages.getValue("breakdownSub");
+			String successMsg = Messages.getValue("breakdownSuccessMsg"); 
+			
+			//send message to passengers 
+			for(int i=0; i<allSeekerForGivenRide.size(); i++){
+				System.out.println("loop1"+i);
+				int passengerID=Integer.parseInt(allSeekerForGivenRide.get(i).getUserID());
+				sendEmail(passengerID, vendorID, breakdownMessageSub,breakdownMessageBody,successMsg);
+				sendSMS(passengerID, vendorID,breakdownMessageBody,successMsg);
+			}
+			
+			//send message to driver, vendor and transport admin
+			breakdownAlertMembers.add(driverID);
+			breakdownAlertMembers.add(vendorID);
+			// add adminID
+			System.out.println(breakdownAlertMembers.size());
+			for(int i=0; i<breakdownAlertMembers.size();i++){
+				System.out.println("loop2"+i);
+				int memberID= breakdownAlertMembers.get(i);
+				sendEmail(memberID, vendorID, breakdownMessageSub,breakdownMessageBody,successMsg);
+				sendSMS(memberID, vendorID,breakdownMessageBody,successMsg);
+			}
+		
+						
+			
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+			rollbackTest = true;
+		} finally {
+			if (rollbackTest) {
+				try {
+					con.rollback();
+				} catch (SQLException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+				}
+				ListOfValuesManager.releaseConnection(con);
+			} else {
+				try {
+					con.commit();
+				} catch (SQLException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber()
+									+ " :: " + e.getMessage());
+				}
+				ListOfValuesManager.releaseConnection(con);
+			}
+		
+	}
+		return null;
 }
+		 
+	    private boolean userrole;   
+	 
+	    public boolean isUserrole() {
+	        return userrole;
+	    }
+	 
+	    public void setUserrole(boolean userrole) {
+	        this.userrole = userrole;
+	    }
+	    public void addMessage() {
+	        String summary = userrole ? "Checked" : "Unchecked";
+	        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(summary));
+	    }
+	    public void selectrole(){
+	    	HttpSession currentSession = ServerUtility.getSession();
+	    	System.out.println(userrole);
+			// set session attribute e.g "LoggedIn='true' " if user is logged in
+	    	if (userrole==false){
+	    	currentSession.setAttribute("userrole","Admin");
+	    	}else{
+	    		currentSession.setAttribute("userrole","Employee");
+	    	}	
+	    }
+	    
+	    public String performGeoCoding() {
+	    	System.out.println("here");
+	    	FacesContext context = FacesContext.getCurrentInstance();
+	    	Map<String, String> locationmap = context.getExternalContext().getRequestParameterMap();
+	    	String location = locationmap.get("location1");
+	    	System.out.println(location);
+	    	  if (location == null) {
+	    		/*return null;*/  
+	    	  } else {
+	    	  Geocoder geocoder = new Geocoder();
+	    	  GeocoderRequest geocoderRequest
+	    	     = new GeocoderRequestBuilder()
+	    	       .setAddress(location) // location
+	    	       .setLanguage("en") // language
+	    	       .getGeocoderRequest();
+	    	  GeocodeResponse geocoderResponse;
+
+	    	  try {
+	    	    geocoderResponse = geocoder.geocode(geocoderRequest);
+	    	    if (geocoderResponse.getStatus() == GeocoderStatus.OK
+	    	      & !geocoderResponse.getResults().isEmpty()) {
+	    	      GeocoderResult geocoderResult =  
+	    	        geocoderResponse.getResults().iterator().next();
+	    	      LatLng latitudeLongitude =
+	    	        geocoderResult.getGeometry().getLocation();
+	    	      Float[] coords = new Float[2];
+	    	      coords[0] = latitudeLongitude.getLat().floatValue();
+	    	      coords[1] = latitudeLongitude.getLng().floatValue();
+	    	      System.out.println(coords[0]+","+coords[1]);
+	    	      /*return coords;*/
+	    	    }
+	    	  } catch (IOException ex) {
+	    	    ex.printStackTrace();
+	    	  }
+	    	  }
+	    	  return "";
+	    	}
+	    
+	    public void calcpickuptime(AjaxBehaviorEvent event)
+				throws AbortProcessingException {
+	    	System.out.println("here");
+	    	System.out.println("from"+rideRegistered.getFromAddress1());
+	    	System.out.println("from"+rideRegistered.getToAddress1());
+			String fromaddress;
+			String toaddress;
+			DecimalFormat format = new DecimalFormat("#.##");
+			float distance;
+			try {
+				distance = ApplicationUtil
+						.calculateDistanceWindowSettings(
+								rideRegistered.getFromAddress1(),
+								rideRegistered.getToAddress1());
+				System.out.println(distance);
+				if (distance > 0) {
+					distance = distance / 1000;
+					distance = Float.parseFloat(format.format(distance));
+					rideRegistered.setRideDistance(distance);
+					System.out.println(rideRegistered.getRideDistance());
+
+				}
+			} catch (IOException e) {
+				errorMessage
+						.add("There is some problem in calculating distance for ride.");
+			} catch (JSONException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName() + "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				errorMessage
+						.add("There is some problem in calculating distance for ride.");
+			}
+			float speed = 15; //kmph
+			float avgtime = (rideRegistered.getRideDistance()/speed)*1000*60*60*24; //time in milliseconds
+			System.out.println("avgtime"+avgtime);
+			System.out.println("logintime"+rideRegistered.getPickup_time1());
+			DateFormat dateFormat = new SimpleDateFormat(
+					ApplicationUtil.datePattern3);
+
+			Calendar cal = Calendar.getInstance();
+			try {
+				rideRegistered.setStartDate(new SimpleDateFormat(
+						ApplicationUtil.datePattern4).parse(rideRegistered
+						.getStartDate1()));
+
+			} catch (ParseException e) {
+				LoggerSingleton.getInstance().error(
+						e.getStackTrace()[0].getClassName() + "->"
+								+ e.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e.getStackTrace()[0].getLineNumber() + " :: "
+								+ e.getMessage());
+				errorMessage.add("Please select proper start date.");
+			}
+			cal.setTime(rideRegistered.getStartDate());
+			float time = ((cal.getTimeInMillis() - avgtime))/1000*60*60*24; 
+			System.out.println("pickuptime"+time);
+
+		}
+}
+
+
 	
 
 	

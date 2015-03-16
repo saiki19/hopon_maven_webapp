@@ -70,9 +70,9 @@ function scroll(){
 															<span style="display: none;">
 																${userAction.rideManagementList()} </span>
 															<script type="text/javascript">function validateAccountClose(){
-				if(confirm("Are You sure want to close account.")){
+				if(confirm("Are you sure you want to close account?")){
 					if(${userAction.pendingRideTest}){
-						if(confirm("There are still pending rides. Are You sure want to close account immediately."))
+						if(confirm("There are still pending rides. Are you sure you want to close account immediately?"))
 						{
 					return true
 					}else{
@@ -80,10 +80,11 @@ function scroll(){
 
 
 															<span class="span5">
-																<div class="control-group">
+															<!-- Commented for Corporate. Uncomment to user -->
+																<!-- <div class="control-group">
 																	<label class="control-label">User Rating</label>
 																	<div class="controls">
-																		<!-- <p:rating readonly="true" value="#{userAction.userRegistrationDTO.averageRating ne null ? 2 : userAction.userRegistrationDTO.averageRating}"></p:rating> -->
+																		<p:rating readonly="true" value="#{userAction.userRegistrationDTO.averageRating ne null ? 2 : userAction.userRegistrationDTO.averageRating}"></p:rating>
 																		${userAction.setRedirectUri("")}
 																		${userAction.userRatingUpdate()}
 																		<c:set var="rate_val"
@@ -106,7 +107,7 @@ function scroll(){
 																			style="display: inline; float: left; position: relative; margin-left: 12px; color: rgb(83, 168, 83);">
 																		</span>
 																	</div>
-																</div>
+																</div> -->
 																<div class="control-group">
 																	<label class="control-label" for="Name">First
 																		Name<i class="icon-asterisk error-icon"></i>
@@ -194,7 +195,8 @@ function scroll(){
 																		</h:selectOneRadio>
 																	</div>
 																</div>
-																<div class="control-group"
+																<!-- Commented for Corporate. Uncomment to user -->
+																<!-- <div class="control-group"
 																	style="float: left; display: inline; width: 100%;">
 																	<label class="control-label" for="travel">Travel<i
 																		class="icon-asterisk error-icon"></i></label>
@@ -210,7 +212,7 @@ function scroll(){
 																		</h:selectOneMenu>
 																		<label style="margin: 5px 5px auto 9px; float: left;">Min
 																			Wait Time</label>
-																		<!-- <h:inputText id="sl1Post" readonly="true" style="width: 37px; display: inline; margin-left: 2px;" value="#{userAction.userRegistrationDTO.defaultTimeSlice}"></h:inputText> -->
+																		<h:inputText id="sl1Post" readonly="true" style="width: 37px; display: inline; margin-left: 2px;" value="#{userAction.userRegistrationDTO.defaultTimeSlice}"></h:inputText>
 																		<h:selectOneMenu
 																			value="#{userAction.userRegistrationDTO.defaultTimeSlice}"
 																			style="width: 110px; display: inline; margin-left: 2px;">
@@ -227,10 +229,10 @@ function scroll(){
 																			<f:selectItem itemValue="00:60:00"
 																				itemLabel="60 Minutes" />
 																		</h:selectOneMenu>
-																		<!-- <input type="text" class="span2" value="1" id="sl1" /> -->
+																		<input type="text" class="span2" value="1" id="sl1" />
 																	</div>
-																</div>
-																<div class="control-group"
+																</div> -->
+																<!-- <div class="control-group"
 																	style="float: left; display: inline; width: 100%;">
 																	<label class="control-label" for="preference">Preference</label>
 																	<div class="controls">
@@ -243,7 +245,7 @@ function scroll(){
 																			<f:selectItem itemValue="female" itemLabel="Female" />
 																		</h:selectOneMenu>
 																	</div>
-																</div>
+																</div> -->
 															</span>
 
 
@@ -270,12 +272,6 @@ function scroll(){
 																		</span>
 																	</pm:content>
 
-
-																	<h:commandButton styleClass="btn btn-link"
-																		value="Close Account"
-																		action="#{userAction.userAcountClose()}"
-																		onclick="return validateAccountClose();" />
-
 																	<pm:content
 																		rendered="#{sessionScope.user_role ne 'T' and not empty userAction.allCircleList}">
 																		<span class="modal-link-span-2"
@@ -284,6 +280,11 @@ function scroll(){
 																				onclick="return false;" />
 																		</span>
 																	</pm:content>
+																	
+																	<h:commandButton styleClass="btn btn-link"
+																		value="Close Account"
+																		action="#{userAction.userAcountClose()}"
+																		onclick="return validateAccountClose();" />
 
 																</div>
 															</div>
@@ -311,8 +312,7 @@ function scroll(){
 															<a class="close" data-dismiss="modal">×</a>
 															<h3>
 																<h:outputText
-																	value="#{(empty userAction.listofCompanyForLoginUser) ? 'Add Company' : 'Edit Company'}">
-																</h:outputText>
+																	value="#{(empty userAction.listofCompanyForLoginUser) ? 'Add Company' : 'Edit Company'}"></h:outputText>
 															</h3>
 														</div>
 														<div class="modal-body">
@@ -357,7 +357,7 @@ function scroll(){
 																		<pm:content
 																			rendered="${sessionScope.user_role eq 'T'}">Taxi</pm:content>
 																		<pm:content
-																			rendered="${sessionScope.user_role ne 'T'}">Non-Taxi</pm:content>
+																			rendered="${sessionScope.user_role ne 'T'}">Corporate</pm:content>
 																		<pm:content
 																			rendered="${sessionScope.user_role ne 'T'}">
 																			<h:outputText value="Sector" id="sectorLabel"></h:outputText>
@@ -437,22 +437,22 @@ function scroll(){
 															${userAction.clearScreenMessage()}
 															<p:panel style="border: medium none;"
 																id="modalPanel-2-panel">
-        											${userAction.populateApprover()}
-        											<c:if test="#{userAction.approverdtoList.size() eq 0}">
+        		${userAction.populateApprover()}
+        		<c:if test="#{userAction.approverdtoList.size() eq 0}">
 																	<span class="muted lead">NO Approver</span>
 																</c:if>
 																<c:if test="#{userAction.approverdtoList.size() gt 0}">
 																	<table class="table table-bordered table-striped">
 																		<tr>
-																			<th>S NO</th>
-																			<th>B Code</th>
-																			<th>Name</th>
-																			<th>Hopon ID</th>
-																			<th>Name 2</th>
-																			<th>Hopon ID 2</th>
+																			<th>Sl. No.</th>
+																			<th>Project Code</th>
+																			<th>Approver 1</th>
+																			<th>Email ID</th>
+																			<th>Approver 2</th>
+																			<th>Email ID</th>
 																		</tr>
 																		<c:forEach var="approver"
-															 					items="#{userAction.approverdtoList}"
+																			items="#{userAction.approverdtoList}"
 																			varStatus="loop">
 																			<tr>
 																				<td>${loop.index + 1}</td>
@@ -467,11 +467,11 @@ function scroll(){
 																</c:if>
 																<h:form id="tab2">
 																	<h:panelGrid columns="5">
-																		<h:outputText value="BCode"></h:outputText>
+																		<h:outputText value="Project Code"></h:outputText>
 																		<h:outputText value="First Approver Name"></h:outputText>
-																		<h:outputText value="Hopon ID"></h:outputText>
+																		<h:outputText value="Reg. Email ID"></h:outputText>
 																		<h:outputText value="Second Approver Name"></h:outputText>
-																		<h:outputText value="Hopon ID"></h:outputText>
+																		<h:outputText value="Reg. Email ID"></h:outputText>
 																		<h:inputText value="#{userAction.approverdto.bCode}"
 																			style="width:90px;" />
 																		<h:inputText value="#{userAction.approverdto.name}"
@@ -485,7 +485,7 @@ function scroll(){
 																			style="width:150px;" />
 
 																		<h:commandButton styleClass="btn btn-info"
-																			value="Save">
+																			value="Add">
 																			<p:ajax
 																				oncomplete="modalUpdate();updateDataTable();scroll();"
 																				listener="#{userAction.addApprover}" process="@form"

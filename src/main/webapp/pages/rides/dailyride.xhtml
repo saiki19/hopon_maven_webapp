@@ -504,6 +504,10 @@
 																		<h:inputText id="tp1"
 																			styleClass="bootstrap-datepicker"
 																			value="#{userAction.rideRegistered.pickup_time1}">
+																			<p:ajax event="blur"
+																				process="@this,fromaddress,toaddress,tp1,dp1"
+																				listener="#{userAction.calcpickuptime}">
+																			</p:ajax>
 																		</h:inputText>
 
 																	</div>

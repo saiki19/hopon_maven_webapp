@@ -317,7 +317,6 @@ public class ListOfValuesManager {
 			try {
 				rideSeekerDTO = getTripService().loadRideSeeker(con, category,
 						rideSeekerDTO);
-		
 			} catch (ConfigurationException e) {
 				LoggerSingleton.getInstance().error(
 						e.getStackTrace()[0].getClassName() + "->"
@@ -3619,7 +3618,6 @@ public class ListOfValuesManager {
 		RideManagementDTO dtos = new RideManagementDTO();
 		try {
 			dtos = getTripService().getDailyRideData(con, userId);
-		
 		} catch (ConfigurationException e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"

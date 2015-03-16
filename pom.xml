@@ -193,8 +193,12 @@
 			<artifactId>bonecp</artifactId>
 			<version>0.8.0.RELEASE</version>
 		</dependency>
+		<dependency>
+  			<groupId>com.google.code.geocoder-java</groupId>
+  			<artifactId>geocoder-java</artifactId>
+  			<version>0.16</version>
+		</dependency>
 	</dependencies>
-
 	<profiles>
 
 		<profile>
@@ -305,7 +309,6 @@
 			</build>
 		</profile>
 	</profiles>
-	
 	<build>
 		<finalName>corp</finalName>
 		<plugins>
@@ -314,8 +317,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 			<!-- 	<version>3.1</version> -->
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 		</plugins>

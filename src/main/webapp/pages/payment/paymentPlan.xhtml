@@ -26,14 +26,13 @@
     		</div>
     		<div class="span10">
     			<div class="page-header">
-			    	<h1>Change Password</h1>
+			    	<h1>Billing Plan</h1>
 				</div>
 				<div class="row">
 					<div class="span6">
 						${userAction.populatePaymentPlan()}
-						<h3 class="muted">Billing Plan Details </h3>
 						<pm:content rendered="#{empty userAction.userPaymentPlanList}">
-							Admin did not set your payment plan.
+							<p class="alert alert-info">Your billing plan has not been set.</p>
 						</pm:content>
 						<pm:content rendered="#{not empty userAction.userPaymentPlanList}">
 						<table class="table table-bordered table-striped">

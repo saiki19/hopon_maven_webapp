@@ -293,13 +293,11 @@ public class TripImpl implements Trip {
 	public RideManagementDTO loadRideSeeker(Connection con, String category,
 			RideManagementDTO rideSeekerDTO) throws ConfigurationException {
 		RideSeekerDAO rideSeekerDAO = DAOProvider.getRideSeekerDAO();
-				
 		try {
 			if (category.equals("all")) {
 
 				rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
 						rideSeekerDTO);
-				
 			} else if (category.equals("findByDTO")) {
 				rideSeekerDTO = rideSeekerDAO.registerRideSeeker(con,
 						rideSeekerDTO);
@@ -1454,10 +1452,8 @@ public class TripImpl implements Trip {
 		// TODO Auto-generated method stub
 		MessageBoardDTO message = null;
 		MessageBoardDAO dao = DAOProvider.getMessageBoardDAO();
-		
 		try {
 			message = dao.insertMessage(con, messagedto);
-			
 		} catch (SQLException e) {
 			LoggerSingleton.getInstance().error(
 					e.getStackTrace()[0].getClassName() + "->"
@@ -3510,7 +3506,7 @@ public class TripImpl implements Trip {
 		}
 		return PaymentTxnsList;
 	}
-
+	
 	@Override
 	public RideManagementDTO getRideIDByUserID(Connection con, int user_id)
 			throws ConfigurationException {

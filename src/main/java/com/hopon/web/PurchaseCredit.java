@@ -38,7 +38,6 @@ public class PurchaseCredit extends HttpServlet {
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
-		System.out.println("Response Data:" + response.getContentType());
 		String userId = (String) session.getAttribute("userId");
 
 		if (session != null && !Validator.isEmpty(userId)) {

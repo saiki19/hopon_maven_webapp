@@ -52,7 +52,7 @@ function searchmatchride(){
           
              <span style="display:none;">${userAction.allCircleForLoginUser()}</span>    
         <pm:content rendered="#{empty userAction.allCilcleForLoginUserDropDownList}">
-        	<span class="span10 muted lead"><h3>Please Create your circle first.</h3></span>
+        	<p class="alert alert-info"><h3>Please Create your circle first.</h3></p>
         </pm:content>
                 
         <pm:content rendered="#{not empty userAction.allCilcleForLoginUserDropDownList}">

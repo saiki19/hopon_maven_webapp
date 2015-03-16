@@ -40,6 +40,7 @@ public class UserRegistrationDTO {
 	private float totalGreenMiles;
 	private float latitude;
 	private float longitude;
+	private String userrole;
 	
 	public String getId() {
 		return id;
@@ -242,5 +243,11 @@ public class UserRegistrationDTO {
 	}
 	public void setLongitude(float longitude) {
 		this.longitude = longitude;
+	}
+	public String getUserrole() {
+		return userrole;
+	}
+	public void setUserrole(String userrole) {
+		this.userrole = userrole;
 	}	
 }

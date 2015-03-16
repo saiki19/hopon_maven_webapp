@@ -7,8 +7,17 @@ public class GuestRideDTO {
 	private String guest_email_id;
 	private String guest_id;
 	private String seekerID;
+	private String created_by;
 	
 	
+
+	public String getCreated_by() {
+		return created_by;
+	}
+
+	public void setCreated_by(String created_by) {
+		this.created_by = created_by;
+	}
 
 	public String getSeekerID() {
 		return seekerID;

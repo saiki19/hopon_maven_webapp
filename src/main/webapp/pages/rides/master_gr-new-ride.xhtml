@@ -23,14 +23,18 @@
 						"q+" : Math.floor((this.getMonth() + 3) / 3),
 						S : this.getMilliseconds()
 					};
-				
 					if (/(y+)/.test(b)) {
 						b = b.replace(RegExp.$1, (this.getFullYear() + "")
 								.substr(4 - RegExp.$1.length))
 					}
 					for ( var a in c) {
 						if (new RegExp("(" + a + ")").test(b)) {
-							b = b.replace(RegExp.$1,RegExp.$1.length == 1 ? c[a]: ("00" + c[a]).substr(("" + c[a]).length))
+							b = b
+									.replace(
+											RegExp.$1,
+											RegExp.$1.length == 1 ? c[a]
+													: ("00" + c[a])
+															.substr(("" + c[a]).length))
 						}
 					}
 					return b
@@ -40,64 +44,75 @@
 					googleLoc()
 				});
 				function updatePart() {
-					var now = new Date (),
-				    now1 = new Date ( now );
-					now1.setHours( now1.getHours() + 2);
+					var datenew = new Date (),
+				    datenew = new Date ( datenew );
+					datenew.setHours( datenew.getHours() + 2);
 					$("#tab1\\:curentDate").datetimepicker({
 								dateFormat : "dd M y,",
 								timeFormat : "hh:mm TT",
-								minDate : now1,
+								minDate : datenew,
 								onSelect : function() {
-									var d = $("#tab1\\:curentDate").datepicker("getDate");
+									var d = $("#tab1\\:curentDate").datepicker(
+											"getDate");
 									d.setDate(d.getDate() + 1);
-									var c = $("#tab1\\:curentDate").datepicker("getDate");
+									var c = $("#tab1\\:curentDate").datepicker(
+											"getDate");
 									c.setDate(c.getDate() + 61);
-									$("#tab1\\:curentDate2").datepicker("option", "minDate", d);
-									$("#tab1\\:curentDate2").datepicker("option", "maxDate", c)
+									$("#tab1\\:curentDate2").datepicker(
+											"option", "minDate", d);
+									$("#tab1\\:curentDate2").datepicker(
+											"option", "maxDate", c)
 								}
 							});
-					
-					$("#tab1\\:curentDate2").datetimepicker({
+					$("#tab1\\:curentDate2").datetimepicker(
+							{
 								dateFormat : "dd M y,",
 								timeFormat : "hh:mm TT",
 								minDate : Date.parseString(
 										"#{userAction.minDate}",
 										"dd NNN yy, HH:mm a")
 							});
-					
 					var a = new Date();
 					a.setDate(a.getDate() + 2);
 					var b = new Date();
 					b.setDate(b.getDate() + 60);
 					$("#tab1\\:curentDate2").datepicker("option", "minDate", a);
 					$("#tab1\\:curentDate2").datepicker("option", "maxDate", b);
-					$("#tab1\\:fromcity, #tab1\\:frompin, #tab1\\:tocity, #tab1\\:topin").prop("readonly", true);
-					
+					$(
+							"#tab1\\:fromcity, #tab1\\:frompin, #tab1\\:tocity, #tab1\\:topin")
+							.prop("readonly", true);
 					if ($("#tab1\\:recurring").is(":checked")) {
 						$("#ifYes").show()
 					} else {
 						$("#ifYes").hide()
 					}
-					$("#tab1\\:recurring").click(
+					$("#tab1\\:recurring")
+							.click(
 									function() {
 										if ($(this).is(":checked")) {
 											var c = Date.parseString(
-													$("#tab1\\:curentDate").val(),
+													$("#tab1\\:curentDate")
+															.val(),
 													"dd NNN yy, HH:mm a");
 											if (c != null) {
 												currentTime = new Date(
-														new Date().getFullYear(),
+														new Date()
+																.getFullYear(),
 														new Date().getMonth(),
 														new Date().getDate());
-												currentTime.setDate(currentTime.getDate() + 1);
+												currentTime.setDate(currentTime
+														.getDate() + 1);
 												if (!(c >= currentTime)) {
-													$("#tab1\\:curentDate").val("")
+													$("#tab1\\:curentDate")
+															.val("")
 												}
 											}
 											currentTime = new Date();
-											currentTime.setDate(currentTime.getDate() + 1);
+											currentTime.setDate(currentTime
+													.getDate() + 1);
 											$("#tab1\\:curentDate").datepicker(
-													"option", "minDate",currentTime);
+													"option", "minDate",
+													currentTime);
 											$("#ifYes").show()
 										} else {
 											$("#ifYes").hide();
@@ -125,7 +140,7 @@
 			<c:set
 				value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}"
 				property="url" var="url" />
-	
+
 			<link rel="stylesheet"
 				href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
 
@@ -150,11 +165,13 @@
 														"");
 												$("#tab1\\:startPoinLng").val(
 														"");
-												x.ajax({
-															url : "http://maps.googleapis.com/maps/api/geocode/json",
+												x
+														.ajax({
+															url : "https://maps.googleapis.com/maps/api/geocode/json",
 															data : {
 																sensor : false,
 																address : b.term,
+																key : 'AIzaSyD0Osc2VUkNgQ4KMUMe38TLDccRyD3FLew',
 																components : "country:IN"
 															},
 															success : function(
@@ -175,7 +192,8 @@
 																			}
 																		}
 																	}
-																	l.push({
+																	l
+																			.push({
 																				formatted_address : f.results[e]["formatted_address"],
 																				lat : f.results[e]["geometry"]["location"]["lat"],
 																				lng : f.results[e]["geometry"]["location"]["lng"],
@@ -183,7 +201,9 @@
 																				postal_code : g
 																			})
 																}
-																a($.map(l,
+																a($
+																		.map(
+																				l,
 																				function(
 																						i) {
 																					return {
@@ -218,11 +238,13 @@
 												$("#tab1\\:topin").val("");
 												$("#tab1\\:endPoinLat").val("");
 												$("#tab1\\:endPoinLng").val("");
-												x.ajax({
-															url : "http://maps.googleapis.com/maps/api/geocode/json",
+												x
+														.ajax({
+															url : "https://maps.googleapis.com/maps/api/geocode/json",
 															data : {
 																sensor : false,
 																address : b.term,
+																key : 'AIzaSyD0Osc2VUkNgQ4KMUMe38TLDccRyD3FLew',
 																components : "country:IN"
 															},
 															success : function(
@@ -243,7 +265,8 @@
 																			}
 																		}
 																	}
-																	l.push({
+																	l
+																			.push({
 																				formatted_address : f.results[e]["formatted_address"],
 																				lat : f.results[e]["geometry"]["location"]["lat"],
 																				lng : f.results[e]["geometry"]["location"]["lng"],
@@ -251,8 +274,11 @@
 																				postal_code : g
 																			})
 																}
-																a($.map(l,
-																				function(i) {
+																a($
+																		.map(
+																				l,
+																				function(
+																						i) {
 																					return {
 																						label : i.formatted_address,
 																						value : i.formatted_address,
@@ -282,8 +308,10 @@
 			</script>
 			<script type="text/javascript">
 				function validate_rideSeeker() {
-					var a = Date.parseString($("#tab1\\:curentDate").val(),"dd NNN yy, HH:mm a");
-					var f = Date.parseString($("#tab1\\:curentDate2").val(),"dd NNN yy, HH:mm a");
+					var a = Date.parseString($("#tab1\\:curentDate").val(),
+							"dd NNN yy, HH:mm a");
+					var f = Date.parseString($("#tab1\\:curentDate2").val(),
+							"dd NNN yy, HH:mm a");
 					var e = $("#tab1\\:fromaddress").val();
 					var d = $("#tab1\\:toaddress").val();
 					var g = $("#tab1\\:recurring").is(":checked");
@@ -445,7 +473,7 @@
 																</div>
 																<div class="control-group">
 																	<label class="control-label" for="custom"><b><h:outputLabel
-																				value="Custom"
+																				value="Note"
 																				rendered="#{sessionScope.user_role == 'C' || sessionScope.user_role == 'B'}" />
 																	</b></label>
 																	<div class="controls"
@@ -492,33 +520,25 @@
 																		</h:selectOneMenu>
 																	</div>
 																</div>
-						
+
 																<div class="control-group">
-																	<label class="control-label" for="inputPassword">Address1</label>
+																	<label class="control-label" for="inputPassword">Address</label>
 																	<div class="controls">
 																		<h:inputText id="fromaddress"
 																			value="#{userAction.rideRegistered.fromAddress1}" />
 																	</div>
 																</div>
 
-
-																<!--  kirty -->
-
-
-																<!-- <div class="control-group">
-                      <label class="control-label" for="inputEmail">City</label>
-                      <div class="controls">
- -->
 																<h:inputHidden id="fromcity"
 																	value="#{userAction.rideRegistered.fromAddressCity}" />
-					
+		
 																<h:inputHidden id="frompin"
 																	value="#{userAction.rideRegistered.fromAddressPin}" />
 																<h:inputHidden id="startPoinLat"
 																	value="#{userAction.rideRegistered.startPointLatitude}" />
 																<h:inputHidden id="startPoinLng"
 																	value="#{userAction.rideRegistered.startPointLongitude}" />
-									
+	
 
 																<div class="control-group">
 																	<label class="control-label" for="inputPassword">Tag
@@ -586,49 +606,50 @@
 																rendered="#{(userAction.userRegistrationDTO.travel == 'B') or userAction.userRegistrationDTO.travel == 'C'}">
 																<div class="well changer" style="height: 125px;">
 																	<div class="control-group">
-																		<div style="margin-bottom: 22px; padding: 7px 1px;">
+																		<div style="margin-bottom: 10px;">
+																		
 																			<pm:content
 																				rendered="#{(userAction.userRegistrationDTO.travel == 'B' and userAction.ridePicker ==1) or userAction.userRegistrationDTO.travel == 'C'}">
+																				<label class="control-label" style="width: 86px;padding-left: 3px; padding-right: 17px;">Ride Type</label>
 																				<span style="margin-right: 1px;"><h:selectBooleanCheckbox
 																						value="#{userAction.rideRegistered.sharedTaxi}"
-																						id="carpool" class="ridecheck1" /> Carpool&nbsp;</span>
+																						id="carpool" class="ridecheck1" /> Carpool &nbsp;</span>
 																				<span style="margin-right: 2px;"><h:selectBooleanCheckbox
 																						id="fullDayCheck" class="ridecheck" /> Full
 																					Day&nbsp;</span>
 																				<h:inputHidden id="fullDay"
 																					value="#{userAction.rideRegistered.fullDay}" />
 																			</pm:content>
-																			<h:selectBooleanCheckbox id="checkboxes-0"
-																				value="#{userAction.rideRegistered.automatchInCircle}"
-																				class="ridecheck" />
-																			Auto Match-In circle only
+						
 																		</div>
-
+																		<div style="margin-bottom: 10px; padding-left: 10px;">
+																		<label class="control-label" style="width: 86px;padding-right: 10px;">Match Type</label>
+																		<h:selectBooleanCheckbox id="checkboxes-0"
+																				value="#{userAction.rideRegistered.automatchInCircle}"
+																				class="ridecheck" /> In circle
+																				<h5 style="padding-left: 100px;">Uncheck to be matched inter circle</h5>
+																		</div>
 																		<pm:content
 																			rendered="#{(userAction.userRegistrationDTO.travel == 'B' and userAction.ridePicker ==1) or userAction.userRegistrationDTO.travel == 'C'}">
-																		<!-- 	<label class="control-label" style="width: 86px;">Exp.
-																				Code / Mgr</label> -->
-																					<div class="control-group"
-																	style="float: left; display: inline; width: 100%;">
-																	
-															<div class="control-group"
-																	style="display: inline; width: 100%;">
-																	<label class="control-label"><strong>Project code:</strong></label>
-																	<div class="controls">
-																	
-																 <p:selectOneMenu id="bcode" value="#{userAction.approverdto.bCode}"  style="height:30px;width:150px;" size="1" styleClass="input-large" onchange="test(this);">	
-																		 
-																			   <f:selectItems value="#{userAction.approver}"/>
-																		
-																			<f:selectItem itemLabel="No Project codes" itemValue="0" />
-																</p:selectOneMenu>
-<!-- 																		<h:inputText  style="margin-left:2px; width:60%" value="#{userAction.approverdto.name}" id="name"></h:inputText>
- -->																		
-																	</div>
-																	
-																</div>
-																</div>
-													</pm:content>
+																			<label class="control-label" style="width: 80px; padding-top: 15px;"><strong>Project Code</strong></label>
+																			<div class="controls" style="padding-top: 5px;">
+																				${userAction.populateApprover()}
+																				<h:selectOneListbox
+																					value="#{userAction.rideRegistered.approverID}"
+																					size="1" style="margin-left: 20px;width: 71%">
+																					<!--  Commented for corporate -->
+																					<!-- <f:selectItem itemLabel="Self Paid" itemValue="-1" /> -->
+																					<c:forEach var="approver"
+																						items="#{userAction.approverdtoList}">
+																						<f:selectItem
+																							itemLabel="${approver.bCode}"
+																							itemValue="${approver.id}" />
+																					</c:forEach>
+																					<f:selectItem itemLabel="No Project Code" itemValue="0" />
+																				</h:selectOneListbox>
+																			</div>
+																		</pm:content>
+
 
 																	</div>
 																</div>
@@ -658,7 +679,7 @@
 																	</div>
 																</div>
 																<div class="control-group">
-																	<label class="control-label" for="inputEmail">Address1</label>
+																	<label class="control-label" for="inputEmail">Address</label>
 																	<div class="controls">
 																		<h:inputText id="toaddress"
 																			value="#{userAction.rideRegistered.toAddress1}" />
@@ -704,8 +725,12 @@
 																											0,
 																											5)
 																						}
-																						$("#tab1\\:before_input").val(a);
-																						$("#tab1\\:after_input")
+																						$(
+																								"#tab1\\:before_input")
+																								.val(
+																										a);
+																						$(
+																								"#tab1\\:after_input")
 																								.val(
 																										a)
 																					});
@@ -741,35 +766,35 @@
 												<p>
 													<h:commandButton
 														rendered="#{sessionScope.user_role == 'P' || (sessionScope.user_role == 'B' and userAction.ridePicker ==2)}"
-														styleClass="btn btn-large btn-success" value="Register">
+														styleClass="btn btn-large btn-success" value="Submit">
 														<f:param value="giveRide" name="ride">
 														</f:param>
 														<p:ajax process="@form"
 															listener="#{userAction.registerRide}" update="@form"
 															oncomplete="googleLoc();updatePart();"
 															onsuccess="setTimeout(function(){ 
-																if(parseInt($('#x3').find('span.form-message').length) == 0) 
-																window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml';  }, 500);" />
+						if(parseInt($('#x3').find('span.form-message').length) == 0) 
+						window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml';  }, 500);" />
 													</h:commandButton>
 													&nbsp;
 													<h:commandButton onclick="return validate_rideSeeker();"
 														rendered="#{sessionScope.user_role == 'C' || (sessionScope.user_role == 'B' and userAction.ridePicker ==1)}"
-														styleClass="btn btn-large btn-success" value="Register">
+														styleClass="btn btn-large btn-success" value="Submit">
 														<f:param value="takeRide" name="ride"></f:param>
 														<p:ajax process="@form"
 															listener="#{userAction.registerRide}" update="@form"
 															oncomplete="googleLoc();updatePart();"
 															onsuccess="setTimeout(function()
-          														{ 
-          												if(parseInt($('#x3').find('span.form-message').length) == 0) {
+          	{ 
+          	if(parseInt($('#x3').find('span.form-message').length) == 0) {
    
-         												if($('#tab1\\:recurring').is(':checked')){
-          	   											 window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml?page=recurring';  
-          	  											  }else{
-          	   											 window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml';  
-          	  											  }
-          	   											 }
-          											  }  , 500);" />
+          	if($('#tab1\\:recurring').is(':checked')){
+          	    window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml?page=recurring';  
+          	    }else{
+          	     window.location = '${url}/pages/rides/master-gr-pending-trips.xhtml';  
+          	    }
+          	    }
+          	  }  , 500);" />
 													</h:commandButton>
 													&nbsp;
 													<h:commandButton styleClass="btn btn-large btn-danger"
@@ -778,8 +803,9 @@
 															update="@form" />
 													</h:commandButton>
 													&nbsp;
-
+												
 												</p>
+												
 
 												<!-- table section ends here -->
 
@@ -790,8 +816,7 @@
 								<c:otherwise>
 									<span class="span10 muted lead"><h3>
 											<h:outputText value="${msgs['error.permissionDenied']}"></h:outputText>
-										</h3>
-									</span>
+										</h3></span>
 								</c:otherwise>
 							</c:choose>
 						</div>

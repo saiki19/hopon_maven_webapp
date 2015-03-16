@@ -250,7 +250,6 @@
 			</script>
 			<script type="text/javascript">
 				function validate_rideSeeker() {
-					var guestdata=$("#guest\\:fname").val();
 				
 					var a = Date.parseString($("#tab1\\:curentDate").val(),
 							"dd NNN yy, HH:mm a");
@@ -263,29 +262,28 @@
 					var mobno= $("#tab1\\:mobno").val();
 					var email = $("#tab1\\:email").val();
 					var b = new Array();
-					 if (guestdata=="") {
-						b.push("Please select guest page.");	
-					}  
+					
+					
+					if (fname == "") {
+						b.push("Please enter First Name.");
+					}
+					else if (lname == "") {
+						b.push("Please enter Last Name.");
+					}
+					else if (mobno == "") {
+						b.push("Please enter Mobile No.");
+					}
+					else if (email == "") {
+						b.push("Please enter Email Id.");
+					}
 					else if (a == null) {
 						b.push("Please select Start Date.");
 					} 
-					else if (fname == "") {
-						b.push("Please enter first name.");
-					}
-					else if (lname == "") {
-						b.push("Please enter last name.");
-					}
-					else if (mobno == "") {
-						b.push("Please enter mobile no.");
-					}
-					else if (email == "") {
-						b.push("Please enter email id.");
-					}
 					else if ($.trim(e).length == 0) {
-						b.push("Please enter source address.");
+						b.push("Please enter Source Address.");
 					} 
 					else if ($.trim(d).length == 0){
-						b.push("Please enter destination address.");
+						b.push("Please enter Destination Address.");
 					} 	
 					if (b.length > 0) {
 						$("#errorMessage").show();
@@ -303,6 +301,7 @@
 					}
 					return false
 				}
+		
 			</script>
 		
 	<!-- 	<script type="text/javascript">
@@ -372,27 +371,6 @@
 						</div>
 					  </div>
 					</div>
-			</c:forEach>
-			<c:forEach var="errMessage" items="${userAction.errorMessage}">
-					<div class="alert fade in alert-error" syle="display:none;">
-						<button class="close" data-dismiss="alert" type="button">×</button>
-						<span class="form-message">${errMessage}</span>
-					</div>
-			</c:forEach>	
-										${userAction.clearScreenMessage()}
-		</p:panel>
-</div>
-										<span style="display: none">
-													${userAction.clearScreenMessage()} </span>
-												<div class="row">
-													<div class="span8">
-														<div class="alert fade in alert-error"
-															style="display: none;" id="errorMessage">
-															<span class="form-message"></span>
-														</div>
-													</div>
-												</div>
-											
 	<div>
 		<div class="row">
 			<div class="span4 ">
@@ -581,34 +559,6 @@
 			<!-- End of the Button Section -->
 	</div>
 </h:form>
-	<div id="modalPanel-2" class="modal hide fade in" style="display: none;">
-        	<div class="modal-header">
-        		<a class="close" data-dismiss="modal">×</a>
-        		<h3>Enter the Guest Page Details</h3>
-           </div>
-			<div class="modal-body"> 
-			<p:panel style="border: medium none;" id="modalPanel-2-panel">
-			<h:form id="guest">				
-				<h:panelGrid columns="2">
-					<h:outputText value="First Name" for= "fname"></h:outputText>
-					<h:inputText  id="fname" name = "fname" value="#{userAction.guestRideDTO.guest_fname}" ></h:inputText>
-					<h:outputText value="Last Name"></h:outputText>
-					<h:inputText  id="lname" value="#{userAction.guestRideDTO.guest_lname}"></h:inputText> 
-					<h:outputText value="Mobile No"></h:outputText>
-					<h:inputText  id="mobno" value="#{userAction.guestRideDTO.guest_mobile_no}" >
-					<f:validateLength maximum="10"></f:validateLength>
-					</h:inputText>	
-					<h:outputText value="Email"></h:outputText>
-					<h:inputText id="email" value="#{userAction.guestRideDTO.guest_email_id}"/>  
-		           <h:commandButton onclick="return validateGuest();" styleClass="btn btn-success" value="select">
-		          	<p:ajax oncomplete="updateDataTable1(); modalUpdate(); scroll();if($('#ui-table-1 tr th:first').length > 0) $('#ui-table-1 tr th:first').attr('class', '').html('');" process="@this,guest" 
-		          	update=":guest"/>
-		            </h:commandButton>
-				</h:panelGrid>
-			</h:form>
-			</p:panel>         
-			</div>  	
-        </div>
 	</pm:content>
 </c:when>
 			<c:otherwise>
@@ -622,7 +572,6 @@
 		</div>
 	</div>
 </div>
-</div>
 				<!-- End: MAIN CONTENT -->
 				<ui:include src="../../pages/common/footer-content.xhtml"></ui:include>
 
@@ -630,5 +579,4 @@
 		</pm:view>
 	</pm:page>
 </f:view>
-
 </html>
