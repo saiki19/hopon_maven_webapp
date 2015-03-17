@@ -102,6 +102,9 @@ public class ApplicationUtil {
 	public static String demoDirectoryPath = catalinaDirectoryPath
 			+ fileSeperator + "webapps" + fileSeperator + "demo"
 			+ fileSeperator;
+	public static String rosterDirectoryPath = catalinaDirectoryPath
+			+ fileSeperator + "webapps" + fileSeperator + "rosters"
+			+ fileSeperator;
 	public static String vehicleDemoFile = "VehicleBulkUploadFormat.xls";
 	public static String userDemoFile = "UserBulkUploadFormat.xls";
 

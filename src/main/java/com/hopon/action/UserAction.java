@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.Connection;
@@ -27,6 +28,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIInput;
@@ -54,6 +57,7 @@ import org.omg.CORBA.Request;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.json.JSONException;
+import org.primefaces.json.JSONObject;
 import org.primefaces.model.UploadedFile;
 
 import com.google.code.geocoder.Geocoder;
@@ -66,6 +70,7 @@ import com.google.code.geocoder.model.LatLng;
 import com.hopon.dao.ApproverDAO;
 import com.hopon.dao.FrequencyDAO;
 import com.hopon.dao.HoponAccountDAO;
+import com.hopon.dao.MatchTripDAO;
 import com.hopon.dao.MessageBoardDAO;
 import com.hopon.dao.PaymentRequestDAO;
 import com.hopon.dao.RideSeekerDAO;
@@ -112,6 +117,7 @@ import com.hopon.utils.Messages;
 import com.hopon.utils.ServerUtility;
 import com.hopon.utils.SmsService;
 import com.hopon.utils.Validator;
+import com.mysql.fabric.xmlrpc.base.Value;
 
 public class UserAction extends HPBaseAction {
 	private List<SelectItem> allCompany;
@@ -7021,13 +7027,13 @@ public class UserAction extends HPBaseAction {
 							errorMessage.add("Row " + i + " : " + error);
 						else
 							successMessage.add(Messages.getValue(
-									"success.uploading", new Object[] { "User",
+									"success.uploading", new Object[] { "User List",
 											i })
 									+ ", " + email);
 					}
 					if (errorMessage.size() > 0) {
 						errorMessage.add(Messages.getValue("error.uploading",
-								new Object[] { "User" }));
+								new Object[] { "User List" }));
 						break;
 					}
 				}
@@ -12358,51 +12364,44 @@ public class UserAction extends HPBaseAction {
 	    	}	
 	    }
 	    
-	    public String performGeoCoding() {
-	    	System.out.println("here");
-	    	FacesContext context = FacesContext.getCurrentInstance();
-	    	Map<String, String> locationmap = context.getExternalContext().getRequestParameterMap();
-	    	String location = locationmap.get("location1");
-	    	System.out.println(location);
-	    	  if (location == null) {
-	    		/*return null;*/  
-	    	  } else {
-	    	  Geocoder geocoder = new Geocoder();
-	    	  GeocoderRequest geocoderRequest
-	    	     = new GeocoderRequestBuilder()
-	    	       .setAddress(location) // location
-	    	       .setLanguage("en") // language
-	    	       .getGeocoderRequest();
-	    	  GeocodeResponse geocoderResponse;
+	    public static Float[] performGeoCoding(String location) {
+	  	  if (location == null)  
+	  	     return null;
+	  	       
+	  	  Geocoder geocoder = new Geocoder();
+	  	  GeocoderRequest geocoderRequest
+	  	     = new GeocoderRequestBuilder()
+	  	       .setAddress(location) // location
+	  	       .setLanguage("en") // language
+	  	       .getGeocoderRequest();
+	  	  GeocodeResponse geocoderResponse;
 
-	    	  try {
-	    	    geocoderResponse = geocoder.geocode(geocoderRequest);
-	    	    if (geocoderResponse.getStatus() == GeocoderStatus.OK
-	    	      & !geocoderResponse.getResults().isEmpty()) {
-	    	      GeocoderResult geocoderResult =  
-	    	        geocoderResponse.getResults().iterator().next();
-	    	      LatLng latitudeLongitude =
-	    	        geocoderResult.getGeometry().getLocation();
-	    	      Float[] coords = new Float[2];
-	    	      coords[0] = latitudeLongitude.getLat().floatValue();
-	    	      coords[1] = latitudeLongitude.getLng().floatValue();
-	    	      System.out.println(coords[0]+","+coords[1]);
-	    	      /*return coords;*/
-	    	    }
-	    	  } catch (IOException ex) {
-	    	    ex.printStackTrace();
-	    	  }
-	    	  }
-	    	  return "";
-	    	}
+	  	  try {
+	  	    geocoderResponse = geocoder.geocode(geocoderRequest);
+	  	    if (geocoderResponse.getStatus() == GeocoderStatus.OK
+	  	      & !geocoderResponse.getResults().isEmpty()) {
+	  	      GeocoderResult geocoderResult =  
+	  	        geocoderResponse.getResults().iterator().next();
+	  	      LatLng latitudeLongitude =
+	  	        geocoderResult.getGeometry().getLocation();
+	  	      Float[] coords = new Float[2];
+	  	      coords[0] = latitudeLongitude.getLat().floatValue();
+	  	      coords[1] = latitudeLongitude.getLng().floatValue();
+	  	      return coords;
+	  	    }
+	  	  } catch (IOException ex) {
+	  	    ex.printStackTrace();
+	  	  }
+	  	  return null;
+	  	}
 	    
 	    public void calcpickuptime(AjaxBehaviorEvent event)
 				throws AbortProcessingException {
 	    	System.out.println("here");
 	    	System.out.println("from"+rideRegistered.getFromAddress1());
 	    	System.out.println("from"+rideRegistered.getToAddress1());
-			String fromaddress;
-			String toaddress;
+			/*String fromaddress;
+			String toaddress;*/
 			DecimalFormat format = new DecimalFormat("#.##");
 			float distance;
 			try {
@@ -12456,6 +12455,623 @@ public class UserAction extends HPBaseAction {
 			float time = ((cal.getTimeInMillis() - avgtime))/1000*60*60*24; 
 			System.out.println("pickuptime"+time);
 
+		}
+	    
+	    public void handleRosterUpload(FileUploadEvent event) {
+			UploadedFile item = event.getFile();	
+			String tomcatDirectoryPath = ApplicationUtil.catalinaDirectoryPath;
+			String extension = ServerUtility.getExtension(item);
+			String path = null;
+			File userPath = null;
+			// uploading the file to rosterDirectorypath
+			if (tomcatDirectoryPath != null) {
+				/*String userDirPath ="F:\\rosters\\";*/
+				String userDirPath = ApplicationUtil.rosterDirectoryPath;
+				path = ServerUtility.constructTargetFileName("roster_"
+						+ userRegistrationDTO.getId(), extension, userDirPath);
+				userPath = new File(userDirPath + path);
+				try {
+					InputStream input = item.getInputstream();
+					OutputStream output = new FileOutputStream(userPath);
+					try {
+						IOUtils.copy(input, output);
+					} catch (Exception e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber()
+										+ " :: " + e.getMessage());
+					} finally {
+						input.close();
+						output.flush();
+						output.close();
+					}
+				} catch (IOException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber() + " :: "
+									+ e.getMessage());
+				}
+
+				// Reading uploaded roster
+				Workbook workbook;
+				int colCount;
+         		int rowCount;
+				try {
+					workbook = Workbook.getWorkbook(userPath);
+					Sheet sheet = workbook.getSheet(0);
+					colCount = sheet.getColumns();
+					rowCount = sheet.getRows();
+					String TripType = null;
+					String RouteNo     = null;
+					String EmployeeID  = null;
+					String SheetMail   = null;
+					String Dept        = null;
+					String PickTime    = null;
+					String PickLoc     = null;
+					String DropLoc     = null;
+					String DropTime    = null;
+					String StartDate   = null;
+					String EndDate     = null;
+					String WO          = null;
+					
+					 TripType	 = sheet.getCell(0,0).getContents().trim() ;//TripType
+					 RouteNo     = sheet.getCell(1,0).getContents().trim() ;//RouteNo
+					 EmployeeID  = sheet.getCell(2,0).getContents().trim() ;//EmployeeID
+				     SheetMail   = sheet.getCell(3,0).getContents().trim() ;//Emailid
+					 Dept        = sheet.getCell(4,0).getContents().trim() ;//department
+					 PickTime    = sheet.getCell(5,0).getContents().trim() ;//login time
+					 PickLoc     = sheet.getCell(6,0).getContents().trim() ;//pickup location
+					 DropLoc     = sheet.getCell(7,0).getContents().trim() ;//drop location
+					 DropTime    = sheet.getCell(8,0).getContents().trim() ;//logout time
+					 StartDate   = sheet.getCell(9,0).getContents().trim() ;//StartDate
+					 EndDate     = sheet.getCell(10,0).getContents().trim() ;//EndDate
+					 WO          = sheet.getCell(11,0).getContents().trim() ;//WO
+				    
+					String error = "";
+						
+						List<CircleOwnerManagerDTO> circleDto = new ArrayList<CircleOwnerManagerDTO>();
+						circleDto = ListOfValuesManager.getAllCorpCircleForLoginUser(userRegistrationDTO.getId());
+						int circleid = Integer.parseInt(circleDto.get(0).getCircleID());
+						int uid = 0; 
+						String RouteErl = "";
+						String notavaliable="NA";
+						String AssinedGroup =   null ;
+						boolean picflag =false;
+						boolean dropflag = false;
+						Float[] coards;
+					
+					try {
+						// template validation
+						if(colCount == 12 && rowCount>1 && TripType.equalsIgnoreCase("TRIP TYPE") && RouteNo.equalsIgnoreCase("ROUTE") && EmployeeID.equalsIgnoreCase("EMPLOYEE ID") && SheetMail.equalsIgnoreCase("EMAIL ID") && 
+							Dept.equalsIgnoreCase("DEPARTMENT") && PickTime.equalsIgnoreCase("LOGIN TIME") && PickLoc.equalsIgnoreCase("PICKUP LOCATION") &&
+							DropLoc.equalsIgnoreCase("DROP LOCATION") && DropTime.equalsIgnoreCase("LOGOUT TIME") && StartDate.equalsIgnoreCase("START DATE") && EndDate.equalsIgnoreCase("END DATE") &&
+							WO.equalsIgnoreCase("WO")){
+							
+						} else {  
+							  error+=" Error in roster template.";
+						}
+						
+						if (error.length()==0){
+						for (int i = 1;i<=rowCount-1; i++) {
+							Connection con = (Connection) ListOfValuesManager.getBroadConnection();
+							rollbackTest = false;
+							 
+							 TripType	 = sheet.getCell(0,i).getContents().trim() ;
+							 RouteNo     = sheet.getCell(1,i).getContents().trim() ;//RouteNo
+							 EmployeeID  = sheet.getCell(2,i).getContents().trim() ;//EmployeeID
+						     SheetMail   = sheet.getCell(3,i).getContents().trim() ;//Emailid
+							 Dept        = sheet.getCell(4,i).getContents().trim() ;//department
+							 PickTime    = sheet.getCell(5,i).getContents().trim() ;//login time
+							 PickLoc     = sheet.getCell(6,i).getContents().trim() ;//pickup location
+							 DropLoc     = sheet.getCell(7,i).getContents().trim() ;//drop location
+							 DropTime    = sheet.getCell(8,i).getContents().trim() ;//logout time
+							 StartDate   = sheet.getCell(9,i).getContents().trim() ;//StartDate
+							 EndDate     = sheet.getCell(10,i).getContents().trim() ;//EndDate
+							 WO          = sheet.getCell(11,i).getContents().trim() ;//WO
+						    
+							RideSeekerDTO RideDto = new RideSeekerDTO();
+							// Row validation
+							if (TripType.trim().isEmpty())
+							{
+								error+=" TripType cannot be empty." ;
+							} else if (!(TripType.trim().equals("1") || TripType.trim().equals("2")))
+							{
+								error+=" TripType can only be 1 or 2.";
+							}
+							if (i == 1){
+								RouteErl = sheet.getCell(1, 1).getContents();
+							} else {
+								RouteErl = sheet.getCell(1, i-1).getContents();
+							}
+							if ((RouteNo.length()<5) ||(RouteNo.trim().isEmpty())||(!RouteNo.substring(0, 5).equalsIgnoreCase("Route"))) 
+							{
+								error +=" Error in format of RouteNo. It should be Route#.";
+							}
+							
+							/*if(EmployeeID.trim().isEmpty())
+							{
+								error+=" EmployeeID cannot be empty." ;
+							}
+							if (Dept.trim().isEmpty()) 
+							{
+								error+=" Department cannot be empty.";
+							}*/
+							if(!SheetMail.trim().isEmpty())
+							{
+								uid =ListOfValuesManager.validateUserforRoster(con, circleid, SheetMail);
+								if (uid==0){
+									error+=" User does not exist for this email. Kindly check the email address." ;
+								}
+							}
+							else if (Validator.isEmpty(SheetMail)) {
+								error+=" Email cannot be empty." ;
+							}
+							if (Validator.isNotEmail(SheetMail)){
+								error+=" Email is not in proper format.";
+							}
+							if(WO.trim().isEmpty()){
+								error+=" Week Off's cannot be empty." ;
+							}
+							if (PickLoc.trim().isEmpty()) 
+							{
+								error+=" Pick location cannot be empty.";	
+							}
+							else{
+								coards = performGeoCoding(PickLoc);
+								System.out.println(coards);
+								if (coards!=null){
+									RideDto.setStartPointLatitude(coards[0]);
+									RideDto.setStartPointLongitude(coards[1]);
+								} 
+								else {
+									error+=" Problem with Pickup Location geocoding.";
+								
+							}
+							}
+							if (DropLoc.trim().isEmpty()) 
+							{
+								error+=" Drop location cannot be empty.";
+							}
+							else
+							{
+								coards = performGeoCoding(DropLoc);
+								if (coards!=null){
+									RideDto.setEndPointLatitude(coards[0]);
+									RideDto.setEndPointLongitude(coards[1]);
+								} else {
+									error+=" Problem with drop Location geocoding.";
+								}
+								
+							}
+							
+							if(TripType.equals("1") && PickTime.trim().equalsIgnoreCase(notavaliable)){
+								picflag = true;
+							} 
+							else if (TripType.equals("2") && PickTime.trim().equalsIgnoreCase(notavaliable)){
+								error+=" Pickup time cannot be NA for triptype 2.";
+							}
+							else if(TripType.equals("2") && PickTime.trim().isEmpty()  )
+							{
+								error+=" Pickup time cannot be empty for triptype 2.";
+							}
+							else if (!(PickTime.trim().isEmpty()))  
+							{
+								try
+								{
+									picflag = false;
+								DateFormat dateFormat = new SimpleDateFormat("hh.mm a");
+								dateFormat.parse(PickTime); // hh:mm a
+						    	}
+								catch(ParseException e)
+								{   error+="Problem with pickup time format.";
+						    		System.out.println("exception in pick time format");
+						    		e.printStackTrace();
+								}
+							}
+							
+							if(TripType.equals("1") && (DropTime.trim().equalsIgnoreCase(notavaliable))){
+									dropflag = true;
+							}else if(TripType.equals("1") && DropTime.trim().isEmpty()  ){
+								error+=" Drop time cannot be empty.";
+							}
+							else if (TripType.equals("2") && DropTime.trim().equalsIgnoreCase(notavaliable)){
+								error+=" Drop time cannot be NA for triptype 2.";
+							}
+							else if(TripType.equals("2") && DropTime.trim().isEmpty()  )
+							{
+								error+=" Drop time cannot be empty for triptype 2.";
+							}
+							else if (!(DropTime.trim().isEmpty()))
+							{
+								try
+								{
+									dropflag = false;
+								DateFormat dateFormat = new SimpleDateFormat("hh.mm a");
+								dateFormat.parse(DropTime); // hh:mm a
+						    	}
+								catch(ParseException  e)
+								{    error+=" Problem with drop time format.";
+						    		e.printStackTrace();
+								}
+							}
+					
+								if (picflag == true && dropflag == true){
+									error+=" One of them should be provided for triptype 1.";
+								}
+							
+							
+							Date date1 = null ; // used further 
+							Date date2 = null;  // used further 
+							
+							if ((StartDate.trim().isEmpty())) 
+							{
+								error+=" Start date cannot be empty.";
+							}
+							else
+							{
+								try{
+							DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+						    date1 = dateFormat.parse(StartDate); // MM/dd/yyyy
+						    Date d = new Date();
+						    System.out.println("startdate"+date1.compareTo(d)+"date1"+date1+"d"+d);
+						    if (date1.compareTo(d)<0 ) 
+							{    error+=" Start Date cannot be less than Current Date.";
+								System.out.println("start date lesser than present date");
+								
+							}
+					    	    }
+							    catch(ParseException  e){   
+							    	error+=" Problem with start date format.";
+					    		    e.printStackTrace();
+						     	}
+								
+							}
+							if (EndDate.trim().isEmpty()) //LogOutTime
+							{   error+=" Start date cannot be empty.";
+							}
+							else
+							{
+								try
+								{
+								    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+								    date2 = dateFormat.parse(EndDate); // MM/dd/yyyy
+								    if(date1!=null && date2.compareTo(date1)<0)
+									{     error+=" End Date cannot be less than Start Date.";
+										  System.out.println("end date lesser than start date");
+										
+									}
+						    	}
+								catch(ParseException  e)
+								{   error+=" Problem with end date format.";
+						    		e.printStackTrace();
+								}
+							}
+							
+							try{
+							if(error.length()==0)
+								// Execution after row validation
+							{   
+								// Remove all previous daily rides
+								new MatchTripDAO().removeRosterRide(con, uid);
+								if(i==1)
+								{ 
+									// Find max group id count (groupid being used -  RS-X)
+								 new RideSeekerDAO().findMaxRosterGroupId(con,RideDto);
+								 AssinedGroup = RideDto.getGroupId();
+								}
+							   if(i>1)
+							    {   
+								   if(RouteNo.equals(RouteErl))
+								   {
+									   RideDto.setGroupId(AssinedGroup);
+								   }
+								   else
+								   {
+									 new RideSeekerDAO().findMaxRosterGroupId(con,RideDto);
+									 AssinedGroup = RideDto.getGroupId();
+								   }
+							    }
+							   
+							   	RideDto.setCircleId(circleid);
+								RideDto.setUserID(String.valueOf(uid));
+								RideDto.setStartDate(date1);// fromdate in createRides dto
+								RideDto.setEndDate(date2); // todate in createRides dto 
+								RideDto.setEnddateValue(EndDate);
+								RideDto.setStartdateValue(StartDate);
+								RideDto.setStartdateValue1(StartDate);
+								RideDto.setTripType(Integer.parseInt(TripType));
+							   if (Integer.parseInt(TripType)==1){
+								   if (PickTime.trim()!= null){
+									   RideDto.setPickup_time1(PickTime);
+									   RideDto.setFromAddress1(PickLoc);
+									   RideDto.setToAddress1(DropLoc);   
+								   } else if (DropTime.trim()!= null){
+									   RideDto.setPickup_time1(DropTime);
+									   RideDto.setFromAddress1(DropLoc);
+									   RideDto.setToAddress1(PickLoc);
+								   }
+							   } else if (Integer.parseInt(TripType)==2){
+								   RideDto.setPickup_time1(PickTime);
+								   RideDto.setFromAddress1(PickLoc);
+								   RideDto.setToAddress1(DropLoc);
+								   RideDto.setPickup_time2(DropTime);
+							   }
+							    DateFormat dateFormat = new SimpleDateFormat(ApplicationUtil.datePattern3);
+							    RideDto.setUpdatedDt(dateFormat.format(new Date()));
+							    RideDto.setStatus("A");
+								RideDto.setViaPoint(RideDto.getFromAddress1());
+								
+								rosterRide(con, RideDto); // geocoding and window calculation 
+								RideDto = ListOfValuesManager.rosterRideSeekerInsert(con, RideDto); // Ride insertion
+								
+								FrequencyDTO frequencyDTO = new FrequencyDTO();
+								List<String> val = new ArrayList<String>();
+								if (frequencyDTO.getFrequency() == null
+										|| frequencyDTO.getFrequency().size() == 0) {
+									//	String putValue = "Mon, Tue, Wed, Thu, Fri, Sat, Sun";
+									
+									Set<String> test1 = new TreeSet<String>();
+									test1.add("Mon");
+									test1.add("Tue");
+									test1.add("Wed");
+									test1.add("Thu");
+									test1.add("Fri");
+									test1.add("Sat");
+									test1.add("Sun");
+									String[] week = WO.split(",");
+									Set<String> test2 = new TreeSet<String>();
+									test2.add(week[0]);
+									test2.add(week[1]);
+									test1.removeAll(test2);
+									val.addAll(test1);
+									frequencyDTO.setFrequency(val);
+								}
+								
+								frequencyDTO.setRideManagementId(null);
+								frequencyDTO.setRideSeekerId(RideDto.getSeekerID());// seeker id 
+								frequencyDTO.setTime(RideDto.getStartDate());
+								frequencyDTO.setStartDate(RideDto.getStartdateValue());
+								frequencyDTO.setEndDate(RideDto.getEnddateValue());
+								frequencyDTO.setCount(val.size());
+								frequencyDTO.setStatus("A");
+								// Ride frequency insertion in trip
+								frequencyDTO = ListOfValuesManager.getFrequencyEntery("findByDTO",
+										frequencyDTO, con);
+							}
+							}catch (ConfigurationException e) {
+								LoggerSingleton.getInstance().error(
+										e.getStackTrace()[0].getClassName() + "->"
+												+ e.getStackTrace()[0].getMethodName()
+												+ "() : "
+												+ e.getStackTrace()[0].getLineNumber()
+												+ " :: " + e.getMessage());
+								rollbackTest = true;
+								error += Messages.getValue("error.db1",
+										new Object[] { "Ride" });
+							} finally {
+								if (rollbackTest) {
+									try {
+										if (error.length() > 0){
+											errorMessage.add("Row " + i + " : " + error);
+										}	
+										else{
+											successMessage.add(Messages.getValue(
+													"success.uploading", new Object[] { "Ride",
+															i })
+													+ ", " + SheetMail);
+										}
+										con.rollback();
+									} catch (SQLException e) {
+										LoggerSingleton.getInstance().error(
+												e.getStackTrace()[0].getClassName() + "->"
+														+ e.getStackTrace()[0].getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0].getLineNumber()
+														+ " :: " + e.getMessage());
+									}
+									ListOfValuesManager.releaseConnection(con);
+								} else {
+									try {
+										if (error.length() > 0){
+											errorMessage.add("Row " + i + " : " + error);
+											con.rollback();
+										}	
+										else{
+											successMessage.add(Messages.getValue(
+													"success.uploading", new Object[] { "Ride",
+															i })
+													+ ", " + SheetMail);
+											con.commit();
+										}
+									} catch (SQLException e) {
+										LoggerSingleton.getInstance().error(
+												e.getStackTrace()[0].getClassName() + "->"
+														+ e.getStackTrace()[0].getMethodName()
+														+ "() : "
+														+ e.getStackTrace()[0].getLineNumber()
+														+ " :: " + e.getMessage());
+									}
+									ListOfValuesManager.releaseConnection(con);
+								}
+							if (errorMessage.size() > 0) {
+								errorMessage.add(Messages.getValue("error.uploading",
+										new Object[] { "Roster" }));
+								break;
+							}
+							
+						} //finally closes
+							
+						}//for closes
+					} else {
+							errorMessage.add(error);
+							errorMessage.add(Messages.getValue("error.uploading",
+									new Object[] { "Roster" }));
+					}
+					}catch (Exception e)
+					{    System.out.println("Error in roster Upload");
+					 e.printStackTrace();
+				}
+			} catch (BiffException e1) {
+				LoggerSingleton.getInstance().error(
+						e1.getStackTrace()[0].getClassName() + "->"
+								+ e1.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e1.getStackTrace()[0].getLineNumber()
+								+ " :: " + e1.getMessage());
+
+			} catch (IOException e1) {
+				LoggerSingleton.getInstance().error(
+						e1.getStackTrace()[0].getClassName() + "->"
+								+ e1.getStackTrace()[0].getMethodName()
+								+ "() : "
+								+ e1.getStackTrace()[0].getLineNumber()
+								+ " :: " + e1.getMessage());
+			}
+	
+		}
+				
+	}
+		
+		public void rosterRide(Connection con, RideSeekerDTO RideDto) throws SQLException {
+
+			UserPreferencesDTO userPreferences = new UserPreferencesDTO();
+			userPreferences = ListOfValuesManager.getUserPreferences(Integer.parseInt(RideDto.getUserID())); // get user preferences using userid
+			
+			if (userPreferences.getMaxWaitTime() == 0) {
+				userPreferences.setMaxWaitTime(10);
+			}
+			userPreferences.getMaxWaitTime();
+			DateFormat dateFormat = new SimpleDateFormat(
+					ApplicationUtil.datePattern3);
+
+			Calendar cal = Calendar.getInstance();
+			Calendar cal1 = Calendar.getInstance();
+			Calendar cal2 = Calendar.getInstance();
+			
+			
+			
+			if (RideDto.getTripType()==1) {
+				try {
+					
+					    String str1 = RideDto.getStartdateValue();
+						String str2 = RideDto.getEnddateValue() + " "+ "00.00 AM" ;
+					
+					    str1 = str1 + " " + RideDto.getPickup_time1();
+					
+						RideDto.setStartDate(new SimpleDateFormat("d/M/yyyy hh.mm a").parse(str1));//start
+			        	RideDto.setEndDate(new SimpleDateFormat("d/M/yyyy hh.mm a").parse(str2));//end
+			        
+					} catch (ParseException e) {
+						LoggerSingleton.getInstance().error(
+								e.getStackTrace()[0].getClassName() + "->"
+										+ e.getStackTrace()[0].getMethodName()
+										+ "() : "
+										+ e.getStackTrace()[0].getLineNumber() + " :: "
+										+ e.getMessage());
+					}
+					cal.setTime(RideDto.getStartDate());
+					String date1 = dateFormat.format(cal.getTime());
+					RideDto.setStartdateValue(date1);//start_date
+					cal1.setTime(RideDto.getEndDate());
+					String date2 = dateFormat.format(cal1.getTime());
+					RideDto.setEnddateValue(date2);//end_date
+				
+					RideDto.setStartTime2("0000:00:00 00:00:00");//start_time2
+			
+					RideDto.setSeekerID(null);
+			
+					RideDto.setUpdatedDt(ApplicationUtil.currentTimeStamp());
+					RideDto.setViaPointLatitude(RideDto.getStartPointLatitude());
+					RideDto.setViaPointLongitude(RideDto.getStartPointLongitude());
+					
+					List windowCalculation;
+					try {
+						windowCalculation = ApplicationUtil
+								.calculateTimeWindowSettings(RideDto.getFromAddress1(), "",
+										RideDto.getToAddress1(),
+										userPreferences.getMaxWaitTime(),
+										RideDto.getStartdateValue());
+						if (windowCalculation.size() > 0) {
+							
+							RideDto.setStartdateValue(windowCalculation.get(1).toString());
+							RideDto.setStartDateEarly(windowCalculation.get(1).toString());
+							RideDto.setStartDateLate(windowCalculation.get(2).toString());
+							RideDto.setEndDateEarly(windowCalculation.get(3).toString());
+							RideDto.setEndDateLate(windowCalculation.get(4).toString());
+							distance = Integer.parseInt(windowCalculation.get(5)
+									.toString()) / 1000;
+							RideDto.setRideDistance(distance);
+						}
+					} catch (IOException e) {
+
+						e.printStackTrace();
+
+					} catch (JSONException e1) {
+						e1.printStackTrace();
+					}
+			}
+			else if (RideDto.getTripType()==2) {
+				try {
+				    String str1 = RideDto.getStartdateValue();
+					String str2 = RideDto.getEnddateValue() + " "+ "00.00 AM" ;
+					String str3 = str1  + " " +RideDto.getPickup_time2() ;
+				    str1 = str1 + " " + RideDto.getPickup_time1();
+					RideDto.setStartDate(new SimpleDateFormat("d/M/yyyy hh.mm a").parse(str1));//start
+		        	RideDto.setEndDate(new SimpleDateFormat("d/M/yyyy hh.mm a").parse(str2));//end
+					RideDto.setStartDate1(new SimpleDateFormat("d/M/yyyy hh.mm a").parse(str3));//start2
+				   } catch (ParseException e) {
+					LoggerSingleton.getInstance().error(
+							e.getStackTrace()[0].getClassName() + "->"
+									+ e.getStackTrace()[0].getMethodName()
+									+ "() : "
+									+ e.getStackTrace()[0].getLineNumber() + " :: "
+									+ e.getMessage());
+				  }
+				  cal.setTime(RideDto.getStartDate());
+				  String date1 = dateFormat.format(cal.getTime());
+			      RideDto.setStartdateValue(date1);//start_date
+				  cal1.setTime(RideDto.getEndDate());
+				  String date2 = dateFormat.format(cal1.getTime());
+				  RideDto.setEnddateValue(date2);//end_date
+		    	  cal2.setTime(RideDto.getStartDate1());
+				  String date3 = dateFormat.format(cal2.getTime());
+				  RideDto.setStartTime2(date3);//start_time2
+				  RideDto.setSeekerID(null);
+				  RideDto.setUpdatedDt(ApplicationUtil.currentTimeStamp());
+				  RideDto.setViaPointLatitude(RideDto.getStartPointLatitude());
+				  RideDto.setViaPointLongitude(RideDto.getStartPointLongitude());
+				  
+				  List windowCalculation;
+			try {
+					windowCalculation = ApplicationUtil
+							.calculateTimeWindowSettings(RideDto.getFromAddress1(), "",
+									RideDto.getToAddress1(),
+									userPreferences.getMaxWaitTime(),
+									RideDto.getStartdateValue());
+					if (windowCalculation.size() > 0) {
+						
+						RideDto.setStartdateValue(windowCalculation.get(1).toString());
+						RideDto.setStartDateEarly(windowCalculation.get(1).toString());
+						RideDto.setStartDateLate(windowCalculation.get(2).toString());
+						RideDto.setEndDateEarly(windowCalculation.get(3).toString());
+						RideDto.setEndDateLate(windowCalculation.get(4).toString());
+						distance = Integer.parseInt(windowCalculation.get(5)
+								.toString()) / 1000;
+						RideDto.setRideDistance(distance);
+
+					}
+				} catch (IOException e) {
+
+					e.printStackTrace();
+
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 }
 

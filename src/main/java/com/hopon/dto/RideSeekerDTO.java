@@ -62,6 +62,7 @@ public class RideSeekerDTO {
 	private String startdateValue1;
 	private Date startDate1;
 	private String daily_rides;
+	private String startTime2;
 
 	private String pickup_time1;
 	private String pickup_time2;
@@ -599,5 +600,13 @@ public class RideSeekerDTO {
 
 	public void setCircleId(int circleId) {
 		this.circleId = circleId;
+	}
+
+	public String getStartTime2() {
+		return startTime2;
+	}
+
+	public void setStartTime2(String startTime2) {
+		this.startTime2 = startTime2;
 	}
 }

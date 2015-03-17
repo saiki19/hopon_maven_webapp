@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.hopon.dto.CircleOwnerManagerDTO;
 import com.hopon.dto.CombineRideDTO;
 import com.hopon.dto.ManageRideDTO;
 import com.hopon.dto.ManageRideFormDTO;
@@ -1027,4 +1028,47 @@ public class MatchTripDAO {
 		pstmt.close();
 		return maps;
 	}
+	public void removeRosterRide(Connection con, int test) throws SQLException {
+		PreparedStatement pstmt = null ;
+		try{
+			StringBuilder query = new StringBuilder();
+			query.append("UPDATE ride_seeker_details SET status='I' WHERE seeker_id IN (SELECT seeker.s FROM (SELECT rs.seeker_id as s FROM ride_seeker_details rs where rs.user_id = '"+test+"' AND status = 'A' AND rs.recurring='Y' AND rs.daily_rides = 'Y') as seeker Where 1)");
+			System.out.println("MatchTripDAO--inactivating seeker as he has placed ride: "+query.toString());
+			pstmt = con.prepareStatement(query.toString());
+			int a= pstmt.executeUpdate();
+			System.out.println(a+":no of rows updated");
+		}finally
+		{
+			pstmt.close();
+		}
+	}
+	
+	public int validateUserforRoster(Connection con,
+			int circleid, String SheetMail) throws SQLException 
+	{ 
+		PreparedStatement pstmt = null ;
+		ResultSet rs=null;
+	    int userid = 0;
+	    
+		try{
+		int circleId = circleid;
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT users.id FROM users where users.email_id ='"+SheetMail+" ' and users.status = 'A' and users.id IN  (SELECT MemberId FROM circle_members where CircleId = '"+circleId +"')");
+		System.out.println("query--MatchTripDAO--select userId for given Email:  "+query.toString());
+		pstmt = con.prepareStatement(query.toString());
+		rs = pstmt.executeQuery();
+		System.out.println(rs);
+			while (rs.next()) {
+				if (rs != null) {
+
+					userid = rs.getInt(1);
+					System.out.println(userid);
+				}
+			}
+		}
+		finally{
+		pstmt.close();
+		       }
+		return userid;
+        }
 }

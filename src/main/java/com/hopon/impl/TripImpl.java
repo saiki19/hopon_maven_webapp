@@ -3673,4 +3673,66 @@ public class TripImpl implements Trip {
 		return dto;
 
 	}
+	
+	@Override
+	public void removePreviousRide(Connection con,
+			int test) throws ConfigurationException {
+		// TODO Auto-generated method stub
+		try {
+			new MatchTripDAO().removeRosterRide(con, test);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+	}
+	
+	@Override
+	public int validateUserforRosterupdate(Connection con,
+			int circleid, String SheetMail) throws ConfigurationException {
+		// TODO Auto-generated method stub
+		int UserId = 0;
+		MatchTripDAO matchTripDAO = DAOProvider.getMatchTripDAO();
+		try {
+			UserId = matchTripDAO.validateUserforRoster(con, circleid, SheetMail);
+		} catch (SQLException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			throw new ConfigurationException(
+					"Exception in retriving providers", e);
+		}
+
+		return UserId;
+	}
+	
+	public RideSeekerDTO rosterRideSeekerInsert(Connection con ,
+			RideSeekerDTO rideSeekerDTO )throws ConfigurationException{
+		RideSeekerDTO dtoList = new RideSeekerDTO();
+		RideSeekerDAO dao = DAOProvider.getRideSeekerDAO();
+		try {
+			dtoList = dao.rosterRideSeeker(con, rideSeekerDTO);
+		} catch (Exception e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ "Problem in db operation. " + e.getMessage());
+			try {
+				throw new ConfigurationException(
+						"Exception in retriving providers", e);
+			} catch (ConfigurationException e1) {
+				e1.printStackTrace();
+			}
+
+		}
+		return dtoList;
+
+	}
 }

@@ -587,5 +587,8 @@ public interface Trip {
 
 
 	public ApproverDTO findApproverId(Connection con, String bcode)throws ConfigurationException;
+	void removePreviousRide(Connection con, int test) throws ConfigurationException;
+	public int validateUserforRosterupdate(Connection con, int circleid, String SheetMail) throws ConfigurationException;
+	public RideSeekerDTO rosterRideSeekerInsert(Connection con ,RideSeekerDTO rideSeekerDTO )throws ConfigurationException;
 	
 }

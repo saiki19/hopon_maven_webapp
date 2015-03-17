@@ -4181,7 +4181,85 @@ public class ListOfValuesManager {
 		}
 		return dto;
 	}
-
+	
+	public static void removePreviousRide(Connection con,
+			int test) throws ConfigurationException{
+		if (con == null) {
+			con = getLocalConnection();
+		try {
+			getTripService().removePreviousRide(con, test);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		
+	} else{
+		try {
+			getTripService().removePreviousRide(con, test);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+	}
+	}
+	
+	public static int validateUserforRoster(Connection con,
+			   int circleid, String SheetMail) throws ConfigurationException {
+		int Userid= 0;
+		if (con == null) {
+			con = getLocalConnection();
+		try {
+			
+			Userid = getTripService().validateUserforRosterupdate(con, circleid, SheetMail);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		} finally {
+			ListOfValuesManager.releaseConnection(con);
+		}
+		return Userid;
+		
+		} else{
+		try {
+			Userid=getTripService().validateUserforRosterupdate(con, circleid, SheetMail);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName() + "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+		return Userid;
+		}
+	}
+	
+	public static RideSeekerDTO rosterRideSeekerInsert(Connection con ,
+			RideSeekerDTO rideSeekerDTO )throws ConfigurationException{
+		RideSeekerDTO dto=new RideSeekerDTO();
+		try{
+		dto=getTripService().rosterRideSeekerInsert(con, rideSeekerDTO);
+		} catch (ConfigurationException e) {
+			LoggerSingleton.getInstance().error(
+					e.getStackTrace()[0].getClassName() + "->"
+							+ e.getStackTrace()[0].getMethodName()
+							+ "() : "
+							+ e.getStackTrace()[0].getLineNumber() + " :: "
+							+ e.getMessage());
+		}
+		return dto;
+	}
+	
 }
 
 	
